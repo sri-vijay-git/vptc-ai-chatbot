@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Next.js
+.next/
+node_modules/
+.DS_Store
+
+# Local App Data
+backend/data/documents/*.pdf
+# Note: We KEEP backend/data/chromadb for the demo so it deploys with data.
+# If using a cloud solution, ignore this too.
+# backend/data/chromadb/

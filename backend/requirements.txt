@@ -1,0 +1,41 @@
+# Core FastAPI
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+python-multipart==0.0.9
+
+# Environment & Config
+python-dotenv==1.0.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+pydantic-core==2.16.2
+annotated-types==0.6.0
+email-validator==2.1.0
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Supabase & Database
+supabase==2.3.4
+postgrest==0.13.2
+gotrue==2.1.0
+realtime==1.0.5
+storage3==0.7.4
+
+# Google AI
+google-generativeai==0.3.2
+google-ai-generativelanguage==0.4.0
+google-api-core==2.15.0
+
+# Vector Database & RAG
+chromadb==0.4.22
+chroma-hnswlib==0.7.3
+
+# PDF Processing
+PyPDF2==3.0.1
+
+# Utilities
+tinydb==4.8.0
+numpy<2.0
+httpx==0.25.2
+pyyaml==6.0.1
