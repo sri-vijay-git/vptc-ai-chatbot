@@ -72,41 +72,57 @@ export default function ChatPage() {
         setLoading(true);
 
         try {
-            const response = await api.post("/chat/message", { message: userMsg });
-
-            const aiResponse = response.data;
-
-            // Add AI Message
-            setMessages((prev) => [
-                ...prev,
-                {
-                    role: "assistant",
-                    content: aiResponse.answer,
-                    sources: aiResponse.sources
-                }
-            ]);
-
-            // Increment guest conversation count
+            // For guest users, provide demo response without backend call
             if (isGuest) {
+                // Simulate API delay for realism
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const demoResponse = `Thank you for trying VPTC AI Chatbot! 🎓
+
+I'm your AI assistant for Vignesh Polytechnic College. I can help you with:
+• Course information & syllabus
+• Admission requirements & procedures  
+• Fee structure & scholarships
+• Exam schedules & results
+• Campus facilities & events
+
+**Sign up for FREE** to unlock:
+✨ Unlimited AI conversations
+✨ Real-time document-based answers
+✨ GPA calculator
+✨ Personalized academic guidance
+
+Demo chats remaining: **${getRemainingConversations() - 1}**`;
+
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: "assistant",
+                        content: demoResponse,
+                        sources: ["VPTC Demo Mode"]
+                    }
+                ]);
+
                 incrementConversation();
+            } else {
+                // Authenticated users get real AI responses from backend
+                const response = await api.post("/chat/message", { message: userMsg });
+                const aiResponse = response.data;
+
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        role: "assistant",
+                        content: aiResponse.answer,
+                        sources: aiResponse.sources
+                    }
+                ]);
             }
         } catch (error: any) {
-            // Handle auth errors for guests
-            if (error.response?.status === 401 && isGuest) {
-                // Guest mode - no auth required, just increment
-                setMessages((prev) => [...prev, {
-                    role: "assistant",
-                    content: "I'm having trouble connecting to the AI brain right now. Please try again later."
-                }]);
-                if (isGuest) {
-                    incrementConversation();
-                }
-            } else {
-                setMessages((prev) => [...prev, {
-                    role: "assistant",
-                    content: "Sorry, I'm having trouble retrieving that information right now."
-                }]);
-            }
+            setMessages((prev) => [...prev, {
+                role: "assistant",
+                content: "Sorry, I'm having trouble right now. Please try again or sign up for full access."
+            }]);
         } finally {
             setLoading(false);
         }
@@ -156,16 +172,16 @@ export default function ChatPage() {
                             <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                                 {/* Avatar */}
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === "user"
-                                        ? "bg-primary text-white"
-                                        : "bg-gradient-to-br from-secondary to-accent text-gray-700"
+                                    ? "bg-primary text-white"
+                                    : "bg-gradient-to-br from-secondary to-accent text-gray-700"
                                     }`}>
                                     {msg.role === "user" ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
                                 </div>
 
                                 {/* Message Bubble */}
                                 <div className={`rounded-2xl p-4 shadow-sm ${msg.role === "user"
-                                        ? "bg-primary text-white rounded-tr-sm"
-                                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm border border-gray-200 dark:border-gray-700"
+                                    ? "bg-primary text-white rounded-tr-sm"
+                                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm border border-gray-200 dark:border-gray-700"
                                     }`}>
                                     <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                                     {msg.sources && msg.sources.length > 0 && (
