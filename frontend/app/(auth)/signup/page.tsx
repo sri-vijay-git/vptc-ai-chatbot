@@ -5,38 +5,57 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         try {
-            const response = await api.post("/auth/login", { email, password });
-            const { access_token } = response.data;
+            await api.post("/auth/signup", {
+                email,
+                password,
+                full_name: fullName,
+                role: "student"
+            });
 
-            // Store token
-            localStorage.setItem("token", access_token);
+            setSuccess(true);
 
-            // Redirect to chat
-            router.push("/chat");
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                router.push("/login");
+            }, 2000);
         } catch (err: any) {
-            setError(err.response?.data?.detail || "Login failed. Please check your credentials.");
+            setError(err.response?.data?.detail || "Signup failed. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
+    if (success) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
+                    <div className="mb-4 text-green-600 text-5xl">✓</div>
+                    <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Account Created!</h2>
+                    <p className="text-gray-600 dark:text-gray-400">Redirecting to login...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
             <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Student Login</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Create Account</h2>
 
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
@@ -44,7 +63,19 @@ export default function LoginPage() {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleSignup} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                        <input
+                            type="text"
+                            required
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="mt-1 w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Your full name"
+                        />
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                         <input
@@ -62,9 +93,11 @@ export default function LoginPage() {
                         <input
                             type="password"
                             required
+                            minLength={6}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="mt-1 w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="At least 6 characters"
                         />
                     </div>
 
@@ -73,14 +106,14 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                     >
-                        {loading ? "Signing in..." : "Sign In"}
+                        {loading ? "Creating account..." : "Sign Up"}
                     </button>
                 </form>
 
                 <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                    First time here?{" "}
-                    <Link href="/signup" className="text-primary hover:underline font-medium">
-                        Create an account
+                    Already have an account?{" "}
+                    <Link href="/login" className="text-primary hover:underline">
+                        Sign in
                     </Link>
                 </p>
             </div>
