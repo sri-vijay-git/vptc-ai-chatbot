@@ -8,9 +8,9 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                primary: "#2563EB", // Blue
-                secondary: "#1E293B", // Dark Slate
-                accent: "#F59E0B", // Amber
+                primary: "#795548", // VPTC Brown
+                secondary: "#d7ccc8", // VPTC Sandle
+                accent: "#8d6e63", // Medium Brown
             },
         },
     },

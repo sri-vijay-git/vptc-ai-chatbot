@@ -1,0 +1,254 @@
+/* VPTC AI Chatbot - Custom Theme with College Colors */
+
+:root {
+  /* VPTC College Colors - Brown & Sandle */
+  --vptc-brown-dark: #5d4037;      /* Dark Brown - Primary */
+  --vptc-brown: #795548;            /* Brown - Main */
+  --vptc-brown-light: #a1887f;     /* Light Brown */
+  --vptc-sandle: #d7ccc8;          /* Sandle/Beige */
+  --vptc-sandle-light: #efebe9;    /* Light Sandle */
+  
+  /* Semantic Colors */
+  --primary: var(--vptc-brown);
+  --primary-dark: var(--vptc-brown-dark);
+  --primary-light: var(--vptc-brown-light);
+  --secondary: var(--vptc-sandle);
+  --secondary-light: var(--vptc-sandle-light);
+  
+  /* Functional Colors */
+  --success: #2e7d32;
+  --error: #c62828;
+  --warning: #f57c00;
+  --info: #0277bd;
+  
+  /* Neutral Colors */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #424242;
+  --gray-900: #212121;
+  
+  /* Background & Surface */
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--vptc-sandle-light);
+  --surface: #ffffff;
+  --surface-hover: var(--gray-50);
+  
+  /* Text Colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-on-primary: #ffffff;
+}
+
+/* Dark Mode */
+.dark {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --surface: #242424;
+  --surface-hover: #2d2d2d;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+}
+
+/* Gemini-Style Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes typing {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* Utility Classes */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.4s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Custom Scrollbar - VPTC Colors */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vptc-brown-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vptc-brown);
+}
+
+/* Smooth Transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--vptc-sandle);
+  transform: translateY(-1px);
+}
+
+/* Card Styles */
+.card {
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Input Styles */
+.input-field {
+  background: var(--surface);
+  border: 1px solid var(--gray-300);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.1);
+}
+
+.dark .input-field {
+  background: var(--surface);
+  border-color: var(--gray-700);
+}
+
+/* Message Bubble Styles */
+.message-user {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+  padding: 0.875rem 1.25rem;
+  max-width: 80%;
+  margin-left: auto;
+  box-shadow: 0 2px 8px rgba(93, 64, 55, 0.2);
+}
+
+.message-assistant {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  padding: 0.875rem 1.25rem;
+  max-width: 80%;
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dark .message-assistant {
+  background: var(--surface);
+  border-color: var(--gray-700);
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Gradient Backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--vptc-brown) 0%, var(--vptc-brown-dark) 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--vptc-sandle-light) 0%, var(--vptc-sandle) 100%);
+}
+
+/* Glass Morphism Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(36, 36, 36, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
