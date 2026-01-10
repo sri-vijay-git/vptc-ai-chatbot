@@ -47,6 +47,16 @@ export default function SignupPage() {
                 <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
                     <div className="mb-4 text-green-600 text-5xl">✓</div>
                     <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Account Created!</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        Your account has been successfully created.
+                    </p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                            📧 <strong>Email Verification:</strong><br />
+                            For production use, you would receive a verification email.
+                            Currently auto-verified for development.
+                        </p>
+                    </div>
                     <p className="text-gray-600 dark:text-gray-400">Redirecting to login...</p>
                 </div>
             </div>
