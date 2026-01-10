@@ -7,7 +7,11 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Cors
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000", 
+        "http://localhost:8000",
+        "https://vptc-ai-chatbot-frontend.vercel.app"
+    ]
 
     # Supabase
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
