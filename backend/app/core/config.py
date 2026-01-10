@@ -1,24 +1,10 @@
 import os
 from pydantic_settings import BaseSettings
-from typing import List
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "VPTC AI Chatbot"
     API_V1_STR: str = "/api/v1"
     
-    # Cors - Can be set via env var as JSON array or uses defaults
-    BACKEND_CORS_ORIGINS: List[str] = []
-    
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # If BACKEND_CORS_ORIGINS not set via env, use defaults
-        if not self.BACKEND_CORS_ORIGINS:
-            self.BACKEND_CORS_ORIGINS = [
-                "http://localhost:3000", 
-                "http://localhost:8000",
-                "https://vptc-ai-chatbot-frontend.vercel.app"
-            ]
-
     # Supabase
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
@@ -36,3 +22,10 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 settings = Settings()
+
+# CORS Origins - Hardcoded for simplicity
+BACKEND_CORS_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:8000", 
+    "https://vptc-ai-chatbot-frontend.vercel.app"
+]
