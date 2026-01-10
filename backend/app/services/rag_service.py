@@ -4,7 +4,7 @@ from app.core.config import settings
 
 # Configure Gemini
 genai.configure(api_key=settings.GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 class RAGService:
     def generate_response(self, user_query: str) -> dict:

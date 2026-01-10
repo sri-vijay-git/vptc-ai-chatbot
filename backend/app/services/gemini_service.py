@@ -6,8 +6,8 @@ genai.configure(api_key=settings.GOOGLE_API_KEY)
 
 class GeminiService:
     def __init__(self):
-        self.model = genai.GenerativeModel('gemini-pro')
-        self.vision_model = genai.GenerativeModel('gemini-pro-vision')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.vision_model = genai.GenerativeModel('gemini-1.5-flash')
 
     def generate_text(self, prompt: str) -> str:
         """
