@@ -1,36 +1,39 @@
-// Google Login Button Component
+// Google Login Button Component - Fixed for Supabase Integration
 
-import { useState } from 'react';
+"use client";
 
-interface GoogleLoginButtonProps {
-    onError?: (error: string) => void;
-}
+import { createClient } from '@supabase/supabase-js';
 
-export default function GoogleLoginButton({ onError }: GoogleLoginButtonProps) {
-    const [loading, setLoading] = useState(false);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export default function GoogleLoginButton() {
     const handleGoogleLogin = async () => {
-        setLoading(true);
         try {
-            // This will be handled by Supabase OAuth
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-            const redirectUrl = `${window.location.origin}/auth/callback`;
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`
+                }
+            });
 
-            // Redirect to Supabase Google OAuth
-            window.location.href = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${redirectUrl}`;
-        } catch (error: any) {
-            setLoading(false);
-            if (onError) {
-                onError(error.message || 'Google login failed');
+            if (error) {
+                console.error('Google login error:', error);
+                alert('Failed to login with Google. Please try again.');
             }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+            alert('An error occurred. Please try again.');
         }
     };
 
     return (
         <button
             onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all disabled:opacity-50"
+            type="button"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
         >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -51,7 +54,7 @@ export default function GoogleLoginButton({ onError }: GoogleLoginButtonProps) {
                 />
             </svg>
             <span className="text-gray-700 dark:text-gray-200 font-medium">
-                {loading ? 'Redirecting...' : 'Continue with Google'}
+                Continue with Google
             </span>
         </button>
     );
