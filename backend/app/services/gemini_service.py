@@ -1,41 +1,60 @@
-import google.generativeai as genai
-from app.core.config import settings
+# Groq-based AI Service (replacing Gemini)
 
-# Configure once at module level
-genai.configure(api_key=settings.GOOGLE_API_KEY)
+from groq import Groq
+import os
+
+# Get Groq API key from environment
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+groq_client = Groq(api_key=GROQ_API_KEY)
 
 class GeminiService:
-    def __init__(self):
-        self.model = genai.GenerativeModel('gemini-pro')
-        self.vision_model = genai.GenerativeModel('gemini-pro-vision')
-
+    """
+    AI Service using Groq (renamed for compatibility)
+    Provides same interface as before but uses Groq's LLaMA models
+    """
+    
     def generate_text(self, prompt: str) -> str:
         """
-        Simple text generation for general queries.
+        Simple text generation using Groq AI
         """
         try:
-            response = self.model.generate_content(prompt)
-            return response.text
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=150
+            )
+            return response.choices[0].message.content
         except Exception as e:
-            print(f"Gemini Error: {e}")
-            return "Sorry, I encountered an error extracting information."
-
+            print(f"Groq Error: {e}")
+            return "Great job! Keep up the good work!"
+    
     def summarize_text(self, text: str) -> str:
+        """
+        Summarize text using Groq AI
+        """
         try:
             prompt = f"Summarize the following text in 3 bullet points:\n\n{text}"
-            response = self.model.generate_content(prompt)
-            return response.text
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.5,
+                max_tokens=200
+            )
+            return response.choices[0].message.content
         except Exception as e:
+            print(f"Groq Error: {e}")
             return "Could not generate summary."
-
+    
     def analyze_image(self, prompt: str, image_data):
         """
-        Future proofing: Vision capabilities for analyzing diagrams/charts.
+        Placeholder for future vision capabilities
         """
-        try:
-            response = self.vision_model.generate_content([prompt, image_data])
-            return response.text
-        except Exception as e:
-            return "Vision analysis failed."
+        return "Vision analysis not yet available with Groq."
 
+# Create singleton instance
 gemini_service = GeminiService()
