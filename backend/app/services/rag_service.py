@@ -1,31 +1,28 @@
-import google.generativeai as genai
+from groq import Groq
 from app.services.vector_store import vector_store
 from app.core.config import settings
 import os
 
-# Configure Gemini with explicit API setup
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or settings.GOOGLE_API_KEY
-genai.configure(api_key=GOOGLE_API_KEY)
-
-# Use the models/ prefix which is more stable
-model = genai.GenerativeModel('models/gemini-pro')
+# Configure Groq AI
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+groq_client = Groq(api_key=GROQ_API_KEY)
 
 class RAGService:
     def generate_response(self, user_query: str) -> dict:
         """
-        Orchestrates the RAG flow with real Gemini AI
+        RAG flow with REAL Groq AI - Fast & Free!
         """
         
-        # 1. Retrieve Context
+        # 1. Retrieve Context from Vector Store
         try:
             relevant_docs = vector_store.search(user_query, n_results=3)
-            context = "\n".join(relevant_docs) if relevant_docs else "No specific college documents found."
+            context = "\n".join(relevant_docs) if relevant_docs else "No specific documents found."
         except Exception as e:
             print(f"Vector store error: {e}")
-            context = "General college knowledge"
+            context = "General knowledge"
 
-        # 2. Build Prompt
-        prompt = f"""You are a helpful AI assistant for Vignesh Polytechnic College (VPTC).
+        # 2. Build Conversational Prompt
+        prompt = f"""You are a helpful and friendly AI assistant for Vignesh Polytechnic College (VPTC).
 
 CONTEXT FROM COLLEGE DOCUMENTS:
 {context}
@@ -33,112 +30,96 @@ CONTEXT FROM COLLEGE DOCUMENTS:
 STUDENT QUESTION: {user_query}
 
 INSTRUCTIONS:
-- Answer in a friendly, conversational tone like a real college advisor
-- Use the context above if relevant
-- If the answer isn't in the context, use your general knowledge about polytechnic colleges in India
-- Keep responses concise but informative
+- Answer naturally like a real college advisor would talk to a student
+- Use the context if it's relevant to the question
+- If the context doesn't have the answer, use your general knowledge about polytechnic colleges in India
+- Be encouraging, helpful, and conversational
+- Keep responses concise but informative (2-4 sentences usually)
 - Use bullet points for lists
-- Be encouraging and helpful
+- If you don't know something specific about VPTC, be honest and suggest they contact the college office
 
-Answer the student's question naturally:"""
+Answer the student's question:"""
 
-        # 3. Generate Response with Gemini AI
+        # 3. Get Response from Groq AI
         try:
-            print(f"🤖 Calling Gemini API with query: {user_query[:50]}...")
-            response = model.generate_content(prompt)
-            answer = response.text
+            print(f"🤖 Calling Groq AI: {user_query[:50]}...")
+            
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",  # Fast, powerful, and free!
+                messages=[
+                    {"role": "system", "content": "You are a helpful AI advisor for VPTC polytechnic college. Be friendly and conversational."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=500,
+                top_p=0.9
+            )
+            
+            answer = response.choices[0].message.content
             sources = ["College Documents"] if relevant_docs else ["General Knowledge"]
-            print(f"✅ Gemini responded successfully!")
+            
+            print(f"✅ Groq responded successfully!")
             
         except Exception as e:
-            error_msg = str(e)
-            print(f"❌ Gemini API Error: {error_msg}")
+            print(f"❌ Groq AI Error: {e}")
             
-            # Try alternative model names
-            alternative_models = ['gemini-pro', 'gemini-1.0-pro', 'gemini-1.5-pro-latest']
+            # Intelligent fallback if API fails
+            query_lower = user_query.lower()
             
-            for alt_model in alternative_models:
-                try:
-                    print(f"🔄 Trying alternative model: {alt_model}")
-                    alt = genai.GenerativeModel(alt_model)
-                    response = alt.generate_content(prompt)
-                    answer = response.text
-                    sources = ["College Documents"] if relevant_docs else ["General Knowledge"]
-                    print(f"✅ Success with {alt_model}!")
-                    break
-                except:
-                    continue
-            else:
-                # All models failed - provide intelligent fallback
-                query_lower = user_query.lower()
-                
-                if any(word in query_lower for word in ['course', 'program', 'diploma']):
-                    answer = """VPTC offers various diploma programs:
+            if any(word in query_lower for word in ['course', 'program', 'diploma']):
+                answer = """VPTC offers various diploma programs:
 
-• **Computer Engineering** - Software development, programming, networking
-• **Electronics & Communication** - Digital systems, telecommunications, embedded systems
-• **Mechanical Engineering** - Manufacturing, CAD/CAM, thermodynamics
-• **Civil Engineering** - Construction, surveying, structural design
-• **Electrical Engineering** - Power systems, control systems, electrical machines
+• **Computer Engineering** - Software, networking, programming
+• **Electronics & Communication** - Digital systems, embedded tech
+• **Mechanical Engineering** - Manufacturing, CAD/CAM
+• **Civil Engineering** - Construction, structural design  
+• **Electrical Engineering** - Power systems, control systems
 
-Each is a 3-year program with practical labs and industry training. Which program interests you?"""
+Each is 3 years with practical labs. Which interests you?"""
 
-                elif any(word in query_lower for word in ['fee', 'fees', 'cost']):
-                    answer = """**Fee Structure** (approximate):
+            elif any(word in query_lower for word in ['fee', 'fees', 'cost']):
+                answer = """**Fee Structure** (approximate):
 
 • Tuition: ₹25,000-35,000/year
 • Admission: ₹5,000 (one-time)
-• Exam fees: ₹2,000/year
-• Lab & Library: ₹3,000/year
+• Total: Around ₹35,000-45,000/year
 
-Total: Around ₹35,000-45,000 per year
+Scholarships available! Payment plans accepted."""
 
-Scholarships available for SC/ST and merit students. Payment plans accepted!"""
-
-                elif any(word in query_lower for word in ['exam', 'test', 'assessment']):
-                    answer = """**Examination System**:
+            elif any(word in query_lower for word in ['exam', 'test']):
+                answer = """**Exam System:**
 
 • 6 semesters over 3 years
-• Each semester: Internal (30%) + Final exam (70%)
-• Practical exams for lab subjects
-• Minimum 35% to pass each subject
-• Results usually within 4-6 weeks
+• Internal (30%) + Final exam (70%)
+• Minimum 35% to pass
+• Results within 4-6 weeks
 
-Exam dates announced 2 weeks in advance. Study regularly!"""
+Study regularly! 📚"""
 
-                elif any(word in query_lower for word in ['admission', 'apply', 'join']):
-                    answer = """**How to Apply**:
+            elif any(word in query_lower for word in ['admission', 'apply']):
+                answer = """**Admission Requirements:**
 
 **Eligibility**: 10th pass with 35%+ marks
 
-**Documents needed**:
-• 10th marksheet & certificate
-• Transfer certificate
-• Community/income certificate
-• Aadhar card
-• Photos (4 nos)
+**Documents**: 10th certificates, transfer cert, Aadhar, photos
 
-**Process**:
-1. Visit college office
-2. Fill application form
-3. Submit documents
-4. Pay admission fee
+**Process**: Visit office, fill form, submit docs, pay fee
 
-Admissions start in June! Any specific questions?"""
+Admissions in June-July!"""
 
-                else:
-                    answer = f"""I'd be happy to help you with "{user_query}"!
+            else:
+                answer = f"""I'd love to help with "{user_query}"!
 
-I can provide information about:
+I can provide info about:
 • 📚 Courses & Programs
-• 💰 Fees & Scholarships
-• 📝 Admissions Process
-• 📊 Exams & Grading
-• 🏫 Campus Facilities
+• 💰 Fees & Scholarships  
+• 📝 Admissions
+• 📊 Exams
+• 🏫 Facilities
 
-What would you like to know more about?"""
-                
-                sources = ["VPTC Knowledge Base"]
+What would you like to know?"""
+            
+            sources = ["VPTC Knowledge Base"]
 
         return {
             "answer": answer,
