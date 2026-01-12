@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     SUPABASE_JWT_SECRET: str = os.getenv("SUPABASE_JWT_SECRET", "")
 
-    # Gemini
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+    # AI Service API
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "temporary-secret-key-for-dev")
