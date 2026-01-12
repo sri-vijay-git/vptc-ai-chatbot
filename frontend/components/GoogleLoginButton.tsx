@@ -9,7 +9,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export default function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+    onError?: (error: string) => void;
+}
+
+export default function GoogleLoginButton({ onError }: GoogleLoginButtonProps) {
     const handleGoogleLogin = async () => {
         try {
             const { error } = await supabase.auth.signInWithOAuth({
@@ -21,11 +25,15 @@ export default function GoogleLoginButton() {
 
             if (error) {
                 console.error('Google login error:', error);
-                alert('Failed to login with Google. Please try again.');
+                if (onError) {
+                    onError('Failed to login with Google. Please try again.');
+                }
             }
         } catch (error) {
             console.error('Unexpected error:', error);
-            alert('An error occurred. Please try again.');
+            if (onError) {
+                onError('An error occurred. Please try again.');
+            }
         }
     };
 
