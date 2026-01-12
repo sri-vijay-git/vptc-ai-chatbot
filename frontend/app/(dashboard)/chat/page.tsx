@@ -72,51 +72,22 @@ export default function ChatPage() {
         setLoading(true);
 
         try {
-            // For guest users, provide demo response without backend call
+            // All users (guests and logged-in) get REAL AI responses!
+            const response = await api.post("/chat/message", { message: userMsg });
+            const aiResponse = response.data;
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: aiResponse.answer,
+                    sources: aiResponse.sources
+                }
+            ]);
+
+            // Track guest conversations
             if (isGuest) {
-                // Simulate API delay for realism
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                const demoResponse = `Thank you for trying VPTC AI Chatbot! 🎓
-
-I'm your AI assistant for Vignesh Polytechnic College. I can help you with:
-• Course information & syllabus
-• Admission requirements & procedures  
-• Fee structure & scholarships
-• Exam schedules & results
-• Campus facilities & events
-
-**Sign up for FREE** to unlock:
-✨ Unlimited AI conversations
-✨ Real-time document-based answers
-✨ GPA calculator
-✨ Personalized academic guidance
-
-Demo chats remaining: **${getRemainingConversations() - 1}**`;
-
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        content: demoResponse,
-                        sources: ["VPTC Demo Mode"]
-                    }
-                ]);
-
                 incrementConversation();
-            } else {
-                // Authenticated users get real AI responses from backend
-                const response = await api.post("/chat/message", { message: userMsg });
-                const aiResponse = response.data;
-
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        content: aiResponse.answer,
-                        sources: aiResponse.sources
-                    }
-                ]);
             }
         } catch (error: any) {
             setMessages((prev) => [...prev, {
