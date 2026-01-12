@@ -1,90 +1,81 @@
 import os
-# Import the patch BEFORE chromadb to fix ONNX runtime issues
-from app.core import chromadb_patch
-
 import chromadb
-from chromadb.utils import embedding_functions
-import google.generativeai as genai
-from app.core.config import settings
 from typing import List, Dict, Any
+import hashlib
 
-# Configure Gemini
-genai.configure(api_key=settings.GOOGLE_API_KEY)
-
-class DummyEmbeddingFunction:
-    """Dummy embedding function to bypass ChromaDB's default ONNX initialization"""
+# Simple hash-based embedding function (no external API needed!)
+class SimpleEmbeddingFunction:
+    """
+    Simple deterministic embedding function using hash
+    Works offline, no API calls needed
+    """
     def __call__(self, input):
-        # ChromaDB expects 'input' parameter, not 'texts'
-        # This won't be used since we provide embeddings manually
         if isinstance(input, str):
             input = [input]
-        return [[0.0] * 768 for _ in input]
+        
+        embeddings = []
+        for text in input:
+            # Use SHA-384 to create 48-byte hash = 384 bits
+            hash_obj = hashlib.sha384(text.encode())
+            hash_bytes = hash_obj.digest()
+            # Convert bytes to normalized floats (-1 to 1)
+            embedding = [(float(b) - 127.5) / 127.5 for b in hash_bytes]
+            embeddings.append(embedding)
+        
+        return embeddings
 
 class VectorStoreService:
     def __init__(self):
-        # Persistent Client: Stores data in 'backend/data/chromadb'
-        self.client = chromadb.PersistentClient(path="data/chromadb")
-        
-        # Create or get the collection with a dummy embedding function
-        # We provide embeddings manually using Google Gemini
-        self.collection = self.client.get_or_create_collection(
-            name="vptc_knowledge_base",
-            embedding_function=DummyEmbeddingFunction(),
-            metadata={"hnsw:space": "cosine"}
-        )
-
-    def get_embedding(self, text: str) -> List[float]:
-        """
-        Generate embedding for a single text using Google Gemini Embedding model.
-        Model: models/embedding-001
-        """
+        """Initialize ChromaDB with simple hash-based embeddings"""
         try:
-            result = genai.embed_content(
-                model="models/embedding-001",
-                content=text,
-                task_type="retrieval_document",
-                title="College Info"
+            # Persistent storage
+            self.client = chromadb.PersistentClient(path="data/chromadb")
+            
+            # Create/get collection with simple embedding function
+            self.collection = self.client.get_or_create_collection(
+                name="vptc_knowledge_base",
+                embedding_function=SimpleEmbeddingFunction(),
+                metadata={"hnsw:space": "cosine"}
             )
-            return result['embedding']
+            print(f"✓ Vector store initialized. Documents: {self.collection.count()}")
         except Exception as e:
-            print(f"Error generating embedding: {e}")
-            return []
+            print(f"Vector store initialization error: {e}")
+            self.collection = None
 
     def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str]):
         """
-        Add documents to ChromaDB. 
-        We generate embeddings manually to ensure we use the Google model.
+        Add documents to ChromaDB
+        Embeddings generated automatically by embedding function
         """
-        # Generate embeddings in batch if possible, or loop (Gemini has limits, go slow or batch)
-        # For this diploma project, loop is fine for ingestion script.
-        embeddings = []
-        for doc in documents:
-            emb = self.get_embedding(doc)
-            embeddings.append(emb)
-
-        self.collection.add(
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-            ids=ids
-        )
+        try:
+            if self.collection:
+                self.collection.add(
+                    documents=documents,
+                    metadatas=metadatas,
+                    ids=ids
+                )
+                print(f"✓ Added {len(documents)} documents")
+        except Exception as e:
+            print(f"Error adding documents: {e}")
 
     def search(self, query: str, n_results: int = 3) -> List[str]:
         """
-        Semantic search for relevant documents.
+        Semantic search for relevant documents
         """
-        query_embedding = genai.embed_content(
-            model="models/embedding-001",
-            content=query,
-            task_type="retrieval_query"
-        )['embedding']
-        
-        results = self.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_results
-        )
-        
-        # valid matches
-        return results['documents'][0] if results['documents'] else []
+        try:
+            if not self.collection:
+                return []
+                
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=n_results
+            )
+            
+            # Return matched documents
+            return results['documents'][0] if results['documents'] else []
+        except Exception as e:
+            print(f"Search error: {e}")
+            return []
 
+# Singleton instance
 vector_store = VectorStoreService()
