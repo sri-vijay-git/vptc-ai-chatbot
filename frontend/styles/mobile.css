@@ -1,0 +1,94 @@
+/* Mobile Responsive Enhancements for VPTC AI Chatbot */
+
+/* Base mobile optimizations */
+@media (max-width: 640px) {
+
+    /* Chat page fixes */
+    .chat-container {
+        padding: 0.75rem;
+    }
+
+    .message-bubble {
+        max-width: 95% !important;
+        font-size: 0.9rem;
+    }
+
+    .chat-input {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+
+    /* Header mobile */
+    .chat-header h1 {
+        font-size: 1.125rem !important;
+    }
+
+    .chat-header .status-text {
+        font-size: 0.7rem !important;
+    }
+
+    /* Login/Signup forms */
+    .auth-container {
+        padding: 1rem !important;
+        margin: 1rem !important;
+    }
+
+    .auth-form input {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+    }
+
+    /* Buttons */
+    button {
+        min-height: 44px;
+        /* Touch target size */
+    }
+
+    /* Home page */
+    .home-hero h1 {
+        font-size: 1.75rem !important;
+    }
+
+    .home-hero p {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .chat-container {
+        padding: 1.5rem;
+    }
+
+    .message-bubble {
+        max-width: 75%;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Mobile device detected */
+    button,
+    a,
+    input[type="submit"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Larger tap targets */
+    .icon-button {
+        padding: 0.75rem !important;
+    }
+}
+
+/* Landscape mobile */
+@media (max-width: 896px) and (orientation: landscape) {
+    .chat-header {
+        padding: 0.5rem 1rem !important;
+    }
+
+    .message-area {
+        max-height: 60vh;
+    }
+}
