@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const GUEST_LIMIT = 3;
+const GUEST_LIMIT = 20; // Generous free trial!
 const STORAGE_KEY = 'vptc_guest_conversations';
 
 export function useGuestMode() {
