@@ -36,6 +36,8 @@ export default function ChatPage() {
         guestLimit
     } = useGuestMode();
 
+    const remaining = getRemainingConversations();
+
     const [showModal, setShowModal] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [userEmail, setUserEmail] = useState<string | null>(null);
