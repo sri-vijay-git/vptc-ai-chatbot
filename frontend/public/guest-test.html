@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guest Mode Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { background: #795548; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #5d4037; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 VPTC Guest Mode Diagnostic Test</h1>
+        
+        <div id="results"></div>
+        
+        <h3>Actions:</h3>
+        <button onclick="runTest()">Run Full Test</button>
+        <button onclick="resetGuest()">Reset Guest Count</button>
+        <button onclick="checkStorage()">Check Storage</button>
+        
+        <div id="details" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function showResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('details').innerHTML = '';
+        }
+
+        function checkStorage() {
+            clearResults();
+            const token = localStorage.getItem('token');
+            const guestCount = localStorage.getItem('vptc_guest_conversations');
+            
+            let html = '<h3>LocalStorage Status:</h3><pre>';
+            html += `Token: ${token ? '✓ Logged in' : '✗ Not logged in (Guest Mode)'}\n`;
+            html += `Guest Conversations: ${guestCount || '0'} / 20\n`;
+            html += `Remaining: ${20 - parseInt(guestCount || '0')} free chats`;
+            html += '</pre>';
+            
+            document.getElementById('details').innerHTML = html;
+            
+            if (!token) {
+                showResult('✓ Guest Mode Active - No login required!', 'success');
+            } else {
+                showResult('ℹ You are logged in', 'info');
+            }
+        }
+
+        function resetGuest() {
+            clearResults();
+            localStorage.removeItem('vptc_guest_conversations');
+            showResult('✓ Guest count reset to 0! You now have 20 free chats.', 'success');
+            checkStorage();
+        }
+
+        function runTest() {
+            clearResults();
+            showResult('🧪 Running Guest Mode Test...', 'info');
+            
+            const token = localStorage.getItem('token');
+            const guestCount = parseInt(localStorage.getItem('vptc_guest_conversations') || '0');
+            
+            // Test 1: Check if guest mode is enabled
+            if (!token) {
+                showResult('✓ Test 1: Guest mode is ACTIVE (no login required)', 'success');
+            } else {
+                showResult('⚠ Test 1: You are logged in (not in guest mode)', 'info');
+            }
+            
+            // Test 2: Check conversation count
+            const remaining = 20 - guestCount;
+            if (remaining > 0) {
+                showResult(`✓ Test 2: You have ${remaining} free chats remaining`, 'success');
+            } else {
+                showResult(`✗ Test 2: Free trial limit reached (${guestCount}/20)`, 'error');
+                showResult('💡 Click "Reset Guest Count" to get 20 more free chats', 'info');
+            }
+            
+            // Test 3: Check if chat should work
+            if (!token && remaining > 0) {
+                showResult('✓ Test 3: Guest chat SHOULD work! Try sending a message.', 'success');
+            } else if (token) {
+                showResult('✓ Test 3: Logged in - unlimited chats available', 'success');
+            } else {
+                showResult('✗ Test 3: Chat blocked - trial limit reached', 'error');
+            }
+            
+            // Show detailed info
+            checkStorage();
+        }
+
+        // Auto-run test on load
+        window.onload = function() {
+            runTest();
+        };
+    </script>
+</body>
+</html>

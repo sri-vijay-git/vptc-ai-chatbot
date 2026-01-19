@@ -2,10 +2,19 @@
 
 from groq import Groq
 import os
+from app.core.config import settings
 
-# Get Groq API key from environment
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-groq_client = Groq(api_key=GROQ_API_KEY)
+# Get Groq API key from environment via settings
+groq_client = None
+
+def get_groq_client():
+    """Lazy initialization of Groq client"""
+    global groq_client
+    if groq_client is None:
+        if not settings.GROQ_API_KEY:
+            raise ValueError("GROQ_API_KEY is not set in .env file")
+        groq_client = Groq(api_key=settings.GROQ_API_KEY)
+    return groq_client
 
 class GeminiService:
     """
@@ -18,7 +27,8 @@ class GeminiService:
         Simple text generation using Groq AI
         """
         try:
-            response = groq_client.chat.completions.create(
+            client = get_groq_client()
+            response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "user", "content": prompt}
@@ -37,7 +47,8 @@ class GeminiService:
         """
         try:
             prompt = f"Summarize the following text in 3 bullet points:\n\n{text}"
-            response = groq_client.chat.completions.create(
+            client = get_groq_client()
+            response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "user", "content": prompt}

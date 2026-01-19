@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import api from "@/lib/api";
-import { Send, LogOut, Bot, User, Sparkles, Sun, Moon } from "lucide-react";
+import { Send, LogOut, Bot, User, Sparkles, Sun, Moon, UserCircle, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGuestMode } from "@/hooks/useGuestMode";
@@ -37,6 +37,18 @@ export default function ChatPage() {
     } = useGuestMode();
 
     const [showModal, setShowModal] = useState(false);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    // Get user email on mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token && !isGuest) {
+            // Try to get email from localStorage or decode token
+            const email = localStorage.getItem('user_email') || 'user@example.com';
+            setUserEmail(email);
+        }
+    }, [isGuest]);
 
     // Auto-scroll to bottom
     const scrollToBottom = () => {
@@ -135,6 +147,7 @@ export default function ChatPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
                         className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
@@ -142,18 +155,52 @@ export default function ChatPage() {
                     >
                         {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
-                    <button
-                        onClick={handleLogout}
-                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        {isGuest ? 'Exit' : 'Logout'}
-                    </button>
+
+                    {/* User Profile Button */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                            className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                        >
+                            <UserCircle className="w-5 h-5" />
+                            <span className="text-sm hidden md:inline">
+                                {isGuest ? 'Guest' : (userEmail?.split('@')[0] || 'User')}
+                            </span>
+                            <ChevronDown className="w-4 h-4" />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showProfileDropdown && (
+                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                                {/* Profile Info */}
+                                <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                    <p className="text-sm font-semibold text-gray-800 dark:text-white">
+                                        {isGuest ? 'Guest Mode' : 'Logged In'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {isGuest ? `${remaining} free chats left` : (userEmail || 'No email')}
+                                    </p>
+                                </div>
+
+                                {/* Logout Button */}
+                                <button
+                                    onClick={() => {
+                                        setShowProfileDropdown(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    {isGuest ? 'Exit' : 'Logout'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </header>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            < div className="flex-1 overflow-y-auto p-4 space-y-4" >
                 <div className="max-w-4xl mx-auto space-y-4">
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}>
@@ -221,10 +268,10 @@ export default function ChatPage() {
                     )}
                     <div ref={messagesEndRef} />
                 </div>
-            </div>
+            </div >
 
             {/* Input Area */}
-            <div className="p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-700">
+            < div className="p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-700" >
                 <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
                     <div className="flex gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
                         <input
@@ -249,7 +296,7 @@ export default function ChatPage() {
                         </p>
                     )}
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
