@@ -186,11 +186,17 @@ function ChatContent() {
                             onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                             className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
                         >
-                            <UserCircle className="w-5 h-5" />
-                            <span className="text-sm hidden md:inline">
+                            {isGuest ? (
+                                <UserCircle className="w-5 h-5" />
+                            ) : (
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                    {(userEmail ? userEmail.charAt(0).toUpperCase() : 'U')}
+                                </div>
+                            )}
+                            <span className="text-sm hidden md:inline font-medium">
                                 {isGuest ? 'Guest' : (userEmail?.split('@')[0] || 'User')}
                             </span>
-                            <ChevronDown className="w-4 h-4" />
+                            <ChevronDown className="w-4 h-4 opacity-70" />
                         </button>
 
                         {/* Dropdown Menu */}
