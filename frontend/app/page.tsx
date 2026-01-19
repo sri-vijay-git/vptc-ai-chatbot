@@ -9,8 +9,12 @@ export default function HomePage() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
 
-    const handleGetStarted = () => {
-        router.push("/chat");
+    const handleGetStarted = (query?: string) => {
+        if (query) {
+            router.push(`/chat?q=${encodeURIComponent(query)}`);
+        } else {
+            router.push("/chat");
+        }
     };
 
     const exampleQuestions = [
@@ -92,10 +96,11 @@ export default function HomePage() {
                 {/* Input Box */}
                 <div className="w-full max-w-3xl">
                     <div className="relative bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden hover:shadow-xl transition-all">
+
                         <input
                             type="text"
                             placeholder="Ask anything about VPTC..."
-                            onClick={handleGetStarted}
+                            onClick={() => handleGetStarted()}
                             readOnly
                             className="w-full px-6 py-5 text-lg bg-transparent outline-none text-[#0a1628] placeholder-gray-400 cursor-pointer"
                         />
@@ -103,21 +108,21 @@ export default function HomePage() {
                         {/* Action Buttons */}
                         <div className="flex items-center gap-2 px-4 pb-4">
                             <button
-                                onClick={handleGetStarted}
+                                onClick={() => handleGetStarted("What courses does VPTC offer?")}
                                 className="flex items-center gap-2 px-3 py-2 text-sm text-[#1e3a5f] hover:bg-blue-50 rounded-lg transition-all"
                             >
                                 <BookOpen className="w-4 h-4" />
                                 <span className="hidden sm:inline">Courses</span>
                             </button>
                             <button
-                                onClick={handleGetStarted}
+                                onClick={() => handleGetStarted("What is the fee structure?")}
                                 className="flex items-center gap-2 px-3 py-2 text-sm text-[#1e3a5f] hover:bg-blue-50 rounded-lg transition-all"
                             >
                                 <Calculator className="w-4 h-4" />
                                 <span className="hidden sm:inline">Fees</span>
                             </button>
                             <button
-                                onClick={handleGetStarted}
+                                onClick={() => handleGetStarted()}
                                 className="flex items-center gap-2 px-3 py-2 text-sm text-[#1e3a5f] hover:bg-blue-50 rounded-lg transition-all"
                             >
                                 <MessageSquare className="w-4 h-4" />
@@ -131,7 +136,7 @@ export default function HomePage() {
                         {exampleQuestions.map((question, idx) => (
                             <button
                                 key={idx}
-                                onClick={handleGetStarted}
+                                onClick={() => handleGetStarted(question)}
                                 className="text-left p-4 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-xl hover:bg-white hover:shadow-lg transition-all group"
                             >
                                 <div className="flex items-start gap-3">

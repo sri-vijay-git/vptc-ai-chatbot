@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import api from "@/lib/api";
-import { Send, LogOut, Bot, User, Sparkles, Sun, Moon, UserCircle, ChevronDown } from "lucide-react";
+import { User, Send, StopCircle, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useGuestMode } from "@/hooks/useGuestMode";
 import SignupPrompt from "@/components/SignupPrompt";
@@ -38,9 +39,28 @@ export default function ChatPage() {
 
     const remaining = getRemainingConversations();
 
+    // State
     const [showModal, setShowModal] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [userEmail, setUserEmail] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const hasAutoSent = useRef(false);
+
+    // Handle auto-send from homepage query
+    useEffect(() => {
+        const query = searchParams.get('q');
+        if (query && !hasAutoSent.current && !loading) {
+            setInput(query);
+            hasAutoSent.current = true;
+            // Use a small timeout to ensure state is ready
+            setTimeout(() => {
+                const fakeEvent = { preventDefault: () => { } } as React.FormEvent;
+                sendMessage(fakeEvent, query);
+            }, 100);
+        }
+    }, [searchParams]);
+
+
 
     // Get user email on mount
     useEffect(() => {
@@ -71,9 +91,11 @@ export default function ChatPage() {
         router.push("/");
     };
 
-    const sendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!input.trim()) return;
+    const sendMessage = async (e: React.FormEvent, overrideMessage?: string) => {
+        if (e && e.preventDefault) e.preventDefault();
+
+        const messageToSend = overrideMessage || input;
+        if (!messageToSend.trim()) return;
 
         // Check if guest can chat
         if (isGuest && !canChat()) {
@@ -81,7 +103,7 @@ export default function ChatPage() {
             return;
         }
 
-        const userMsg = input.trim();
+        const userMsg = messageToSend.trim();
         setInput("");
 
         // Add User Message
@@ -116,7 +138,7 @@ export default function ChatPage() {
         }
     };
 
-    const remaining = getRemainingConversations();
+
 
     return (
         <div className="flex flex-col h-screen bg-gradient-to-br from-[#efebe9] via-[#d7ccc8] to-[#bcaaa4] dark:from-[#3e2723] dark:via-[#5d4037] dark:to-[#4e342e]">
