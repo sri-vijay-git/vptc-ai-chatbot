@@ -105,7 +105,7 @@ export default function ChatPage() {
     const remaining = getRemainingConversations();
 
     return (
-        <div className="flex flex-col h-screen bg-gradient-to-br from-secondary-light to-white dark:from-gray-900 dark:to-gray-800">
+        <div className="flex flex-col h-screen bg-gradient-to-br from-[#efebe9] via-[#d7ccc8] to-[#bcaaa4] dark:from-[#3e2723] dark:via-[#5d4037] dark:to-[#4e342e]">
             {/* Signup Prompt Modal */}
             <SignupPrompt
                 isOpen={showModal}
@@ -232,7 +232,7 @@ export default function ChatPage() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Ask about your college..."
-                            className="flex-1 px-4 py-2 bg-transparent focus:outline-none dark:text-white placeholder-gray-400"
+                            className="flex-1 px-4 py-2 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             disabled={loading || (isGuest && !canChat())}
                         />
                         <button
