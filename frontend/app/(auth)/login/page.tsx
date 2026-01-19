@@ -24,6 +24,7 @@ export default function LoginPage() {
 
             // Store token
             localStorage.setItem("token", access_token);
+            localStorage.setItem("user_email", email);
 
             // Redirect to chat
             router.push("/chat");
