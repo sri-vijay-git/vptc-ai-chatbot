@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, Suspense } from "react";
 import api from "@/lib/api";
 import { User, Send, StopCircle, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown } from "lucide-react";
 import Image from "next/image";
@@ -17,7 +17,7 @@ type Message = {
     sources?: string[];
 };
 
-export default function ChatPage() {
+function ChatContent() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
     const [input, setInput] = useState("");
@@ -322,5 +322,17 @@ export default function ChatPage() {
                 </form>
             </div >
         </div >
+    );
+}
+
+export default function ChatPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <ChatContent />
+        </Suspense>
     );
 }
