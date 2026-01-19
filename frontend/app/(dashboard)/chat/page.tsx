@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import api from "@/lib/api";
-import { Send, LogOut, Bot, User, Sparkles } from "lucide-react";
+import { Send, LogOut, Bot, User, Sparkles, Sun, Moon } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGuestMode } from "@/hooks/useGuestMode";
 import SignupPrompt from "@/components/SignupPrompt";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Types
 type Message = {
@@ -16,6 +18,7 @@ type Message = {
 
 export default function ChatPage() {
     const router = useRouter();
+    const { theme, toggleTheme } = useTheme();
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }
@@ -114,8 +117,13 @@ export default function ChatPage() {
             {/* Header */}
             <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-full flex items-center justify-center">
-                        <Bot className="w-6 h-6 text-white" />
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <Image
+                            src="/logo.png"
+                            alt="VPTC Logo"
+                            fill
+                            className="object-cover"
+                        />
                     </div>
                     <div>
                         <h1 className="text-xl font-bold text-gray-800 dark:text-white">VPTC AI Chatbot</h1>
@@ -126,13 +134,22 @@ export default function ChatPage() {
                         )}
                     </div>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    className="text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                >
-                    <LogOut className="w-4 h-4" />
-                    {isGuest ? 'Exit' : 'Logout'}
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                        title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                    >
+                        {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        {isGuest ? 'Exit' : 'Logout'}
+                    </button>
+                </div>
             </header>
 
             {/* Chat Area */}
@@ -146,7 +163,16 @@ export default function ChatPage() {
                                     ? "bg-primary text-white"
                                     : "bg-gradient-to-br from-secondary to-accent text-gray-700"
                                     }`}>
-                                    {msg.role === "user" ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+                                    {msg.role === "user" ? <User className="w-5 h-5" /> : (
+                                        <div className="relative w-full h-full rounded-full overflow-hidden">
+                                            <Image
+                                                src="/logo.png"
+                                                alt="AI"
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Message Bubble */}
@@ -156,9 +182,15 @@ export default function ChatPage() {
                                     }`}>
                                     <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                                     {msg.sources && msg.sources.length > 0 && (
-                                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 text-xs opacity-75">
-                                            <span className="font-semibold">Sources:</span> {msg.sources.join(", ")}
-                                        </div>
+                                        (() => {
+                                            const filteredSources = msg.sources!.filter(s => s !== "General Knowledge");
+                                            if (filteredSources.length === 0) return null;
+                                            return (
+                                                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 text-xs opacity-75">
+                                                    <span className="font-semibold">Sources:</span> {filteredSources.join(", ")}
+                                                </div>
+                                            );
+                                        })()
                                     )}
                                 </div>
                             </div>
@@ -169,8 +201,13 @@ export default function ChatPage() {
                     {loading && (
                         <div className="flex justify-start animate-fadeIn">
                             <div className="flex gap-3 max-w-[85%]">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center flex-shrink-0">
-                                    <Sparkles className="w-5 h-5 text-gray-700" />
+                                <div className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 overflow-hidden flex-shrink-0 relative">
+                                    <Image
+                                        src="/logo.png"
+                                        alt="AI"
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
                                 <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-sm shadow-sm border border-gray-200 dark:border-gray-700">
                                     <div className="flex gap-1">

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
-import Link from "next/link";
+import { Shield } from "lucide-react";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -25,8 +25,16 @@ export default function LoginPage() {
             // Store token
             localStorage.setItem("token", access_token);
 
-            // Redirect to chat
-            router.push("/chat");
+            // Verify admin role by trying to access admin endpoint
+            try {
+                await api.get("/admin/analytics/dashboard");
+                // If successful, user is admin - redirect to dashboard
+                router.push("/admin/dashboard");
+            } catch (adminErr) {
+                // Not an admin
+                localStorage.removeItem("token");
+                setError("Access denied. Admin credentials required.");
+            }
         } catch (err: any) {
             setError(err.response?.data?.detail || "Login failed. Please check your credentials.");
         } finally {
@@ -37,7 +45,15 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#1e3a5f] to-[#0f2744]">
             <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl border border-blue-100">
-                <h2 className="text-2xl font-bold mb-6 text-center text-[#0a1628]">Student Login</h2>
+                {/* Admin Badge */}
+                <div className="flex justify-center mb-6">
+                    <div className="p-4 bg-gradient-to-br from-[#1e3a5f] to-[#2563eb] rounded-full shadow-lg">
+                        <Shield className="w-8 h-8 text-white" />
+                    </div>
+                </div>
+
+                <h2 className="text-3xl font-bold mb-2 text-center text-[#0a1628]">Admin Portal</h2>
+                <p className="text-center text-[#1e3a5f] mb-6">VPTC AI Chatbot Dashboard</p>
 
                 {error && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg text-sm">
@@ -47,14 +63,14 @@ export default function LoginPage() {
 
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#0a1628] mb-2">Email</label>
+                        <label className="block text-sm font-medium text-[#0a1628] mb-2">Admin Email</label>
                         <input
                             type="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-200 rounded-lg text-[#0a1628] placeholder-gray-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200"
-                            placeholder="student@vptc.edu.in"
+                            placeholder="admin@vptc.edu.in"
                         />
                     </div>
 
@@ -67,11 +83,12 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full px-4 py-3 pr-10 bg-blue-50 border-2 border-blue-200 rounded-lg text-[#0a1628] placeholder-gray-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200"
+                                placeholder="Enter your password"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5 text-[#1e3a5f] hover:text-[#2563eb]"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1e3a5f] hover:text-[#2563eb]"
                             >
                                 {showPassword ? (
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,17 +107,14 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2563eb] text-white font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#3b82f6] transition-all transform hover:scale-[1.02] disabled:opacity-50 shadow-lg"
+                        className="w-full py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2563eb] text-white font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#3b82f6] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                     >
-                        {loading ? "Signing in..." : "Sign In"}
+                        {loading ? "Authenticating..." : "Access Dashboard"}
                     </button>
                 </form>
 
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    First time here?{" "}
-                    <Link href="/signup" className="text-[#2563eb] hover:underline font-medium">
-                        Create an account
-                    </Link>
+                <p className="mt-6 text-center text-sm text-gray-600">
+                    Authorized personnel only
                 </p>
             </div>
         </div>

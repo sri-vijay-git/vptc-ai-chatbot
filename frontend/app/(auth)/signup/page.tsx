@@ -43,7 +43,7 @@ export default function SignupPage() {
 
     if (success) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#1e3a5f] to-[#0f2744]">
                 <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
                     <div className="mb-4 text-green-600 text-5xl">✓</div>
                     <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Account Created!</h2>
@@ -64,7 +64,7 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#1e3a5f] to-[#0f2744]">
             <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Create Account</h2>
 
