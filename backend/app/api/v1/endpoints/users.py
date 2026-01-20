@@ -1,18 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.core.database import supabase
-from app.services.auth_bearer import JWTBearer
+from app.api.v1.dependencies import get_current_user
 
 router = APIRouter()
 
 @router.delete("/me")
-def delete_own_account(token: str = Depends(JWTBearer())):
+def delete_own_account(current_user: dict = Depends(get_current_user)):
     try:
-        # Get user from token
-        user = supabase.auth.get_user(token)
-        if not user or not user.user:
-             raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user_id = user.user.id
+        user_id = current_user["id"]
         
         # Since we don't have the Admin Key configured in the settings for this demo,
         # we will simulate the deletion and return success so the UI flow is complete.
