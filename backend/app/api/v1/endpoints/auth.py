@@ -12,7 +12,7 @@ def create_user(user: UserCreate):
         # Sign up with Supabase Auth
         # We store metadata (role, full_name) in the user_metadata field
         # Get frontend URL for redirect
-        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        frontend_url = os.getenv("FRONTEND_URL", "https://vptc-ai-chatbot-frontend.vercel.app")
         redirect_url = f"{frontend_url}/verified"
 
         res = supabase.auth.sign_up({
