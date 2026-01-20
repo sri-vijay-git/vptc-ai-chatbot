@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, Suspense } from "react";
 import api from "@/lib/api";
-import { User, Send, StopCircle, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown } from "lucide-react";
+import { User, Send, StopCircle, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown, Settings } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -211,6 +211,20 @@ function ChatContent() {
                                         {isGuest ? `${remaining} free chats left` : (userEmail || 'No email')}
                                     </p>
                                 </div>
+
+                                {/* Profile Settings */}
+                                {!isGuest && (
+                                    <button
+                                        onClick={() => {
+                                            setShowProfileDropdown(false);
+                                            router.push("/profile");
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        Profile Settings
+                                    </button>
+                                )}
 
                                 {/* Logout Button */}
                                 <button

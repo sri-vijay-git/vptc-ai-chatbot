@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, HTTPException, status
 from app.models.user import UserCreate, UserLogin, Token, UserResponse
 from app.core.database import supabase
@@ -10,7 +11,10 @@ def create_user(user: UserCreate):
     try:
         # Sign up with Supabase Auth
         # We store metadata (role, full_name) in the user_metadata field
-        # email_confirm: false bypasses email verification for development
+        # Get frontend URL for redirect
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        redirect_url = f"{frontend_url}/verified"
+
         res = supabase.auth.sign_up({
             "email": user.email,
             "password": user.password,
@@ -19,7 +23,7 @@ def create_user(user: UserCreate):
                     "role": user.role,
                     "full_name": user.full_name
                 },
-                "email_confirm": False  # Auto-confirm for development
+                "email_redirect_to": redirect_url
             }
         })
         

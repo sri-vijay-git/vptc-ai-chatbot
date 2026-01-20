@@ -30,10 +30,13 @@ export default function SignupPage() {
 
             setSuccess(true);
 
-            // Redirect to login after 2 seconds
+            setSuccess(true);
+
+            // Allow user to read the message, they can click link to go to login
+            // or wait for redirect
             setTimeout(() => {
-                router.push("/login");
-            }, 2000);
+                router.push("/login"); // Optional: Remove if you want them to stay until checked
+            }, 5000);
         } catch (err: any) {
             setError(err.response?.data?.detail || "Signup failed. Please try again.");
         } finally {
@@ -52,12 +55,12 @@ export default function SignupPage() {
                     </p>
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
                         <p className="text-sm text-blue-800 dark:text-blue-200">
-                            📧 <strong>Email Verification:</strong><br />
-                            For production use, you would receive a verification email.
-                            Currently auto-verified for development.
+                            📧 <strong>Check your inbox!</strong><br />
+                            We have sent a verification link to <strong>{email}</strong>.<br />
+                            Please click the link to verify your account and sign in.
                         </p>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400">Redirecting to login...</p>
+                    <p className="text-gray-600 dark:text-gray-400">Redirecting to login page...</p>
                 </div>
             </div>
         );

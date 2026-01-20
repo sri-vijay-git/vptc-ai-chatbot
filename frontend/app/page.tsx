@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Bot, Sparkles, BookOpen, Calculator, MessageSquare, Shield, Sun, Moon } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -8,6 +9,22 @@ import { useTheme } from "@/contexts/ThemeContext";
 export default function HomePage() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+
+    // Check for auth errors in URL hash (Supabase redirect)
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.location.hash) {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const error = hashParams.get('error');
+            const errorDescription = hashParams.get('error_description');
+
+            if (error) {
+                // Clear hash
+                window.history.replaceState(null, '', ' ');
+                // Redirect to login with error
+                router.push(`/login?error=${encodeURIComponent(errorDescription || 'Authentication failed')}`);
+            }
+        }
+    }, [router]);
 
     const handleGetStarted = (query?: string) => {
         if (query) {
