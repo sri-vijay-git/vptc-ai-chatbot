@@ -94,8 +94,8 @@ export default function HomePage() {
                     <button
                         onClick={() => router.push("/signup")}
                         className={`px-4 md:px-6 py-2 text-sm font-medium rounded-full transition-colors shadow-lg ${theme === "dark"
-                            ? "bg-white text-[#0a1628] hover:bg-blue-50"
-                            : "bg-[#2563eb] text-white hover:bg-[#1e3a5f]"
+                            ? "bg-[#ffcc80] text-[#3e2723] hover:bg-[#ffe0b2]"
+                            : "bg-[#3e2723] text-white hover:bg-[#5d4037]"
                             }`}
                     >
                         Sign up for free
