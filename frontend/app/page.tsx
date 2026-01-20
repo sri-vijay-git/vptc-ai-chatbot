@@ -44,7 +44,7 @@ export default function HomePage() {
     return (
         <div className={`min-h-screen flex flex-col ${theme === "dark"
             ? "bg-gradient-to-br from-[#1a100e] via-[#2d1b15] to-[#3e2723]"
-            : "bg-gradient-to-br from-[#fff8e1] via-[#ffe0b2] to-[#ffcc80]"
+            : "bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2]"
             }`}>
             {/* Header */}
             <header className="w-full p-4 md:p-6 flex justify-between items-center">
