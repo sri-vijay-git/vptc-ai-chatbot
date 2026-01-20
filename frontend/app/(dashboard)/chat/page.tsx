@@ -150,17 +150,97 @@ function ChatContent() {
                 totalLimit={guestLimit}
             />
 
-            {/* Simple Header */}
-            <header className="p-6 flex flex-col items-center justify-center">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden shadow-lg mb-4 border-2 border-white/20">
-                    <Image
-                        src="/logo.png"
-                        alt="VPTC Logo"
-                        fill
-                        className="object-cover"
-                    />
+            {/* Header */}
+            <header className="p-4 flex justify-between items-center bg-transparent">
+                <div className="flex items-center gap-3">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <Image
+                            src="/logo.png"
+                            alt="VPTC Logo"
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-[#3e2723] dark:text-[#ffcc80]">VPTC AI Chatbot</h1>
+                        {isGuest && remaining > 0 && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {remaining} free {remaining === 1 ? 'chat' : 'chats'} remaining
+                            </p>
+                        )}
+                    </div>
                 </div>
-                <h1 className="text-2xl font-bold text-[#3e2723] dark:text-[#ffcc80]">VPTC AI</h1>
+                <div className="flex items-center gap-2">
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                        title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                    >
+                        {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+
+                    {/* User Profile Button */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                            className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition-all"
+                        >
+                            {isGuest ? (
+                                <UserCircle className="w-5 h-5" />
+                            ) : (
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                    {(userEmail ? userEmail.charAt(0).toUpperCase() : 'U')}
+                                </div>
+                            )}
+                            <span className="text-sm hidden md:inline font-medium">
+                                {isGuest ? 'Guest' : (userEmail?.split('@')[0] || 'User')}
+                            </span>
+                            <ChevronDown className="w-4 h-4 opacity-70" />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showProfileDropdown && (
+                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                                {/* Profile Info */}
+                                <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                    <p className="text-sm font-semibold text-gray-800 dark:text-white">
+                                        {isGuest ? 'Guest Mode' : 'Logged In'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {isGuest ? `${remaining} free chats left` : (userEmail || 'No email')}
+                                    </p>
+                                </div>
+
+                                {/* Profile Settings */}
+                                {!isGuest && (
+                                    <button
+                                        onClick={() => {
+                                            setShowProfileDropdown(false);
+                                            router.push("/profile");
+                                        }}
+                                        className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        Profile Settings
+                                    </button>
+                                )}
+
+                                {/* Logout Button */}
+                                <button
+                                    onClick={() => {
+                                        setShowProfileDropdown(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    {isGuest ? 'Exit' : 'Logout'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </header>
 
             {/* Chat Area */}
