@@ -43,7 +43,7 @@ export default function HomePage() {
 
     return (
         <div className={`min-h-screen flex flex-col ${theme === "dark"
-            ? "bg-gradient-to-br from-[#3e2723] via-[#5d4037] to-[#4e342e]"
+            ? "bg-gradient-to-br from-[#1a100e] via-[#2d1b15] to-[#3e2723]"
             : "bg-gradient-to-br from-[#fff8e1] via-[#ffe0b2] to-[#ffcc80]"
             }`}>
             {/* Header */}
