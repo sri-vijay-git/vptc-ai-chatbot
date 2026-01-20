@@ -85,7 +85,7 @@ export default function SignupPage() {
                             required
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="mt-1 w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            className="mt-1 w-full px-4 py-2 border rounded-lg text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             placeholder="Your full name"
                         />
                     </div>
@@ -97,7 +97,7 @@ export default function SignupPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            className="mt-1 w-full px-4 py-2 border rounded-lg text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             placeholder="student@vptc.edu.in"
                         />
                     </div>
@@ -111,7 +111,7 @@ export default function SignupPage() {
                                 minLength={6}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 w-full px-4 py-2 pr-10 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="mt-1 w-full px-4 py-2 pr-10 border rounded-lg text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="At least 6 characters"
                             />
                             <button
