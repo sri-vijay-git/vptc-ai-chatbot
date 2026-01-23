@@ -46,6 +46,10 @@ function ChatContent() {
     const searchParams = useSearchParams();
     const hasAutoSent = useRef(false);
 
+    // Voice Input State
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
+
     // Handle auto-send from homepage query
     useEffect(() => {
         const query = searchParams.get('q');
@@ -138,6 +142,63 @@ function ChatContent() {
         }
     };
 
+    // Voice Input Handler
+    const handleVoiceInput = () => {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert('Voice input not supported in your browser. Please use Chrome, Edge, or Safari.');
+            return;
+        }
+
+        if (isListening) {
+            // Stop listening
+            recognitionRef.current?.stop();
+            setIsListening(false);
+            return;
+        }
+
+        // Start listening
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            setIsListening(true);
+        };
+
+        recognition.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setInput(transcript);
+            setIsListening(false);
+        };
+
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error:', event.error);
+            setIsListening(false);
+
+            // Provide helpful error messages
+            if (event.error === 'not-allowed') {
+                alert('Microphone access denied. Please:\n\n1. Click the lock icon in your browser address bar\n2. Allow microphone permission\n3. Refresh the page and try again');
+            } else if (event.error === 'no-speech') {
+                alert('No speech detected. Please try again and speak clearly.');
+            } else if (event.error === 'audio-capture') {
+                alert('No microphone found. Please check your microphone connection.');
+            } else if (event.error === 'network') {
+                alert('Network error. Please check your internet connection.');
+            } else {
+                alert('Could not recognize speech. Please try again.');
+            }
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
 
 
     return (
@@ -267,10 +328,12 @@ function ChatContent() {
                                 </div>
 
                                 {/* Message Bubble */}
-                                <div className={`rounded-2xl p-4 shadow-sm ${msg.role === "user"
-                                    ? "bg-primary text-white rounded-tr-sm"
-                                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm border border-gray-200 dark:border-gray-700"
-                                    }`}>
+                                <div
+                                    className={`rounded-2xl p-4 shadow-sm ${msg.role === "user"
+                                        ? "bg-primary text-white rounded-tr-sm border border-blue-600"
+                                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm"
+                                        }`}
+                                >
                                     <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                                     {msg.sources && msg.sources.length > 0 && (
                                         (() => {
@@ -326,6 +389,29 @@ function ChatContent() {
                             className="flex-1 px-4 py-2 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             disabled={loading || (isGuest && !canChat())}
                         />
+
+                        {/* Voice Input Button */}
+                        <button
+                            type="button"
+                            onClick={handleVoiceInput}
+                            disabled={loading || (isGuest && !canChat())}
+                            className={`p-3 rounded-full transition-all ${isListening
+                                ? 'bg-red-500 text-white animate-pulse'
+                                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            title={isListening ? "Listening... Click to stop" : "Voice input"}
+                        >
+                            {isListening ? (
+                                <div className="w-5 h-5 flex items-center justify-center">
+                                    <div className="w-3 h-3 rounded-full bg-white"></div>
+                                </div>
+                            ) : (
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" />
+                                </svg>
+                            )}
+                        </button>
+
                         <button
                             type="submit"
                             disabled={loading || !input.trim() || (isGuest && !canChat())}
