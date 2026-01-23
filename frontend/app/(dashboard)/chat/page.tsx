@@ -380,13 +380,13 @@ function ChatContent() {
             {/* Input Area */}
             <div className="p-4 bg-transparent">
                 <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
-                    <div className="flex gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
+                    <div className="flex gap-1 sm:gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Ask about your college..."
-                            className="flex-1 px-4 py-2 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="flex-1 px-3 sm:px-4 py-2 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base min-w-0"
                             disabled={loading || (isGuest && !canChat())}
                         />
 
@@ -395,18 +395,18 @@ function ChatContent() {
                             type="button"
                             onClick={handleVoiceInput}
                             disabled={loading || (isGuest && !canChat())}
-                            className={`p-3 rounded-full transition-all ${isListening
+                            className={`p-2 sm:p-3 rounded-full transition-all flex-shrink-0 ${isListening
                                 ? 'bg-red-500 text-white animate-pulse'
                                 : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
                                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                             title={isListening ? "Listening... Click to stop" : "Voice input"}
                         >
                             {isListening ? (
-                                <div className="w-5 h-5 flex items-center justify-center">
-                                    <div className="w-3 h-3 rounded-full bg-white"></div>
+                                <div className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white"></div>
                                 </div>
                             ) : (
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" />
                                 </svg>
                             )}
@@ -415,9 +415,9 @@ function ChatContent() {
                         <button
                             type="submit"
                             disabled={loading || !input.trim() || (isGuest && !canChat())}
-                            className="p-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95"
+                            className="p-2 sm:p-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex-shrink-0"
                         >
-                            <Send className="w-5 h-5" />
+                            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                     {isGuest && remaining === 0 && (
