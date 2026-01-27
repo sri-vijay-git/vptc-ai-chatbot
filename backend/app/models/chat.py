@@ -14,3 +14,4 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     sources: List[str] = []  # List of document names used for RAG
+    followup_questions: Optional[List[str]] = []  # Smart follow-up suggestions

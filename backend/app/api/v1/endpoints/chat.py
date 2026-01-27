@@ -25,7 +25,12 @@ async def chat_endpoint(
     
     response_data = rag_service.generate_response(request.message)
     
+    # Generate follow-up questions
+    from app.services.followup_generator import generate_followup_questions
+    followup_questions = generate_followup_questions(request.message, response_data["answer"])
+    
     return ChatResponse(
         answer=response_data["answer"],
-        sources=response_data["sources"]
+        sources=response_data["sources"],
+        followup_questions=followup_questions
     )

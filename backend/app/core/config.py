@@ -16,10 +16,14 @@ class Settings(BaseSettings):
     # Security
     SECRET_KEY: str = os.getenv("SECRET_KEY", "temporary-secret-key-for-dev")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    
+    # Frontend
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
     class Config:
         case_sensitive = True
         env_file = ".env"
+        extra = "allow"  # Allow extra fields from .env
 
 settings = Settings()
 

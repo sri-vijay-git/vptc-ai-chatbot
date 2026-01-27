@@ -6,6 +6,7 @@ import { Bot, Sparkles, BookOpen, Calculator, MessageSquare, Shield, Sun, Moon }
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 import SplashScreen from "@/components/SplashScreen";
+import QuickActionCard from "@/components/QuickActionCard";
 
 export default function HomePage() {
     const router = useRouter();
@@ -170,6 +171,63 @@ export default function HomePage() {
                                     <MessageSquare className="w-4 h-4" />
                                     <span className="hidden sm:inline">Ask AI</span>
                                 </button>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="w-full max-w-4xl mx-auto mt-12 px-4 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-6 text-center">
+                                Quick Actions
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <QuickActionCard
+                                    icon="📋"
+                                    title="Admission Status"
+                                    description="Check your application"
+                                    onClick={() => router.push('/chat?q=What is my admission status')}
+                                />
+                                <QuickActionCard
+                                    icon="💰"
+                                    title="Fee Calculator"
+                                    description="Calculate course fees"
+                                    onClick={() => router.push('/chat?q=Calculate fees for my course')}
+                                />
+                                <QuickActionCard
+                                    icon="📄"
+                                    title="Download Forms"
+                                    description="Application forms"
+                                    onClick={() => router.push('/chat?q=Where can I download application forms')}
+                                />
+                                <QuickActionCard
+                                    icon="📅"
+                                    title="Important Dates"
+                                    description="Deadlines & events"
+                                    onClick={() => router.push('/chat?q=Show me important dates and deadlines')}
+                                />
+                                <QuickActionCard
+                                    icon="🎓"
+                                    title="Course Details"
+                                    description="Browse programs"
+                                    onClick={() => router.push('/chat?q=Show me all available courses')}
+                                />
+                                <QuickActionCard
+                                    icon="📊"
+                                    title="Placements"
+                                    description="Job statistics"
+                                    onClick={() => router.push('/chat?q=Tell me about placement statistics')}
+                                />
+                                <QuickActionCard
+                                    icon="💳"
+                                    title="Scholarships"
+                                    description="Financial aid"
+                                    onClick={() => router.push('/chat?q=What scholarships are available')}
+                                />
+                                <QuickActionCard
+                                    icon="📞"
+                                    title="Contact"
+                                    description="Get in touch"
+                                    onClick={() => router.push('/chat?q=How can I contact the admission office')}
+                                />
                             </div>
                         </div>
 

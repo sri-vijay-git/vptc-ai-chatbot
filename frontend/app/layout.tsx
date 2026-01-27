@@ -3,8 +3,14 @@ import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import "../styles/vptc-theme.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+    subsets: ["latin"],
+    display: 'swap',
+    fallback: ['system-ui', 'arial'],
+    adjustFontFallback: false
+});
 
 export const metadata: Metadata = {
     title: "VPTC AI Chatbot",
@@ -20,7 +26,9 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
                 <ThemeProvider>
-                    {children}
+                    <LayoutWrapper>
+                        {children}
+                    </LayoutWrapper>
                 </ThemeProvider>
             </body>
         </html>

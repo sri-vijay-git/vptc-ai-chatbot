@@ -1,121 +1,288 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import api from "@/lib/api";
-import { Shield } from "lucide-react";
+import { Users, FileText, TrendingUp, DollarSign, CheckCircle, Clock, XCircle, Settings, LogOut, Bell, Search, Download, Filter, MoreVertical, Shield } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function AdminLoginPage() {
-    const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+export default function AdminDashboard() {
+    const [activeTab, setActiveTab] = useState("overview");
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+    // Mock admin data
+    const stats = {
+        totalStudents: 5234,
+        newApplications: 147,
+        revenue: "₹2.4M",
+        placementRate: 95,
+    };
 
-        try {
-            const response = await api.post("/auth/login", { email, password });
-            const { access_token } = response.data;
+    const recentApplications = [
+        { id: "APP001", name: "Priya Sharma", dept: "CSE", date: "Jan 25, 2026", status: "pending" },
+        { id: "APP002", name: "Rahul Verma", dept: "ECE", date: "Jan 25, 2026", status: "approved" },
+        { id: "APP003", name: "Anjali Patel", dept: "Mech", date: "Jan 24, 2026", status: "pending" },
+        { id: "APP004", name: "Karthik Raja", dept: "Civil", date: "Jan 24, 2026", status: "rejected" },
+        { id: "APP005", name: "Sneha Reddy", dept: "IT", date: "Jan 23, 2026", status: "approved" },
+    ];
 
-            // Store token
-            localStorage.setItem("token", access_token);
+    const departmentStats = [
+        { name: "CSE", students: 1456, applications: 45, color: "blue" },
+        { name: "ECE", students: 1123, applications: 32, color: "purple" },
+        { name: "Mech", students: 987, applications: 28, color: "orange" },
+        { name: "Civil", students: 856, applications: 18, color: "green" },
+        { name: "EEE", students: 645, applications: 15, color: "yellow" },
+        { name: "IT", students: 567, applications: 9, color: "teal" },
+    ];
 
-            // Verify admin role by trying to access admin endpoint
-            try {
-                await api.get("/admin/analytics/dashboard");
-                // If successful, user is admin - redirect to dashboard
-                router.push("/admin/dashboard");
-            } catch (adminErr) {
-                // Not an admin
-                localStorage.removeItem("token");
-                setError("Access denied. Admin credentials required.");
-            }
-        } catch (err: any) {
-            setError(err.response?.data?.detail || "Login failed. Please check your credentials.");
-        } finally {
-            setLoading(false);
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "approved": return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
+            case "pending": return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30";
+            case "rejected": return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30";
+            default: return "text-gray-600 bg-gray-100";
+        }
+    };
+
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case "approved": return <CheckCircle className="w-4 h-4" />;
+            case "pending": return <Clock className="w-4 h-4" />;
+            case "rejected": return <XCircle className="w-4 h-4" />;
+            default: return null;
         }
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#1e3a5f] to-[#0f2744]">
-            <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl border border-blue-100">
-                {/* Admin Badge */}
-                <div className="flex justify-center mb-6">
-                    <div className="p-4 bg-gradient-to-br from-[#1e3a5f] to-[#2563eb] rounded-full shadow-lg">
-                        <Shield className="w-8 h-8 text-white" />
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* Header */}
+            <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+                <div className="container mx-auto px-4 md:px-6 py-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-md">
+                                <Image
+                                    src="/logo.png"
+                                    alt="VPTC Logo"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <Shield className="w-5 h-5 text-yellow-500" />
+                                    Admin Dashboard
+                                </h1>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    VPTC Management Portal
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button className="relative p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                                <Bell className="w-5 h-5" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </button>
+                            <Link
+                                href="/"
+                                className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </Link>
+                        </div>
                     </div>
                 </div>
+            </header>
 
-                <h2 className="text-3xl font-bold mb-2 text-center text-[#0a1628]">Admin Portal</h2>
-                <p className="text-center text-[#1e3a5f] mb-6">VPTC AI Chatbot Dashboard</p>
-
-                {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-lg text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleLogin} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-[#0a1628] mb-2">Admin Email</label>
-                        <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-blue-50 border-2 border-blue-200 rounded-lg text-[#0a1628] placeholder-gray-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200"
-                            placeholder="admin@vptc.edu.in"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-[#0a1628] mb-2">Password</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 pr-10 bg-blue-50 border-2 border-blue-200 rounded-lg text-[#0a1628] placeholder-gray-400 focus:outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-200"
-                                placeholder="Enter your password"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1e3a5f] hover:text-[#2563eb]"
-                            >
-                                {showPassword ? (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                                    </svg>
-                                ) : (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                )}
-                            </button>
+            <div className="container mx-auto px-4 md:px-6 py-8">
+                <div className="grid lg:grid-cols-5 gap-6">
+                    {/* Sidebar */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700 sticky top-24">
+                            <nav className="space-y-2">
+                                {[
+                                    { id: "overview", icon: TrendingUp, label: "Overview" },
+                                    { id: "applications", icon: FileText, label: "Applications" },
+                                    { id: "students", icon: Users, label: "Students" },
+                                    { id: "departments", icon: Settings, label: "Departments" },
+                                    { id: "finance", icon: DollarSign, label: "Finance" },
+                                ].map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveTab(item.id)}
+                                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm ${activeTab === item.id
+                                                ? "bg-yellow-500 text-gray-900 font-medium"
+                                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            }`}
+                                    >
+                                        <item.icon className="w-5 h-5" />
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2563eb] text-white font-semibold rounded-lg hover:from-[#2563eb] hover:to-[#3b82f6] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                    >
-                        {loading ? "Authenticating..." : "Access Dashboard"}
-                    </button>
-                </form>
+                    {/* Main Content */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Stats Cards */}
+                        <div className="grid md:grid-cols-4 gap-6">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                        <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                                    {stats.totalStudents}
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Total Students</p>
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-2">↑ 12% from last year</p>
+                            </div>
 
-                <p className="mt-6 text-center text-sm text-gray-600">
-                    Authorized personnel only
-                </p>
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                                        <FileText className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                                    {stats.newApplications}
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">New Applications</p>
+                                <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">Pending review</p>
+                            </div>
+
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                        <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                                    {stats.revenue}
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-2">This semester</p>
+                            </div>
+
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                        <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                                    {stats.placementRate}%
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Placement Rate</p>
+                                <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">2025 Batch</p>
+                            </div>
+                        </div>
+
+                        {/* Recent Applications */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                        Recent Applications
+                                    </h2>
+                                    <div className="flex items-center gap-3">
+                                        <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                                            <Filter className="w-4 h-4" />
+                                            Filter
+                                        </button>
+                                        <button className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-lg font-medium">
+                                            <Download className="w-4 h-4" />
+                                            Export
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-gray-50 dark:bg-gray-700/50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Application ID
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Student Name
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Department
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Date
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Status
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        {recentApplications.map((app) => (
+                                            <tr key={app.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                    {app.id}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                    {app.name}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                    {app.dept}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                    {app.date}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
+                                                        {getStatusIcon(app.status)}
+                                                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                                        <MoreVertical className="w-5 h-5" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Department Statistics */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                    Department Overview
+                                </h2>
+                            </div>
+                            <div className="p-6">
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {departmentStats.map((dept) => (
+                                        <div key={dept.name} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h3 className="font-semibold text-gray-900 dark:text-white">{dept.name}</h3>
+                                                <span className={`px-2 py-1 bg-${dept.color}-100 dark:bg-${dept.color}-900/30 text-${dept.color}-600 dark:text-${dept.color}-400 text-xs rounded`}>
+                                                    +{dept.applications}
+                                                </span>
+                                            </div>
+                                            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                                                {dept.students}
+                                            </div>
+                                            <p className="text-xs text-gray-600 dark:text-gray-400">Enrolled Students</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
