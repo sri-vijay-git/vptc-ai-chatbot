@@ -59,7 +59,7 @@ function ChatContent() {
     const hasAutoSent = useRef(false);
 
     // Sidebar State
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [currentChatId, setCurrentChatId] = useState<string>("1");
 
     // Mock conversation history (in production, fetch from backend)
