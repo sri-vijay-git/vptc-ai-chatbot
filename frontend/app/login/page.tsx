@@ -38,7 +38,7 @@ export default function LoginPage() {
                         Student Portal
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Sign in to access your dashboard
+                        Login to access your dashboard
                     </p>
                 </div>
 
@@ -107,28 +107,18 @@ export default function LoginPage() {
                             type="submit"
                             className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-600 hover:to-yellow-500 text-gray-900 font-semibold rounded-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
                         >
-                            Sign In
+                            Login
                             <ArrowRight className="w-5 h-5" />
                         </button>
                     </form>
 
-                    {/* Demo Credentials */}
-                    <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                        <p className="text-xs text-yellow-800 dark:text-yellow-300 font-medium mb-2">
-                            🎓 Demo Credentials:
-                        </p>
-                        <p className="text-xs text-yellow-700 dark:text-yellow-400">
-                            Email: student@vptc.edu<br />
-                            Password: demo123
-                        </p>
-                    </div>
                 </div>
 
                 {/* Footer Links */}
                 <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                     Don't have an account?{" "}
-                    <Link href="/admissions" className="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 font-semibold">
-                        Apply Now
+                    <Link href="/signup" className="text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 font-semibold">
+                        Sign Up
                     </Link>
                 </div>
 

@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function AdminLogin() {
     const router = useRouter();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
@@ -19,18 +19,35 @@ export default function AdminLogin() {
         setError("");
         setLoading(true);
 
-        // Simple authentication check (you can replace with API call)
-        // Default credentials: admin / admin123
-        if (username === "admin" && password === "admin123") {
-            // Store admin session (in production, use proper auth)
-            localStorage.setItem("adminAuth", "true");
+        try {
+            // Call backend authentication API
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email.toLowerCase().trim(),
+                    password: password,
+                }),
+            });
 
-            // Redirect to admin dashboard
-            setTimeout(() => {
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // Store admin session
+                localStorage.setItem("adminAuth", "true");
+                localStorage.setItem("adminToken", data.token);
+                localStorage.setItem("adminEmail", email);
+
+                // Redirect to admin dashboard
                 router.push("/admin");
-            }, 500);
-        } else {
-            setError("Invalid username or password");
+            } else {
+                setError(data.message || "Invalid email or password");
+                setLoading(false);
+            }
+        } catch (err) {
+            setError("Connection error. Please try again.");
             setLoading(false);
         }
     };
@@ -69,20 +86,20 @@ export default function AdminLogin() {
                     </h2>
 
                     <form onSubmit={handleLogin} className="space-y-5">
-                        {/* Username Field */}
+                        {/* Email Field */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Username
+                                Email Address
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-5 w-5 text-gray-400" />
+                                    <Mail className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter admin username"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="admin@vptc.edu"
                                     className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                     required
                                 />
@@ -102,9 +119,10 @@ export default function AdminLogin() {
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter password"
+                                    placeholder="Enter your password"
                                     className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                     required
+                                    minLength={6}
                                 />
                                 <button
                                     type="button"
@@ -122,8 +140,9 @@ export default function AdminLogin() {
 
                         {/* Error Message */}
                         {error && (
-                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
-                                {error}
+                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                <span>{error}</span>
                             </div>
                         )}
 
@@ -147,17 +166,14 @@ export default function AdminLogin() {
                         </button>
                     </form>
 
-                    {/* Demo Credentials */}
-                    <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Demo Credentials:
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Username: <span className="font-mono font-semibold">admin</span>
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                            Password: <span className="font-mono font-semibold">admin123</span>
-                        </p>
+                    {/* Forgot Password */}
+                    <div className="mt-4 text-center">
+                        <Link
+                            href="/admin/forgot-password"
+                            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                        >
+                            Forgot your password?
+                        </Link>
                     </div>
 
                     {/* Back to Home */}
@@ -171,9 +187,24 @@ export default function AdminLogin() {
                     </div>
                 </div>
 
+                {/* Security Notice */}
+                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-start gap-2">
+                        <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">
+                                Secure Access
+                            </p>
+                            <p className="text-xs text-blue-700 dark:text-blue-400">
+                                This portal is for authorized VPTC administrators only. All login attempts are logged and monitored.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Footer Text */}
                 <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-                    Authorized personnel only. Unauthorized access is prohibited.
+                    Unauthorized access is prohibited and will be prosecuted.
                 </p>
             </div>
         </div>

@@ -57,7 +57,7 @@ export default function SignupPage() {
                         <p className="text-sm text-blue-800 dark:text-blue-200">
                             📧 <strong>Check your inbox!</strong><br />
                             We have sent a verification link to <strong>{email}</strong>.<br />
-                            Please click the link to verify your account and sign in.
+                            Please click the link to verify your account and login.
                         </p>
                     </div>
                     <p className="text-gray-600 dark:text-gray-400">Redirecting to login page...</p>
@@ -145,7 +145,7 @@ export default function SignupPage() {
                 <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
                     Already have an account?{" "}
                     <Link href="/login" className="text-primary hover:underline">
-                        Sign in
+                        Login
                     </Link>
                 </p>
             </div>

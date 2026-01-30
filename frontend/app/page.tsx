@@ -148,7 +148,7 @@ export default function HomePage() {
 
                     <div className="absolute right-6 flex gap-4 items-center">
                         <button
-                            onClick={() => router.push("/login")}
+                            onClick={() => router.push("/signup")}
                             className="text-sm px-4 py-2 bg-[#8B6F47] hover:bg-[#6D563C] text-white rounded-lg transition-colors"
                         >
                             SignUp
