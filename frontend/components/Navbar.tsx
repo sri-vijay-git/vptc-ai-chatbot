@@ -144,7 +144,7 @@ export default function Navbar() {
                             {/* Student Dashboard Button */}
                             <Link
                                 href="/student/dashboard"
-                                className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
+                                className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
                             >
                                 <User className="w-4 h-4" />
                                 <span className="hidden sm:inline">Dashboard</span>
@@ -153,12 +153,12 @@ export default function Navbar() {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                    className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                                    className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-[#2D1B15] border border-[#D7CCC8] dark:border-[#5D4037] shadow-sm hover:shadow-md transition-all"
                                 >
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] flex items-center justify-center text-white">
                                         <User className="w-4 h-4 sm:w-6 sm:h-6" />
                                     </div>
-                                    <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
+                                    <ChevronDown className="w-4 h-4 text-[#5D4037] dark:text-[#BCAAA4] hidden sm:block" />
                                 </button>
 
                                 {/* Profile Dropdown */}
@@ -188,7 +188,7 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
+                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
                                 >
                                     <GraduationCap className="w-4 h-4" />
                                     <span className="hidden sm:inline">Student</span>
@@ -244,7 +244,7 @@ export default function Navbar() {
 
                             <Link
                                 href="/login"
-                                className="flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors"
+                                className="flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] hover:from-[#6D563C] hover:to-[#5D4037] text-white transition-all shadow-md hover:shadow-lg"
                             >
                                 <GraduationCap className="w-5 h-5" />
                                 Student Login

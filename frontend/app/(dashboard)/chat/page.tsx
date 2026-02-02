@@ -493,7 +493,7 @@ function ChatContent() {
                                 {isGuest ? (
                                     <UserCircle className="w-5 h-5" />
                                 ) : (
-                                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white flex items-center justify-center text-xs font-bold shadow-sm">
                                         {(userEmail ? userEmail.charAt(0).toUpperCase() : 'U')}
                                     </div>
                                 )}
@@ -555,8 +555,8 @@ function ChatContent() {
                                 <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : ""} group`}>
                                     {/* Avatar */}
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === "user"
-                                        ? "bg-primary text-white"
-                                        : "bg-gradient-to-br from-secondary to-accent text-gray-700"
+                                        ? "bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white"
+                                        : "bg-gradient-to-br from-[#EFEBE9] to-[#D7CCC8] dark:from-[#3E2723] dark:to-[#5D4037] text-[#3E2723] dark:text-[#FFCC80]"
                                         }`}>
                                         {msg.role === "user" ? <User className="w-5 h-5" /> : (
                                             <div className="relative w-full h-full rounded-full overflow-hidden">
@@ -573,8 +573,8 @@ function ChatContent() {
                                     {/* Message Bubble */}
                                     <div
                                         className={`rounded-2xl p-4 shadow-sm ${msg.role === "user"
-                                            ? "bg-primary text-white rounded-tr-sm border border-blue-600"
-                                            : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-sm"
+                                            ? "bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white rounded-tr-sm border border-[#6D563C]"
+                                            : "bg-white dark:bg-[#2D1B15] text-[#3E2723] dark:text-[#FFCC80] rounded-tl-sm"
                                             }`}
                                     >
                                         <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
@@ -601,9 +601,9 @@ function ChatContent() {
                                                         <button
                                                             key={qIdx}
                                                             onClick={() => sendMessage({} as any, question)}
-                                                            className="text-left text-sm px-3 py-2 bg-gray-50 dark:bg-gray-700/50 hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-all border border-transparent hover:border-blue-100 dark:hover:border-gray-600 flex items-center gap-2 group"
+                                                            className="text-left text-sm px-3 py-2 bg-[#FAF7F2] dark:bg-[#3E2723]/50 hover:bg-[#EFEBE9] dark:hover:bg-[#3E2723] text-[#3E2723] dark:text-[#FFCC80] rounded-lg transition-all border border-transparent hover:border-[#D7CCC8] dark:hover:border-[#5D4037] flex items-center gap-2 group"
                                                         >
-                                                            <span className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <span className="text-[#8B6F47] dark:text-[#FFCC80] opacity-0 group-hover:opacity-100 transition-opacity">
                                                                 <Sparkles className="w-3 h-3" />
                                                             </span>
                                                             {question}
@@ -657,9 +657,9 @@ function ChatContent() {
                                     </div>
                                     <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-sm shadow-sm border border-gray-200 dark:border-gray-700">
                                         <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                            <div className="w-2 h-2 bg-[#8B6F47] dark:bg-[#FFCC80] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                            <div className="w-2 h-2 bg-[#8B6F47] dark:bg-[#FFCC80] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                            <div className="w-2 h-2 bg-[#8B6F47] dark:bg-[#FFCC80] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -707,7 +707,7 @@ function ChatContent() {
                             <button
                                 type="submit"
                                 disabled={loading || !input.trim() || (isGuest && !canChat())}
-                                className="p-2 sm:p-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex-shrink-0"
+                                className="p-2 sm:p-3 bg-gradient-to-r from-[#8B6F47] to-[#6D563C] hover:from-[#6D563C] hover:to-[#5D4037] text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex-shrink-0"
                             >
                                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
