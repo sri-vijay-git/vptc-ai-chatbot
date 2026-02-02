@@ -23,7 +23,7 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-    // Initial auth check
+    // Initial auth check & check on route change
     useEffect(() => {
         const checkAuth = () => {
             const token = localStorage.getItem("token");
@@ -34,8 +34,9 @@ export default function Navbar() {
 
         // Listen for storage events (e.g. login from another tab or component)
         window.addEventListener("storage", checkAuth);
+
         return () => window.removeEventListener("storage", checkAuth);
-    }, []);
+    }, [pathname]); // Re-run check when path changes (e.g. redirect from /login to /)
 
     const handleLogout = () => {
         localStorage.removeItem("token");

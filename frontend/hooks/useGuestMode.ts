@@ -11,21 +11,28 @@ export function useGuestMode() {
     const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
     useEffect(() => {
-        // Check if user is logged in
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsGuest(false);
-            return;
-        }
+        const checkAuth = () => {
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (token) {
+                setIsGuest(false);
+            } else {
+                setIsGuest(true);
+                // Get guest conversation count
+                const count = parseInt(localStorage.getItem(STORAGE_KEY) || '0');
+                setConversationCount(count);
 
-        // Get guest conversation count
-        const count = parseInt(localStorage.getItem(STORAGE_KEY) || '0');
-        setConversationCount(count);
+                // Show signup prompt if limit reached
+                if (count >= GUEST_LIMIT) {
+                    setShowSignupPrompt(true);
+                }
+            }
+        };
 
-        // Show signup prompt if limit reached
-        if (count >= GUEST_LIMIT) {
-            setShowSignupPrompt(true);
-        }
+        checkAuth();
+
+        window.addEventListener("storage", checkAuth);
+        return () => window.removeEventListener("storage", checkAuth);
     }, []);
 
     const incrementConversation = () => {
