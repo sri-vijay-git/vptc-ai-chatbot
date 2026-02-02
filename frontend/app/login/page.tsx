@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, GraduationCap, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import api from "@/lib/api";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -18,19 +19,41 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            // Use the same API structure as signup
-            // const response = await api.post("/auth/login", formData);
+        setLoading(true);
+        setError("");
 
-            // For now, we simulate success and redirect to Home
-            // Real integration will be added when backend is fully connected if not already
-            // forcing a hard reload to ensure Navbar updates if context isn't using a listener yet
-            // but router.push should trigger re-render.
+        try {
+            // Create URLSearchParams for x-www-form-urlencoded
+            const params = new URLSearchParams();
+            params.append('username', formData.email);
+            params.append('password', formData.password);
+
+            const response = await api.post("/auth/login", params, {
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            });
+
+            const { access_token, user } = response.data;
+
+            if (access_token) {
+                localStorage.setItem("token", access_token);
+            }
+            if (user) {
+                localStorage.setItem("user", JSON.stringify(user));
+            }
+
+            // Dispatch custom event to notify components in the SAME window
+            window.dispatchEvent(new Event("auth-change"));
+
+            // Also dispatch storage event for consistency (though it mainly affects other tabs)
+            window.dispatchEvent(new Event("storage"));
 
             router.push("/");
-            router.refresh(); // Ensure components re-evaluate auth state
-        } catch (error) {
-            console.error("Login failed", error);
+            router.refresh();
+        } catch (err: any) {
+            console.error("Login failed", err);
+            setError(err.response?.data?.detail || "Invalid email or password");
+        } finally {
+            setLoading(false);
         }
     };
 
