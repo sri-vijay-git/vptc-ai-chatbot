@@ -22,9 +22,17 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Mount check to prevent hydration mismatch
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Initial auth check & check on route change
     useEffect(() => {
+        if (!isMounted) return; // Only check auth after mount to avoid hydration mismatch
+
         const checkAuth = () => {
             const token = localStorage.getItem("token");
             setIsLoggedIn(!!token);
@@ -40,7 +48,7 @@ export default function Navbar() {
             window.removeEventListener("storage", checkAuth);
             window.removeEventListener("auth-change", checkAuth);
         };
-    }, [pathname]); // Re-run check when path changes (e.g. redirect from /login to /)
+    }, [pathname, isMounted]); // Re-run check when path changes (e.g. redirect from /login to /)
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -75,7 +83,7 @@ export default function Navbar() {
                 : "bg-white dark:bg-[#1A100E] py-4"
                 }`}
         >
-            <div className="container mx-auto px-4 md:px-6 flex justify-center items-center relative">
+            <div className="container mx-auto px-4 md:px-6 flex justify-center items-center relative bg-transparent">
                 {/* Desktop Navigation - Centered */}
                 <div className="hidden md:flex items-center gap-8">
                     {navLinks.map((link) => (
