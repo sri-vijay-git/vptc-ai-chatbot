@@ -10,16 +10,39 @@ import api from "@/lib/api";
 export default function ProfilePage() {
     const router = useRouter();
     const [userEmail, setUserEmail] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string>('User');
     const [loading, setLoading] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        const email = localStorage.getItem('user_email');
-        if (email) {
-            setUserEmail(email);
+        // Get user data from localStorage
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                setUserEmail(user.email || 'user@example.com');
+                setUserName(user.full_name || user.email?.split('@')[0] || 'User');
+            } catch (e) {
+                // Fallback to user_email if parse fails
+                const email = localStorage.getItem('user_email');
+                if (email) {
+                    setUserEmail(email);
+                    setUserName(email.split('@')[0]);
+                } else {
+                    setUserEmail('user@example.com');
+                    setUserName('User');
+                }
+            }
         } else {
-            // If no email, maybe redirect or just show 'User'
-            setUserEmail('User'); // Fallback
+            // Fallback to user_email
+            const email = localStorage.getItem('user_email');
+            if (email) {
+                setUserEmail(email);
+                setUserName(email.split('@')[0]);
+            } else {
+                setUserEmail('user@example.com');
+                setUserName('User');
+            }
         }
     }, []);
 
@@ -58,9 +81,9 @@ export default function ProfilePage() {
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div className="p-6 flex flex-col items-center border-b border-gray-200 dark:border-gray-700 bg-gradient-to-b from-blue-50 to-white dark:from-gray-700 dark:to-gray-800">
                         <div className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold shadow-md mb-4">
-                            {userEmail ? userEmail.charAt(0).toUpperCase() : <User className="w-12 h-12" />}
+                            {userName ? userName.charAt(0).toUpperCase() : <User className="w-12 h-12" />}
                         </div>
-                        <h2 className="text-lg font-semibold">{userEmail?.split('@')[0]}</h2>
+                        <h2 className="text-lg font-semibold">{userName}</h2>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{userEmail}</p>
                     </div>
                 </div>
