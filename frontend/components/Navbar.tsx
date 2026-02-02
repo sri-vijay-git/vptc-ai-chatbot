@@ -112,38 +112,49 @@ export default function Navbar() {
                     </button>
 
                     {isLoggedIn ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                        <>
+                            {/* Student Dashboard Button */}
+                            <Link
+                                href="/student/dashboard"
+                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-colors text-sm font-medium whitespace-nowrap shadow-sm"
                             >
-                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <User className="w-6 h-6" />
-                                </div>
-                                <ChevronDown className="w-4 h-4 text-gray-400" />
-                            </button>
+                                <User className="w-4 h-4" />
+                                <span className="hidden lg:inline">Dashboard</span>
+                            </Link>
 
-                            {/* Profile Dropdown */}
-                            {showProfileMenu && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 animate-[fadeIn_0.2s_ease-out]">
-                                    <Link
-                                        href="/profile"
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                        onClick={() => setShowProfileMenu(false)}
-                                    >
-                                        <User className="w-4 h-4" />
-                                        My Profile
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                                    className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <User className="w-6 h-6" />
+                                    </div>
+                                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                                </button>
+
+                                {/* Profile Dropdown */}
+                                {showProfileMenu && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 animate-[fadeIn_0.2s_ease-out]">
+                                        <Link
+                                            href="/profile"
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                            onClick={() => setShowProfileMenu(false)}
+                                        >
+                                            <User className="w-4 h-4" />
+                                            My Profile
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     ) : (
                         pathname === "/" && (
                             <>
