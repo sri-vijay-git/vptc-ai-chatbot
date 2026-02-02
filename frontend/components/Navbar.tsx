@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -83,9 +84,36 @@ export default function Navbar() {
                 : "bg-white dark:bg-[#1A100E] py-4"
                 }`}
         >
-            <div className="container mx-auto px-4 md:px-6 flex justify-center items-center relative bg-transparent">
+            <div className="container mx-auto px-4 flex justify-between items-center relative bg-transparent">
+                {/* Mobile Menu Button (Left side) */}
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors z-50"
+                    aria-label="Toggle Menu"
+                >
+                    {isOpen ? (
+                        <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                    ) : (
+                        <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                    )}
+                </button>
+
+                {/* Logo - Always visible on mobile (Center on mobile, Left on desktop) */}
+                <Link href="/" className="flex items-center gap-2 md:absolute md:left-4 z-40">
+                    <Image
+                        src="/logo.png"
+                        alt="VPTC Logo"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                    />
+                    <span className="hidden sm:inline font-bold text-lg text-gray-900 dark:text-white">
+                        VPTC AI
+                    </span>
+                </Link>
+
                 {/* Desktop Navigation - Centered */}
-                <div className="hidden md:flex items-center gap-8">
+                <div className="hidden md:flex items-center gap-8 mx-auto">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
@@ -100,12 +128,12 @@ export default function Navbar() {
                     ))}
                 </div>
 
-
-                {/* Right Actions - Fixed positioned in corner */}
-                <div className="hidden md:flex items-center gap-2 lg:gap-3 fixed top-4 right-4 lg:right-6 z-50">
+                {/* Right Actions - Always visible */}
+                <div className="flex items-center gap-2 z-50">
+                    {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
-                        className="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors backdrop-blur-sm"
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         aria-label="Toggle Theme"
                     >
                         {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />}
@@ -116,10 +144,10 @@ export default function Navbar() {
                             {/* Student Dashboard Button */}
                             <Link
                                 href="/student/dashboard"
-                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-colors text-sm font-medium whitespace-nowrap shadow-sm"
+                                className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
                             >
                                 <User className="w-4 h-4" />
-                                <span className="hidden lg:inline">Dashboard</span>
+                                <span className="hidden sm:inline">Dashboard</span>
                             </Link>
 
                             <div className="relative">
@@ -127,10 +155,10 @@ export default function Navbar() {
                                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                                     className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                        <User className="w-6 h-6" />
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        <User className="w-4 h-4 sm:w-6 sm:h-6" />
                                     </div>
-                                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                                    <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
                                 </button>
 
                                 {/* Profile Dropdown */}
@@ -160,34 +188,23 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                                 >
                                     <GraduationCap className="w-4 h-4" />
-                                    <span className="hidden lg:inline">Student Portal</span>
-                                    <span className="lg:hidden">Student</span>
+                                    <span className="hidden sm:inline">Student</span>
                                 </Link>
 
                                 <Link
                                     href="/admin/login"
-                                    className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                                 >
                                     <Shield className="w-4 h-4" />
-                                    <span className="hidden lg:inline">Admin Login</span>
-                                    <span className="lg:hidden">Admin</span>
+                                    <span className="hidden sm:inline">Admin</span>
                                 </Link>
                             </>
                         )
                     )}
                 </div>
-
-                {/* Mobile Menu Button */}
-                <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="md:hidden p-2 text-gray-700 dark:text-white"
-                    aria-label="Toggle Menu"
-                >
-                    {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </button>
             </div>
 
             {/* Mobile Menu Overlay */}

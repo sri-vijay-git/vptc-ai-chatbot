@@ -127,10 +127,10 @@ export default function HomePage() {
                     <div className="w-full max-w-3xl text-center space-y-8">
                         {/* Main Heading */}
                         <div className="space-y-4">
-                            <h1 className="text-5xl md:text-6xl font-bold text-[#3E2723] dark:text-[#FFCC80]">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#3E2723] dark:text-[#FFCC80]">
                                 Your VPTC AI Assistant
                             </h1>
-                            <p className="text-xl text-[#5D4037] dark:text-[#FFCC80]/70">
+                            <p className="text-base sm:text-lg md:text-xl text-[#5D4037] dark:text-[#FFCC80]/70">
                                 Ask anything about your college
                             </p>
                         </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
                                         value={promptInput}
                                         onChange={(e) => setPromptInput(e.target.value)}
                                         placeholder="Ask about courses, admissions, fees..."
-                                        className="w-full px-6 py-5 text-lg rounded-2xl border-2 border-transparent bg-white dark:bg-[#2D1B15] text-[#3E2723] dark:text-[#FFCC80] focus:outline-none relative z-10 transition-all shadow-lg hover:shadow-2xl"
+                                        className="w-full px-4 sm:px-6 py-3 sm:py-5 text-sm sm:text-base md:text-lg rounded-2xl border-2 border-transparent bg-white dark:bg-[#2D1B15] text-[#3E2723] dark:text-[#FFCC80] focus:outline-none relative z-10 transition-all shadow-lg hover:shadow-2xl"
                                     />
                                     <button
                                         type="submit"
@@ -169,15 +169,15 @@ export default function HomePage() {
                         </form>
 
                         {/* Example Prompts - Chip Style */}
-                        <div className="flex flex-wrap gap-3 justify-center">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                             {examplePrompts.map((prompt, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => handleSubmit(undefined, prompt.text)}
-                                    className="px-5 py-3 bg-white dark:bg-[#2D1B15] border border-[#D7CCC8] dark:border-[#5D4037]
-                                         rounded-full text-sm text-[#5D4037] dark:text-[#FFCC80] 
+                                    className="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 bg-white dark:bg-[#2D1B15] border border-[#D7CCC8] dark:border-[#5D4037]
+                                         rounded-full text-xs sm:text-sm text-[#5D4037] dark:text-[#FFCC80] 
                                          hover:border-[#8B6F47] dark:hover:border-[#FFCC80] hover:shadow-md
-                                         transition-all flex items-center gap-2"
+                                         transition-all flex items-center gap-1 sm:gap-2"
                                 >
                                     <span>{prompt.icon}</span>
                                     <span>{prompt.text}</span>
@@ -190,7 +190,7 @@ export default function HomePage() {
                 {/* Features Section - Simplified Grid */}
                 <section className="w-full px-4 py-16 bg-white/50 dark:bg-black/20">
                     <div className="max-w-6xl mx-auto">
-                        <h2 className="text-3xl font-bold text-center text-[#3E2723] dark:text-[#FFCC80] mb-12">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-center text-[#3E2723] dark:text-[#FFCC80] mb-8 sm:mb-12">
                             Why Choose VPTC AI?
                         </h2>
 
