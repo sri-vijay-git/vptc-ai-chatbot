@@ -1,33 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookOpen, Calendar, TrendingUp, FileText, User, Settings, LogOut, MessageSquare, Award, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function StudentDashboard() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState("overview");
 
-    // Mock student data
-    const studentData = {
-        name: "Rajesh Kumar",
-        rollNo: "VPTC/CSE/2024/001",
-        department: "Computer Science & Engineering",
-        semester: "3rd Semester",
-        attendance: 92,
-        cgpa: 8.7,
-        courses: [
+    // Student data state
+    const [studentData, setStudentData] = useState({
+        name: "Loading...",
+        email: "",
+        rollNo: "VPTC/CSE/2024/001", // Mock - backend doesn't provide this yet
+        department: "Computer Science & Engineering", // Mock
+        semester: "3rd Semester", // Mock
+        attendance: 92, // Mock
+        cgpa: 8.7, // Mock
+        courses: [ // Mock - backend doesn't provide this yet
             { code: "CS301", name: "Data Structures", credits: 4, grade: "A", attendance: 95 },
             { code: "CS302", name: "Database Management", credits: 3, grade: "A+", attendance: 98 },
             { code: "CS303", name: "Operating Systems", credits: 4, grade: "A", attendance: 90 },
             { code: "MA301", name: "Mathematics III", credits: 3, grade: "B+", attendance: 88 },
         ],
-        upcomingEvents: [
+        upcomingEvents: [ // Mock
             { title: "Mid-term Exams", date: "Feb 15, 2026", type: "exam" },
             { title: "Project Submission", date: "Feb 20, 2026", type: "assignment" },
             { title: "Sports Day", date: "Feb 25, 2026", type: "event" },
         ]
-    };
+    });
+
+    // Fetch logged-in user data
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            // Not logged in, redirect to login
+            router.push("/login");
+            return;
+        }
+
+        // Get user data from localStorage
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            setStudentData(prev => ({
+                ...prev,
+                name: user.full_name || user.email || "Student",
+                email: user.email || ""
+            }));
+        } else {
+            // Fallback: use email from localStorage
+            const email = localStorage.getItem("user_email") || "";
+            setStudentData(prev => ({
+                ...prev,
+                name: email.split('@')[0] || "Student",
+                email: email
+            }));
+        }
+    }, [router]);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -107,8 +139,8 @@ export default function StudentDashboard() {
                                         key={item.id}
                                         onClick={() => setActiveTab(item.id)}
                                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === item.id
-                                                ? "bg-yellow-500 text-gray-900 font-medium"
-                                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            ? "bg-yellow-500 text-gray-900 font-medium"
+                                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                                             }`}
                                     >
                                         <item.icon className="w-5 h-5" />
@@ -225,12 +257,12 @@ export default function StudentDashboard() {
                                             className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
                                         >
                                             <div className={`p-3 rounded-lg ${event.type === 'exam' ? 'bg-red-100 dark:bg-red-900/30' :
-                                                    event.type === 'assignment' ? 'bg-blue-100 dark:bg-blue-900/30' :
-                                                        'bg-green-100 dark:bg-green-900/30'
+                                                event.type === 'assignment' ? 'bg-blue-100 dark:bg-blue-900/30' :
+                                                    'bg-green-100 dark:bg-green-900/30'
                                                 }`}>
                                                 <Clock className={`w-5 h-5 ${event.type === 'exam' ? 'text-red-600 dark:text-red-400' :
-                                                        event.type === 'assignment' ? 'text-blue-600 dark:text-blue-400' :
-                                                            'text-green-600 dark:text-green-400'
+                                                    event.type === 'assignment' ? 'text-blue-600 dark:text-blue-400' :
+                                                        'text-green-600 dark:text-green-400'
                                                     }`} />
                                             </div>
                                             <div className="flex-1">
