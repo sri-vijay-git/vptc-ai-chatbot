@@ -31,5 +31,6 @@ settings = Settings()
 BACKEND_CORS_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000", 
-    "https://vptc-ai-chatbot-frontend.vercel.app"
+    "https://vptc-ai-chatbot-frontend.vercel.app",
+    "https://vptc-ai.vercel.app"
 ]
