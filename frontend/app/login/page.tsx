@@ -33,9 +33,33 @@ export default function LoginPage() {
 
             if (access_token) {
                 localStorage.setItem("token", access_token);
-            }
-            if (user) {
-                localStorage.setItem("user", JSON.stringify(user));
+
+                // Decode JWT to extract user data if user object not provided
+                if (!user) {
+                    try {
+                        const tokenParts = access_token.split('.');
+                        if (tokenParts.length === 3) {
+                            const payload = JSON.parse(atob(tokenParts[1]));
+                            const userData = {
+                                email: payload.email || formData.email,
+                                full_name: payload.full_name || payload.email?.split('@')[0] || "Student",
+                                role: payload.role || "student",
+                                id: payload.sub
+                            };
+                            localStorage.setItem("user", JSON.stringify(userData));
+                        }
+                    } catch (decodeError) {
+                        console.error("Failed to decode token:", decodeError);
+                        // Fallback: save email from form
+                        localStorage.setItem("user", JSON.stringify({
+                            email: formData.email,
+                            full_name: formData.email.split('@')[0],
+                            role: "student"
+                        }));
+                    }
+                } else {
+                    localStorage.setItem("user", JSON.stringify(user));
+                }
             }
 
             // Dispatch custom event to notify components in the SAME window
