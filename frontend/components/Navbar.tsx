@@ -105,8 +105,8 @@ export default function Navbar() {
                                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                                 className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
                             >
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <User className="w-5 h-5" />
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <User className="w-6 h-6" />
                                 </div>
                                 <ChevronDown className="w-4 h-4 text-gray-400" />
                             </button>
