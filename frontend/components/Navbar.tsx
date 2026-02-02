@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown } from "lucide-react";
-import Image from "next/image";
+import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut } from "lucide-react";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -21,6 +20,30 @@ export default function Navbar() {
     const pathname = usePathname();
     const { theme, toggleTheme } = useTheme();
     const [scrolled, setScrolled] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+    // Initial auth check
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem("token");
+            setIsLoggedIn(!!token);
+        };
+
+        checkAuth();
+
+        // Listen for storage events (e.g. login from another tab or component)
+        window.addEventListener("storage", checkAuth);
+        return () => window.removeEventListener("storage", checkAuth);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setIsLoggedIn(false);
+        setShowProfileMenu(false);
+        window.location.href = "/"; // Force refresh to clear any state
+    };
 
     // Handle scroll effect
     useEffect(() => {
@@ -37,12 +60,8 @@ export default function Navbar() {
     }, [pathname]);
 
     const isChatPage = pathname?.startsWith("/chat");
-    const isAdminPage = pathname?.startsWith("/admin");
 
-    // Hide Navbar on specific pages if needed, but for now we keep it or handle via LayoutWrapper.
-    // However, if this component is used inside LayoutWrapper which conditionally renders it, we don't need this check.
-    // But keeping it robust:
-    if (isChatPage && pathname === "/chat") return null; // Logic might be moved to LayoutWrapper, but safeguards are good.
+    if (isChatPage && pathname === "/chat") return null;
 
     return (
         <nav
@@ -79,23 +98,60 @@ export default function Navbar() {
                         {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />}
                     </button>
 
-                    <Link
-                        href="/login"
-                        className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
-                    >
-                        <GraduationCap className="w-4 h-4" />
-                        <span className="hidden lg:inline">Student Portal</span>
-                        <span className="lg:hidden">Student</span>
-                    </Link>
+                    {isLoggedIn ? (
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                                className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <User className="w-5 h-5" />
+                                </div>
+                                <ChevronDown className="w-4 h-4 text-gray-400" />
+                            </button>
 
-                    <Link
-                        href="/admin/login"
-                        className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
-                    >
-                        <Shield className="w-4 h-4" />
-                        <span className="hidden lg:inline">Admin Login</span>
-                        <span className="lg:hidden">Admin</span>
-                    </Link>
+                            {/* Profile Dropdown */}
+                            {showProfileMenu && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 animate-[fadeIn_0.2s_ease-out]">
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                        onClick={() => setShowProfileMenu(false)}
+                                    >
+                                        <User className="w-4 h-4" />
+                                        My Profile
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
+                                    >
+                                        <LogOut className="w-4 h-4" />
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <Link
+                                href="/login"
+                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                            >
+                                <GraduationCap className="w-4 h-4" />
+                                <span className="hidden lg:inline">Student Portal</span>
+                                <span className="lg:hidden">Student</span>
+                            </Link>
+
+                            <Link
+                                href="/admin/login"
+                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                            >
+                                <Shield className="w-4 h-4" />
+                                <span className="hidden lg:inline">Admin Login</span>
+                                <span className="lg:hidden">Admin</span>
+                            </Link>
+                        </>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button */}

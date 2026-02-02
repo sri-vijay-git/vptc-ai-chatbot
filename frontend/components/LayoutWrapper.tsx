@@ -11,7 +11,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     // /chat has its own full-screen layout
     // /admin will have its own dashboard layout
     // /login is a standalone page usually, but maybe we want navbar there? Let's keep it for now.
-    const isExcluded = pathname?.startsWith("/chat") || pathname?.startsWith("/admin");
+    // Hide Global Navbar/Footer on specific routes
+    // /chat will now HAVE the navbar, so we remove it from exclusion
+    // /admin will have its own dashboard layout
+    const isExcluded = pathname?.startsWith("/admin");
+    const isChat = pathname?.startsWith("/chat");
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -19,7 +23,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             <main className={`flex-1 ${!isExcluded ? "pt-20" : ""}`}>
                 {children}
             </main>
-            {!isExcluded && <Footer />}
+            {!isExcluded && !isChat && <Footer />}
         </div>
     );
 }

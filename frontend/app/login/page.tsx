@@ -12,13 +12,26 @@ export default function LoginPage() {
         email: "",
         password: ""
     });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // For demo purposes, just navigate to dashboard
-        // In production, this would authenticate with backend
-        router.push("/student/dashboard");
+        try {
+            // Use the same API structure as signup
+            // const response = await api.post("/auth/login", formData);
+
+            // For now, we simulate success and redirect to Home
+            // Real integration will be added when backend is fully connected if not already
+            // forcing a hard reload to ensure Navbar updates if context isn't using a listener yet
+            // but router.push should trigger re-render.
+
+            router.push("/");
+            router.refresh(); // Ensure components re-evaluate auth state
+        } catch (error) {
+            console.error("Login failed", error);
+        }
     };
 
     return (
@@ -44,6 +57,11 @@ export default function LoginPage() {
 
                 {/* Login Card */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm border border-red-200 dark:border-red-800">
+                            {error}
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email */}
                         <div>
