@@ -95,9 +95,22 @@ function ChatContent() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token && !isGuest) {
-            // Try to get email from localStorage or decode token
-            const email = localStorage.getItem('user_email') || 'user@example.com';
-            setUserEmail(email);
+            // Get user data from localStorage
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    setUserEmail(user.full_name || user.email || 'user@example.com');
+                } catch (e) {
+                    // Fallback to user_email if parse fails
+                    const email = localStorage.getItem('user_email') || 'user@example.com';
+                    setUserEmail(email);
+                }
+            } else {
+                // Fallback to user_email
+                const email = localStorage.getItem('user_email') || 'user@example.com';
+                setUserEmail(email);
+            }
         }
     }, [isGuest]);
 
