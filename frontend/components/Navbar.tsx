@@ -34,8 +34,12 @@ export default function Navbar() {
 
         // Listen for storage events (e.g. login from another tab or component)
         window.addEventListener("storage", checkAuth);
+        window.addEventListener("auth-change", checkAuth);
 
-        return () => window.removeEventListener("storage", checkAuth);
+        return () => {
+            window.removeEventListener("storage", checkAuth);
+            window.removeEventListener("auth-change", checkAuth);
+        };
     }, [pathname]); // Re-run check when path changes (e.g. redirect from /login to /)
 
     const handleLogout = () => {

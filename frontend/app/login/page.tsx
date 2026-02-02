@@ -23,13 +23,10 @@ export default function LoginPage() {
         setError("");
 
         try {
-            // Create URLSearchParams for x-www-form-urlencoded
-            const params = new URLSearchParams();
-            params.append('username', formData.email);
-            params.append('password', formData.password);
-
-            const response = await api.post("/auth/login", params, {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            // Backend expects JSON with email and password fields
+            const response = await api.post("/auth/login", {
+                email: formData.email,
+                password: formData.password
             });
 
             const { access_token, user } = response.data;
@@ -146,9 +143,10 @@ export default function LoginPage() {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-600 hover:to-yellow-500 text-gray-900 font-semibold rounded-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                            disabled={loading}
+                            className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-600 hover:to-yellow-500 text-gray-900 font-semibold rounded-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Login
+                            {loading ? "Logging in..." : "Login"}
                             <ArrowRight className="w-5 h-5" />
                         </button>
                     </form>

@@ -32,7 +32,12 @@ export function useGuestMode() {
         checkAuth();
 
         window.addEventListener("storage", checkAuth);
-        return () => window.removeEventListener("storage", checkAuth);
+        window.addEventListener("auth-change", checkAuth);
+
+        return () => {
+            window.removeEventListener("storage", checkAuth);
+            window.removeEventListener("auth-change", checkAuth);
+        };
     }, []);
 
     const incrementConversation = () => {
