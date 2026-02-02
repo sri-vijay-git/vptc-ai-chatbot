@@ -98,8 +98,8 @@ export default function Navbar() {
                     )}
                 </button>
 
-                {/* Logo - Always visible on mobile (Center on mobile, Left on desktop) */}
-                <Link href="/" className="flex items-center gap-2 md:absolute md:left-4 z-40">
+                {/* Logo - Centered on mobile, Left on desktop */}
+                <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:left-4 md:translate-x-0 flex items-center gap-2 z-40">
                     <Image
                         src="/logo.png"
                         alt="VPTC Logo"

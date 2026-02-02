@@ -422,17 +422,18 @@ function ChatContent() {
                 {/* Header */}
                 <header className="p-4 flex justify-between items-center bg-transparent">
                     <div className="flex items-center gap-3">
-                        {/* Sidebar Toggle - Matches theme */}
+                        {/* Sidebar Toggle - Simple icon on mobile, with text on desktop */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="px-3 py-2 bg-[#3e2723] hover:bg-[#5d4037] dark:bg-[#5d4037] dark:hover:bg-[#6d4c41] text-[#ffcc80] rounded-lg transition-colors shadow-md flex items-center gap-2 border border-[#5d4037] dark:border-[#6d4c41]"
+                            className="px-2 sm:px-3 py-2 bg-[#3e2723] hover:bg-[#5d4037] dark:bg-[#5d4037] dark:hover:bg-[#6d4c41] text-[#ffcc80] rounded-lg transition-colors shadow-md flex items-center gap-2 border border-[#5d4037] dark:border-[#6d4c41]"
                             title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
                         >
                             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                            <span className="text-sm font-medium">{sidebarOpen ? 'Close' : 'Menu'}</span>
+                            <span className="hidden sm:inline text-sm font-medium">{sidebarOpen ? 'Close' : 'Menu'}</span>
                         </button>
 
-                        <Link href="/" className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-[#5d4037] dark:hover:border-[#ffcc80] transition-colors cursor-pointer">
+                        {/* Logo - Hidden on mobile */}
+                        <Link href="/" className="hidden md:block relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-[#5d4037] dark:hover:border-[#ffcc80] transition-colors cursor-pointer">
                             <Image
                                 src="/logo.png"
                                 alt="VPTC Logo"
@@ -440,7 +441,9 @@ function ChatContent() {
                                 className="object-cover"
                             />
                         </Link>
-                        <div>
+
+                        {/* Title - Hidden on mobile */}
+                        <div className="hidden md:block">
                             <Link href="/" className="hover:opacity-80 transition-opacity">
                                 <h1 className="text-xl font-bold text-[#3e2723] dark:text-[#ffcc80]">VPTC AI Chatbot</h1>
                             </Link>
