@@ -122,46 +122,6 @@ export default function HomePage() {
                     <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-yellow-400/10 to-orange-300/10 rounded-full blur-2xl animate-pulse delay-500" />
                 </div>
 
-                {/* Simple Header */}
-                <header className="w-full px-6 py-4 flex justify-center items-center border-b border-[#D7CCC8] dark:border-[#3E2723] bg-white/80 dark:bg-[#1A100E]/80 backdrop-blur-sm relative z-10">
-                    <div className="flex items-center gap-4 animate-[fadeInScale_0.8s_ease-out]">
-                        <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-lg animate-pulse hover:scale-110 transition-transform duration-300">
-                            <Image src="/logo.png" alt="VPTC" fill className="object-cover" />
-                        </div>
-                        <span className="text-3xl font-semibold text-[#3E2723] dark:text-[#FFCC80]">
-                            VPTC AI
-                        </span>
-                    </div>
-
-                    <style jsx>{`
-                    @keyframes fadeInScale {
-                        0% {
-                            opacity: 0;
-                            transform: scale(0.8);
-                        }
-                        100% {
-                            opacity: 1;
-                            transform: scale(1);
-                        }
-                    }
-                `}</style>
-
-                    <div className="absolute right-6 flex gap-4 items-center">
-                        <button
-                            onClick={() => router.push("/signup")}
-                            className="text-sm px-4 py-2 bg-[#8B6F47] hover:bg-[#6D563C] text-white rounded-lg transition-colors"
-                        >
-                            SignUp
-                        </button>
-                        <button
-                            onClick={() => router.push("/login")}
-                            className="text-sm text-[#5D4037] dark:text-[#FFCC80]/80 hover:text-[#3E2723] dark:hover:text-[#FFCC80] transition-colors"
-                        >
-                            Login
-                        </button>
-                    </div>
-                </header>
-
                 {/* Hero Section - Gemini Style */}
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative z-10">
                     <div className="w-full max-w-3xl text-center space-y-8">

@@ -137,25 +137,27 @@ export default function Navbar() {
                             )}
                         </div>
                     ) : (
-                        <>
-                            <Link
-                                href="/login"
-                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
-                            >
-                                <GraduationCap className="w-4 h-4" />
-                                <span className="hidden lg:inline">Student Portal</span>
-                                <span className="lg:hidden">Student</span>
-                            </Link>
+                        pathname === "/" && (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                                >
+                                    <GraduationCap className="w-4 h-4" />
+                                    <span className="hidden lg:inline">Student Portal</span>
+                                    <span className="lg:hidden">Student</span>
+                                </Link>
 
-                            <Link
-                                href="/admin/login"
-                                className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
-                            >
-                                <Shield className="w-4 h-4" />
-                                <span className="hidden lg:inline">Admin Login</span>
-                                <span className="lg:hidden">Admin</span>
-                            </Link>
-                        </>
+                                <Link
+                                    href="/admin/login"
+                                    className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-sm font-medium whitespace-nowrap backdrop-blur-sm"
+                                >
+                                    <Shield className="w-4 h-4" />
+                                    <span className="hidden lg:inline">Admin Login</span>
+                                    <span className="lg:hidden">Admin</span>
+                                </Link>
+                            </>
+                        )
                     )}
                 </div>
 
