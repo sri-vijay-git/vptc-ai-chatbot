@@ -18,6 +18,7 @@ type Message = {
     sources?: string[];
     followupQuestions?: string[];
     rating?: number; // 1 for helpful, -1 for not helpful
+    isTyping?: boolean; // For typing animation
 };
 
 type Conversation = {
@@ -56,6 +57,10 @@ function ChatContent() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const searchParams = useSearchParams();
+
+    // Typing animation state
+    const [typingMessageIndex, setTypingMessageIndex] = useState<number | null>(null);
+    const [displayedText, setDisplayedText] = useState<string>("");
     const hasAutoSent = useRef(false);
 
     // Sidebar State
@@ -74,6 +79,9 @@ function ChatContent() {
     // Voice Input State
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+
+    // Profile Dropdown Ref for click-outside detection
+    const profileDropdownRef = useRef<HTMLDivElement>(null);
 
     // Handle auto-send from homepage query
     useEffect(() => {
@@ -128,6 +136,55 @@ function ChatContent() {
         }
     }, [showSignupPrompt]);
 
+    // Close profile dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+                setShowProfileDropdown(false);
+            }
+        };
+
+        if (showProfileDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showProfileDropdown]);
+
+    // Typing animation effect for AI responses
+    useEffect(() => {
+        if (typingMessageIndex === null) return;
+
+        const message = messages[typingMessageIndex];
+        if (!message || message.role !== "assistant" || !message.isTyping) return;
+
+        const fullText = message.content;
+        let currentIndex = 0;
+
+        // Clear displayed text when starting new message
+        setDisplayedText("");
+
+        const typingInterval = setInterval(() => {
+            if (currentIndex < fullText.length) {
+                // Type 2-4 characters at a time for smoother effect
+                const charsToAdd = Math.min(3, fullText.length - currentIndex);
+                setDisplayedText(fullText.substring(0, currentIndex + charsToAdd));
+                currentIndex += charsToAdd;
+            } else {
+                // Typing complete - mark message as no longer typing
+                clearInterval(typingInterval);
+                setMessages(prev => prev.map((msg, idx) =>
+                    idx === typingMessageIndex ? { ...msg, isTyping: false } : msg
+                ));
+                setTypingMessageIndex(null);
+            }
+        }, 30); // Faster for smoother effect
+
+        return () => clearInterval(typingInterval);
+    }, [typingMessageIndex, messages]);
+
     // Auto-save conversation when messages change
     useEffect(() => {
         if (messages.length > 1) { // More than just the initial message
@@ -177,15 +234,20 @@ function ChatContent() {
             const response = await api.post("/chat/message", { message: userMsg });
             const aiResponse = response.data;
 
-            setMessages((prev) => [
-                ...prev,
-                {
-                    role: "assistant",
-                    content: aiResponse.answer,
-                    sources: aiResponse.sources,
-                    followupQuestions: aiResponse.followup_questions
-                }
-            ]);
+            const newMessage = {
+                role: "assistant" as const,
+                content: aiResponse.answer,
+                sources: aiResponse.sources,
+                followupQuestions: aiResponse.followup_questions,
+                isTyping: true
+            };
+
+            setMessages((prev) => [...prev, newMessage]);
+
+            // Start typing animation for the new message
+            setTimeout(() => {
+                setTypingMessageIndex(messages.length + 1); // +1 because we added user message earlier
+            }, 100);
 
             // Track guest conversations
             if (isGuest) {
@@ -404,7 +466,7 @@ function ChatContent() {
             )}
 
             {/* Main Chat Area */}
-            <div className="flex flex-col flex-1 bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723]">
+            <div className="flex flex-col flex-1 h-screen bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723] overflow-hidden">
                 {/* Signup Prompt Modal */}
                 <SignupPrompt
                     isOpen={showModal}
@@ -420,7 +482,7 @@ function ChatContent() {
                 />
 
                 {/* Header */}
-                <header className="p-4 flex justify-between items-center bg-transparent">
+                <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-center bg-gradient-to-b from-white/80 via-white/50 to-transparent dark:from-black/80 dark:via-black/50 dark:to-transparent backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                         {/* Sidebar Toggle - Simple icon on mobile, with text on desktop */}
                         <button
@@ -485,7 +547,7 @@ function ChatContent() {
                         </button>
 
                         {/* User Profile Button */}
-                        <div className="relative">
+                        <div className="relative" ref={profileDropdownRef}>
                             <button
                                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                                 className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition-all"
@@ -548,18 +610,18 @@ function ChatContent() {
                 </header>
 
                 {/* Chat Area */}
-                < div className="flex-1 overflow-y-auto p-4 space-y-4" >
-                    <div className="max-w-4xl mx-auto space-y-4">
+                <div className="flex-1 overflow-y-auto px-4 pt-20">
+                    <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}>
-                                <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : ""} group`}>
+                            <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn py-2`}>
+                                <div className={`flex gap-4 max-w-full ${msg.role === "user" ? "flex-row-reverse" : ""} group w-full`}>
                                     {/* Avatar */}
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === "user"
                                         ? "bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white"
-                                        : "bg-gradient-to-br from-[#EFEBE9] to-[#D7CCC8] dark:from-[#3E2723] dark:to-[#5D4037] text-[#3E2723] dark:text-[#FFCC80]"
+                                        : "bg-transparent"
                                         }`}>
                                         {msg.role === "user" ? <User className="w-5 h-5" /> : (
-                                            <div className="relative w-full h-full rounded-full overflow-hidden">
+                                            <div className="relative w-8 h-8 rounded-full overflow-hidden">
                                                 <Image
                                                     src="/logo.png"
                                                     alt="AI"
@@ -570,75 +632,83 @@ function ChatContent() {
                                         )}
                                     </div>
 
-                                    {/* Message Bubble */}
-                                    <div
-                                        className={`rounded-2xl p-4 shadow-sm ${msg.role === "user"
-                                            ? "bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white rounded-tr-sm border border-[#6D563C]"
-                                            : "bg-white dark:bg-[#2D1B15] text-[#3E2723] dark:text-[#FFCC80] rounded-tl-sm"
-                                            }`}
-                                    >
-                                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                                        {msg.sources && msg.sources.length > 0 && (
-                                            (() => {
-                                                const filteredSources = msg.sources!.filter(s => s !== "General Knowledge");
-                                                if (filteredSources.length === 0) return null;
-                                                return (
-                                                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 text-xs opacity-75">
-                                                        <span className="font-semibold">Sources:</span> {filteredSources.join(", ")}
-                                                    </div>
-                                                );
-                                            })()
-                                        )}
-
-                                        {/* Follow-up Questions */}
-                                        {msg.role === "assistant" && msg.followupQuestions && msg.followupQuestions.length > 0 && (
-                                            <div className="mt-4 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-3">
-                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                                                    Suggested Questions
+                                    {/* Message Content */}
+                                    {msg.role === "user" ? (
+                                        // User message with bubble
+                                        <div className="flex-1 text-right">
+                                            <div className="inline-block max-w-[70%] px-4 py-3 rounded-2xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white shadow-sm border border-[#6D563C]/20">
+                                                <p className="whitespace-pre-wrap leading-relaxed text-base">
+                                                    {msg.content}
                                                 </p>
-                                                <div className="flex flex-col gap-2">
-                                                    {msg.followupQuestions.map((question, qIdx) => (
-                                                        <button
-                                                            key={qIdx}
-                                                            onClick={() => sendMessage({} as any, question)}
-                                                            className="text-left text-sm px-3 py-2 bg-[#FAF7F2] dark:bg-[#3E2723]/50 hover:bg-[#EFEBE9] dark:hover:bg-[#3E2723] text-[#3E2723] dark:text-[#FFCC80] rounded-lg transition-all border border-transparent hover:border-[#D7CCC8] dark:hover:border-[#5D4037] flex items-center gap-2 group"
-                                                        >
-                                                            <span className="text-[#8B6F47] dark:text-[#FFCC80] opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <Sparkles className="w-3 h-3" />
-                                                            </span>
-                                                            {question}
-                                                        </button>
-                                                    ))}
-                                                </div>
                                             </div>
-                                        )}
+                                        </div>
+                                    ) : (
+                                        // AI message clean without bubble
+                                        <div className="flex-1">
+                                            <p className="whitespace-pre-wrap leading-relaxed text-base text-gray-900 dark:text-gray-100">
+                                                {msg.isTyping && idx === typingMessageIndex
+                                                    ? displayedText
+                                                    : msg.content}
+                                                {msg.isTyping && idx === typingMessageIndex && (
+                                                    <span className="inline-block w-1 h-4 ml-1 bg-current animate-pulse"></span>
+                                                )}
+                                            </p>
+                                            {!msg.isTyping && msg.sources && msg.sources.length > 0 && (
+                                                (() => {
+                                                    const filteredSources = msg.sources!.filter(s => s !== "General Knowledge");
+                                                    if (filteredSources.length === 0) return null;
+                                                    return (
+                                                        <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                                                            <span className="font-medium">Sources:</span> {filteredSources.join(", ")}
+                                                        </div>
+                                                    );
+                                                })()
+                                            )}
 
-                                        {/* Feedback Buttons */}
-                                        {msg.role === "assistant" && !loading && (
-                                            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:opacity-100">
-                                                <button
-                                                    onClick={() => handleFeedback(idx, 1)}
-                                                    className={`p-1 rounded transition-colors ${msg.rating === 1
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                                                        : 'text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
-                                                        }`}
-                                                    title="Helpful"
-                                                >
-                                                    <ThumbsUp className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleFeedback(idx, -1)}
-                                                    className={`p-1 rounded transition-colors ${msg.rating === -1
-                                                        ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                                                        : 'text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
-                                                        }`}
-                                                    title="Not helpful"
-                                                >
-                                                    <ThumbsDown className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
+                                            {/* Follow-up Questions */}
+                                            {!msg.isTyping && msg.role === "assistant" && msg.followupQuestions && msg.followupQuestions.length > 0 && (
+                                                <div className="mt-4 space-y-2">
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {msg.followupQuestions.map((question, qIdx) => (
+                                                            <button
+                                                                key={qIdx}
+                                                                onClick={() => sendMessage({} as any, question)}
+                                                                className="text-sm px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full transition-all border border-gray-200 dark:border-gray-700"
+                                                            >
+                                                                {question}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Feedback Buttons */}
+                                            {msg.role === "assistant" && !loading && (
+                                                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:opacity-100">
+                                                    <button
+                                                        onClick={() => handleFeedback(idx, 1)}
+                                                        className={`p-1 rounded transition-colors ${msg.rating === 1
+                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                                            : 'text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                                            }`}
+                                                        title="Helpful"
+                                                    >
+                                                        <ThumbsUp className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleFeedback(idx, -1)}
+                                                        className={`p-1 rounded transition-colors ${msg.rating === -1
+                                                            ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                                                            : 'text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                                                            }`}
+                                                        title="Not helpful"
+                                                    >
+                                                        <ThumbsDown className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -667,10 +737,10 @@ function ChatContent() {
                         )}
                         <div ref={messagesEndRef} />
                     </div>
-                </div >
+                </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-transparent">
+                <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50">
                     <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
                         <div className="flex gap-1 sm:gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
                             <input
