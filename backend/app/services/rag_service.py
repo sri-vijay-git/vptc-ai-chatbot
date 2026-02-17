@@ -45,8 +45,8 @@ INSTRUCTIONS:
 - Keep responses concise but informative (2-4 sentences for simple questions, more for detailed ones).
 - Use bullet points for lists.
 - When suggesting to contact the college, ALWAYS include: Phone: 9488853917 / 9488863917, Mobile: 7373689294, Email: vpt384@yahoo.co.in
-- DO NOT make up or fabricate any information that is not in the context. If the context doesn't have specific data (like a person's name or a specific number), say you don't have that specific detail and direct them to the college office with the contact numbers above.
-- If asked about the principal or specific staff names not in the context, honestly say the information is not available in your current database and provide the college contact details.
+- DO NOT make up or fabricate any information that is not in the context. If the context doesn't have specific data, say you don't have that specific detail and direct them to the college office with the contact numbers above.
+- For questions about the principal, chairman, or other staff, ALWAYS check the context first — these details are available in the college documents. Use the information from the context directly.
 - For placement questions, mention VPTC's 100% placement record and list some recruiters from the context.
 - For fee questions, mention fees are as per government norms and provide the contact details.
 
@@ -60,7 +60,7 @@ Answer the student's question:"""
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",  # Fast, powerful, and free!
                 messages=[
-                    {"role": "system", "content": "You are a helpful AI advisor for Vignesh Polytechnic College (VPTC), Tiruvannamalai. Always prioritize the provided context data in your answers. Be friendly, accurate, and conversational. Never fabricate information not present in the context. When information is unavailable, direct users to the college office: Phone 9488853917/9488863917, Email vpt384@yahoo.co.in."},
+                    {"role": "system", "content": "You are a helpful AI advisor for Vignesh Polytechnic College (VPTC), Tiruvannamalai. Always prioritize the provided context data in your answers. Be friendly, accurate, and conversational. Never fabricate information not present in the context. The context contains verified details about the principal, chairman, courses, placements, and more — use them directly. When information is unavailable, direct users to the college office: Phone 9488853917/9488863917, Email vpt384@yahoo.co.in."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
