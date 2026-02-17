@@ -22,13 +22,14 @@ def ingest_documents():
         print("Please create it and add your PDF files.")
         return
 
-    files = [f for f in os.listdir(DOCUMENTS_DIR) if f.lower().endswith('.pdf')]
+    valid_extensions = ('.pdf', '.txt', '.md')
+    files = [f for f in os.listdir(DOCUMENTS_DIR) if f.lower().endswith(valid_extensions)]
     
     if not files:
-        print("⚠️  No PDF files found in data/documents/")
+        print("⚠️  No compatible files (.pdf, .txt, .md) found in data/documents/")
         return
 
-    print(f"📄 Found {len(files)} PDF details.")
+    print(f"📄 Found {len(files)} documents.")
 
     documents_content = []
     ids = []
@@ -38,8 +39,18 @@ def ingest_documents():
         file_path = os.path.join(DOCUMENTS_DIR, filename)
         print(f"   scanning: {filename}...")
         
-        # 1. Extract Text
-        raw_text = pdf_service.extract_text_from_pdf(file_path)
+        raw_text = ""
+        if filename.lower().endswith('.pdf'):
+            # 1. Extract Text from PDF
+            raw_text = pdf_service.extract_text_from_pdf(file_path)
+        else:
+            # 1. Extract Text from Text/Markdown
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    raw_text = f.read()
+            except Exception as e:
+                print(f"   ❌ Error reading file {filename}: {e}")
+                continue
         
         if not raw_text:
             print(f"   ⚠️  Skipping empty file: {filename}")

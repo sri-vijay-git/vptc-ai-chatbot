@@ -9,10 +9,10 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
-                            VPTC
+                            Vignesh Polytechnic College
                         </h2>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Empowering students with quality education and cutting-edge technology for a brighter future.
+                            Managed by Sree Selvavinayagar Trust. Providing quality technical education since 1995.
                         </p>
                     </div>
 
@@ -20,7 +20,7 @@ export default function Footer() {
                     <div>
                         <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
                         <ul className="space-y-3">
-                            {["About Us", "Admissions", "Departments", "Campus Life", "Contact"].map((item) => (
+                            {["About Us", "Admissions", "Departments", "Campus", "Contact"].map((item) => (
                                 <li key={item}>
                                     <Link
                                         href={`/${item.toLowerCase().replace(" ", "-")}`}
@@ -37,7 +37,7 @@ export default function Footer() {
                     <div>
                         <h3 className="text-lg font-semibold mb-6">Departments</h3>
                         <ul className="space-y-3">
-                            {["Computer Science", "Electronics", "Mechanical", "Civil", "Information Tech"].map((item) => (
+                            {["Civil Engg.", "Mechanical Engg.", "EEE", "ECE", "Computer Sci. Engg."].map((item) => (
                                 <li key={item}>
                                     <Link
                                         href="/departments"
@@ -56,15 +56,15 @@ export default function Footer() {
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3 text-gray-400 text-sm">
                                 <MapPin className="w-5 h-5 text-yellow-500 shrink-0" />
-                                <span>123 College Road, Education City, State - 600001</span>
+                                <span>Melputhiyandal, Manalurpet Road, Tiruvannamalai - 606603</span>
                             </li>
                             <li className="flex items-center gap-3 text-gray-400 text-sm">
                                 <Phone className="w-5 h-5 text-yellow-500 shrink-0" />
-                                <span>+91 123 456 7890</span>
+                                <span>9488853917 / 7373689294</span>
                             </li>
                             <li className="flex items-center gap-3 text-gray-400 text-sm">
                                 <Mail className="w-5 h-5 text-yellow-500 shrink-0" />
-                                <span>admissions@vptc.edu</span>
+                                <span>vpt384@yahoo.co.in</span>
                             </li>
                         </ul>
                     </div>
@@ -72,7 +72,7 @@ export default function Footer() {
 
                 <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-gray-500 text-sm">
-                        © {new Date().getFullYear()} VPTC. All rights reserved.
+                        © {new Date().getFullYear()} Vignesh Polytechnic College. All rights reserved.
                     </p>
 
                     <div className="flex items-center gap-4">

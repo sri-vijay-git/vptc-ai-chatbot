@@ -31,7 +31,7 @@ class RAGService:
             context = "General knowledge"
 
         # 2. Build Conversational Prompt
-        prompt = f"""You are a helpful and friendly AI assistant for Vignesh Polytechnic College (VPTC).
+        prompt = f"""You are a helpful and friendly AI assistant for Vignesh Polytechnic College (VPTC), Tiruvannamalai.
 
 CONTEXT FROM COLLEGE DOCUMENTS:
 {context}
@@ -39,13 +39,16 @@ CONTEXT FROM COLLEGE DOCUMENTS:
 STUDENT QUESTION: {user_query}
 
 INSTRUCTIONS:
-- Answer naturally like a real college advisor would talk to a student
-- Use the context if it's relevant to the question
-- If the context doesn't have the answer, use your general knowledge about polytechnic colleges in India
-- Be encouraging, helpful, and conversational
-- Keep responses concise but informative (2-4 sentences usually)
-- Use bullet points for lists
-- If you don't know something specific about VPTC, be honest and suggest they contact the college office
+- ALWAYS prioritize information from the CONTEXT above. If the answer is in the context, use it directly.
+- Answer naturally like a real college advisor would talk to a student.
+- Be encouraging, helpful, and conversational.
+- Keep responses concise but informative (2-4 sentences for simple questions, more for detailed ones).
+- Use bullet points for lists.
+- When suggesting to contact the college, ALWAYS include: Phone: 9488853917 / 9488863917, Mobile: 7373689294, Email: vpt384@yahoo.co.in
+- DO NOT make up or fabricate any information that is not in the context. If the context doesn't have specific data (like a person's name or a specific number), say you don't have that specific detail and direct them to the college office with the contact numbers above.
+- If asked about the principal or specific staff names not in the context, honestly say the information is not available in your current database and provide the college contact details.
+- For placement questions, mention VPTC's 100% placement record and list some recruiters from the context.
+- For fee questions, mention fees are as per government norms and provide the contact details.
 
 Answer the student's question:"""
 
@@ -57,7 +60,7 @@ Answer the student's question:"""
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",  # Fast, powerful, and free!
                 messages=[
-                    {"role": "system", "content": "You are a helpful AI advisor for VPTC polytechnic college. Be friendly and conversational."},
+                    {"role": "system", "content": "You are a helpful AI advisor for Vignesh Polytechnic College (VPTC), Tiruvannamalai. Always prioritize the provided context data in your answers. Be friendly, accurate, and conversational. Never fabricate information not present in the context. When information is unavailable, direct users to the college office: Phone 9488853917/9488863917, Email vpt384@yahoo.co.in."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.7,
@@ -76,25 +79,25 @@ Answer the student's question:"""
             # Intelligent fallback if API fails
             query_lower = user_query.lower()
             
-            if any(word in query_lower for word in ['course', 'program', 'diploma']):
-                answer = """VPTC offers various diploma programs:
+            if any(word in query_lower for word in ['course', 'program', 'diploma', 'branch']):
+                answer = """Vignesh Polytechnic College offers the following 3-year Diploma courses:
 
-• **Computer Engineering** - Software, networking, programming
-• **Electronics & Communication** - Digital systems, embedded tech
-• **Mechanical Engineering** - Manufacturing, CAD/CAM
-• **Civil Engineering** - Construction, structural design  
-• **Electrical Engineering** - Power systems, control systems
+• **Civil Engineering**
+• **Mechanical Engineering**
+• **Electrical & Electronics Engineering (EEE)**
+• **Electronics & Communication Engineering (ECE)**
+• **Computer Science Engineering**
 
-Each is 3 years with practical labs. Which interests you?"""
+Lateral entry options are available for direct admission to the 2nd year. Which one are you interested in?"""
 
             elif any(word in query_lower for word in ['fee', 'fees', 'cost']):
-                answer = """**Fee Structure** (approximate):
+                answer = """**Fee Structure:**
 
-• Tuition: ₹25,000-35,000/year
-• Admission: ₹5,000 (one-time)
-• Total: Around ₹35,000-45,000/year
+• Tuition fees are collected as per the norms fixed by the **Government of Tamil Nadu**.
+• Scholarships are available for SC/ST and eligible students.
 
-Scholarships available! Payment plans accepted."""
+For exact fee details, you can download the fee structure PDF from the official website or contact the college office at **9488853917 or 9488863917**."""
+
 
             elif any(word in query_lower for word in ['exam', 'test']):
                 answer = """**Exam System:**
@@ -107,15 +110,22 @@ Scholarships available! Payment plans accepted."""
 Study regularly! 📚"""
 
             elif any(word in query_lower for word in ['admission', 'apply']):
-                answer = """**Admission Requirements:**
+                answer = """**Admission Process:**
 
-**Eligibility**: 10th pass with 35%+ marks
+**Eligibility**: Pass in SSLC (10th) or equivalent. **No Age Limit.**
+**Location**: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai - 606603.
 
-**Documents**: 10th certificates, transfer cert, Aadhar, photos
+**Documents Required**:
+• 10th Mark Sheet
+• Transfer Certificate (TC)
+• Community Certificate
+• Passport Size Photos
+• Conduct Certificate
 
-**Process**: Visit office, fill form, submit docs, pay fee
+**Contact**: 9488853917 / 7373689294
+**Email**: vpt384@yahoo.co.in
 
-Admissions in June-July!"""
+Please visit the campus with your Parent/Guardian for admission!"""
 
             else:
                 answer = f"""I'd love to help with "{user_query}"!

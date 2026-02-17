@@ -34,7 +34,7 @@ function ChatContent() {
     const { theme, toggleTheme } = useTheme();
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
-        { role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }
+        { role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor. Ask me anything about our Diploma courses, admissions, or campus facilities." }
     ]);
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -69,11 +69,10 @@ function ChatContent() {
 
     // Mock conversation history (in production, fetch from backend)
     const [conversations, setConversations] = useState<Conversation[]>([
-        { id: "1", title: "VPTC AI Advisor", date: "Today", preview: "Hello! I am your VPTC AI Advisor...", messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }] },
-        { id: "2", title: "Course Information", date: "Yesterday", preview: "What courses does VPTC offer?", messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }] },
-        { id: "3", title: "Admission Process", date: "Jan 25", preview: "How do I apply for admission?", messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }] },
-        { id: "4", title: "Fee Structure Query", date: "Jan 24", preview: "What are the fees for CSE department?", messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }] },
-        { id: "5", title: "Placement Statistics", date: "Jan 23", preview: "Tell me about placement records", messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }] },
+        { id: "1", title: "VPTC AI Advisor", date: "Today", preview: "Hello! I am your VPTC AI...", messages: [{ role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor." }] },
+        { id: "2", title: "Mechanical Engineering", date: "Yesterday", preview: "Tell me about the Mechanical dept", messages: [{ role: "assistant", content: "VPTC offers a flagship Diploma in Mechanical Engineering..." }] },
+        { id: "3", title: "Admission 2026", date: "Jan 25", preview: "How do I apply for 1st year?", messages: [{ role: "assistant", content: "Admissions are open! You need..." }] },
+        { id: "4", title: "Bus Routes", date: "Jan 24", preview: "Is there a bus from Polur?", messages: [{ role: "assistant", content: "Yes, we have 40km radius transport..." }] },
     ]);
 
     // Voice Input State
@@ -303,7 +302,7 @@ function ChatContent() {
             title: "New Chat",
             date: new Date().toLocaleDateString(),
             preview: "Start a conversation...",
-            messages: [{ role: "assistant", content: "Hello! I am your VPTC AI Advisor. Ask me anything about courses, fees, or exams." }]
+            messages: [{ role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor. Ask me anything about our Diploma courses, admissions, or campus facilities." }]
         };
 
         setConversations(prev => [newConversation, ...prev]);
@@ -507,7 +506,7 @@ function ChatContent() {
                         {/* Title - Hidden on mobile */}
                         <div className="hidden md:block">
                             <Link href="/" className="hover:opacity-80 transition-opacity">
-                                <h1 className="text-xl font-bold text-[#3e2723] dark:text-[#ffcc80]">VPTC AI Chatbot</h1>
+                                <h1 className="text-xl font-bold text-[#3e2723] dark:text-[#ffcc80]">Vignesh Polytechnic AI</h1>
                             </Link>
                             {isGuest && remaining > 0 && (
                                 <p className="text-xs text-gray-500 dark:text-gray-400">

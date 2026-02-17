@@ -32,34 +32,34 @@ export default function HomePage() {
         }
     };
 
-    // Example prompts - Gemini style
+    // Example prompts - VPTC Context
     const examplePrompts = [
-        { icon: "📚", text: "What courses does VPTC offer?" },
-        { icon: "🎓", text: "Tell me about admission requirements" },
-        { icon: "💰", text: "What is the fee structure?" },
+        { icon: "📚", text: "Tell me about Mechanical Engineering" },
+        { icon: "🎓", text: "How to apply for Lateral Entry?" },
+        { icon: "🚌", text: "Is college bus facility available?" },
     ];
 
-    // Features - simplified
+    // Features - VPTC Context
     const features = [
         {
             icon: <Sparkles className="w-8 h-8" />,
-            title: "Smart Answers",
-            description: "Get instant, accurate answers about courses, admissions, and more"
+            title: "Instant College Info",
+            description: "Get immediate answers about courses, fees, and admissions"
         },
         {
             icon: <Clock className="w-8 h-8" />,
-            title: "24/7 Available",
-            description: "Your AI assistant is always ready to help, anytime"
+            title: "24/7 Student Support",
+            description: "Your AI assistant is always ready to help prospective students"
         },
         {
             icon: <BookOpen className="w-8 h-8" />,
-            title: "Course Information",
-            description: "Explore all programs, syllabi, and academic details"
+            title: "Academic Details",
+            description: "Explore syllabus, lab facilities, and faculty information"
         },
         {
             icon: <Shield className="w-8 h-8" />,
-            title: "Reliable & Secure",
-            description: "Trusted information from official VPTC sources"
+            title: "Official Updates",
+            description: "Trusted information directly from Vignesh Polytechnic College"
         },
     ];
 
@@ -128,10 +128,10 @@ export default function HomePage() {
                         {/* Main Heading */}
                         <div className="space-y-4">
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#3E2723] dark:text-[#FFCC80]">
-                                Your VPTC AI Assistant
+                                What can I help You?
                             </h1>
                             <p className="text-base sm:text-lg md:text-xl text-[#5D4037] dark:text-[#FFCC80]/70">
-                                Ask anything about your college
+                                Your Guide to Excellence in Technical Education
                             </p>
                         </div>
 
@@ -219,7 +219,7 @@ export default function HomePage() {
                 {/* Simple Footer */}
                 <footer className="w-full px-6 py-8 border-t border-[#D7CCC8] dark:border-[#3E2723] text-center">
                     <p className="text-sm text-[#5D4037] dark:text-[#FFCC80]/70">
-                        © 2026 VPTC Polytechnic College. Powered by AI.
+                        © 2026 Vignesh Polytechnic College. Powered by AI.
                     </p>
                     <div className="flex gap-6 justify-center mt-4">
                         <button

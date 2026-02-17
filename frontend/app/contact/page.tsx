@@ -7,10 +7,10 @@ export default function ContactPage() {
             <section className="bg-gradient-to-br from-yellow-500 via-yellow-400 to-yellow-300 dark:from-yellow-600 dark:via-yellow-500 dark:to-yellow-400 py-20">
                 <div className="container mx-auto px-4 md:px-6 text-center">
                     <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                        Get in Touch
+                        Contact Us
                     </h1>
                     <p className="text-xl text-gray-800 max-w-3xl mx-auto leading-relaxed">
-                        Have questions? We're here to help you take the next step in your education journey
+                        Reach out to us for admissions, inquiries, or campus visits. We are here to assist you.
                     </p>
                 </div>
             </section>
@@ -32,7 +32,7 @@ export default function ContactPage() {
                                     <input
                                         type="text"
                                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 outline-none"
-                                        placeholder="John Doe"
+                                        placeholder="Your Name"
                                     />
                                 </div>
 
@@ -43,7 +43,7 @@ export default function ContactPage() {
                                     <input
                                         type="email"
                                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 outline-none"
-                                        placeholder="john@example.com"
+                                        placeholder="your.email@example.com"
                                     />
                                 </div>
 
@@ -101,8 +101,9 @@ export default function ContactPage() {
                                             Campus Address
                                         </h3>
                                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                            123 College Road, Education City<br />
-                                            Tamil Nadu, India - 600001
+                                            Melputhiyandal Village, Manalurpet Road,<br />
+                                            Tiruvannamalai, Tamil Nadu – 606 603,<br />
+                                            India.
                                         </p>
                                     </div>
                                 </div>
@@ -117,8 +118,8 @@ export default function ContactPage() {
                                             Phone
                                         </h3>
                                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                            +91 123 456 7890<br />
-                                            +91 098 765 4321
+                                            9488853917, 9488863917<br />
+                                            Mobile: 7373689294
                                         </p>
                                     </div>
                                 </div>
@@ -133,8 +134,7 @@ export default function ContactPage() {
                                             Email
                                         </h3>
                                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                            admissions@vptc.edu<br />
-                                            info@vptc.edu
+                                            vpt384@yahoo.co.in
                                         </p>
                                     </div>
                                 </div>
@@ -149,8 +149,8 @@ export default function ContactPage() {
                                             Office Hours
                                         </h3>
                                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                            Monday - Friday: 9:00 AM - 5:00 PM<br />
-                                            Saturday: 9:00 AM - 1:00 PM
+                                            Monday - Saturday: 9:00 AM - 5:00 PM<br />
+                                            Sunday: Closed
                                         </p>
                                     </div>
                                 </div>

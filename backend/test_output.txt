@@ -1,0 +1,27 @@
+﻿Vector store initialization error: 'charmap' codec can't encode character '\u2713' in position 0: character maps to <undefined>
+python : Traceback (most recent call 
+last):
+At line:1 char:1
++ python test_rag.py 2>&1 | Out-File 
+-FilePath test_output.txt -Encodin ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecif 
+   ied: (Traceback (most recent call l  
+  ast)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCom 
+   mandError
+ 
+  File "D:\Final project\vptc-ai-chatbot
+\backend\test_rag.py", line 17, in 
+<module>
+    print("\U0001f50d Testing ChromaDB 
+RAG System\n")
+  File "C:\Users\acer\AppData\Local\Prog
+rams\Python\Python310\lib\encodings\cp12
+52.py", line 19, in encode
+    return codecs.charmap_encode(input,s
+elf.errors,encoding_table)[0]
+UnicodeEncodeError: 'charmap' codec 
+can't encode character '\U0001f50d' in 
+position 0: character maps to 
+<undefined>
