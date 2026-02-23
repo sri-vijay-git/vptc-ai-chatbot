@@ -1,6 +1,6 @@
 import os
 from fastapi import APIRouter, HTTPException, status
-from app.models.user import UserCreate, UserLogin, Token, UserResponse
+from app.models.user import UserCreate, UserLogin, Token, UserResponse, ForgotPasswordRequest
 from app.core.database import supabase
 from gotrue.errors import AuthApiError
 
@@ -60,5 +60,21 @@ def login_user(user: UserLogin):
         
     except AuthApiError as e:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/forgot-password")
+def forgot_password(request: ForgotPasswordRequest):
+    try:
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        redirect_url = f"{frontend_url}/reset-password"
+        
+        supabase.auth.reset_password_for_email(
+            request.email,
+            options={"redirect_to": redirect_url}
+        )
+        return {"message": "Password reset email sent"}
+    except AuthApiError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
