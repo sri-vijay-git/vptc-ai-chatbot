@@ -66,15 +66,30 @@ def login_user(user: UserLogin):
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest):
     try:
+        import httpx
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
         redirect_url = f"{frontend_url}/reset-password"
-        
-        supabase.auth.reset_password_for_email(
-            request.email,
-            options={"redirect_to": redirect_url}
+
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = os.getenv("SUPABASE_KEY")
+
+        response = httpx.post(
+            f"{supabase_url}/auth/v1/recover",
+            headers={
+                "apikey": supabase_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "email": request.email,
+                "redirect_to": redirect_url
+            }
         )
+
+        if response.status_code not in (200, 204):
+            raise HTTPException(status_code=400, detail="Failed to send reset email")
+
         return {"message": "Password reset email sent"}
-    except AuthApiError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

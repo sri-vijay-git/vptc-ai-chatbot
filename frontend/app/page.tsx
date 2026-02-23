@@ -125,6 +125,21 @@ export default function HomePage() {
                 {/* Hero Section - Gemini Style */}
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative z-10">
                     <div className="w-full max-w-3xl text-center space-y-8">
+                        {/* College Logo */}
+                        <div className="flex justify-center">
+                            <div className="relative w-24 h-24">
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#FFCC80] to-[#FFB74D] rounded-full blur-lg opacity-50 animate-pulse" />
+                                <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-xl border-2 border-[#8B6F47]/30 dark:border-[#FFCC80]/30">
+                                    <Image
+                                        src="/logo.png"
+                                        alt="VPTC Logo"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Main Heading */}
                         <div className="space-y-4">
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#3E2723] dark:text-[#FFCC80]">
