@@ -16,7 +16,7 @@ async def chat_endpoint(
     - Logged-in users: Unlimited conversations
     
     1. Receives user message
-    2. Sends query to RAG pipeline (Gemini + ChromaDB)
+    2. Sends query to RAG pipeline (Groq LLaMA + ChromaDB)
     3. Returns AI response with sources
     """
     

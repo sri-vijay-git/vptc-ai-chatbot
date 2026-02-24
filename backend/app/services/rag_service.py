@@ -1,20 +1,7 @@
-from groq import Groq
 from app.services.vector_store import vector_store
 from app.core.config import settings
+from app.services.groq_client import get_groq_client
 import os
-
-# Configure Groq AI
-# GROQ_API_KEY will be loaded from .env via settings
-groq_client = None
-
-def get_groq_client():
-    """Lazy initialization of Groq client"""
-    global groq_client
-    if groq_client is None:
-        if not settings.GROQ_API_KEY:
-            raise ValueError("GROQ_API_KEY is not set in .env file")
-        groq_client = Groq(api_key=settings.GROQ_API_KEY)
-    return groq_client
 
 class RAGService:
     def generate_response(self, user_query: str) -> dict:

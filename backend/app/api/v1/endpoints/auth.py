@@ -2,6 +2,7 @@ import os
 from fastapi import APIRouter, HTTPException, status
 from app.models.user import UserCreate, UserLogin, Token, UserResponse, ForgotPasswordRequest
 from app.core.database import supabase
+from app.core.config import settings
 from gotrue.errors import AuthApiError
 
 router = APIRouter()
@@ -67,7 +68,7 @@ def login_user(user: UserLogin):
 def forgot_password(request: ForgotPasswordRequest):
     try:
         import httpx
-        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        frontend_url = settings.FRONTEND_URL
         redirect_url = f"{frontend_url}/reset-password"
 
         supabase_url = os.getenv("SUPABASE_URL")

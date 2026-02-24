@@ -80,36 +80,7 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    <style jsx>{`
-                        @keyframes fadeOut {
-                            from { opacity: 1; }
-                            to { opacity: 0; pointer-events: none; }
-                        }
-                        @keyframes bounceIn {
-                            0% { transform: scale(0.3); opacity: 0; }
-                            50% { transform: scale(1.05); }
-                            70% { transform: scale(0.9); }
-                            100% { transform: scale(1); opacity: 1; }
-                        }
-                        @keyframes fadeInUp {
-                            from { 
-                                opacity: 0; 
-                                transform: translateY(20px); 
-                            }
-                            to { 
-                                opacity: 1; 
-                                transform: translateY(0); 
-                            }
-                        }
-                        @keyframes zoomPulse {
-                            0%, 100% { 
-                                transform: scale(1); 
-                            }
-                            50% { 
-                                transform: scale(1.1); 
-                            }
-                        }
-                    `}</style>
+
                 </div>
             )}
 
@@ -157,13 +128,7 @@ export default function HomePage() {
                                 <div className="absolute -inset-1 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-purple-500 to-red-500 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-[gradient_3s_linear_infinite] bg-[length:200%_200%]"
                                     style={{ backgroundSize: '200% 200%', animation: 'gradient 3s linear infinite' }} />
 
-                                <style jsx>{`
-                                @keyframes gradient {
-                                    0% { background-position: 0% 50%; }
-                                    50% { background-position: 100% 50%; }
-                                    100% { background-position: 0% 50%; }
-                                }
-                            `}</style>
+
 
                                 <div className="relative">
                                     <input

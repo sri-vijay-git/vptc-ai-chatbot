@@ -1,6 +1,8 @@
 import os
 from pydantic_settings import BaseSettings
 
+_INSECURE_DEFAULT_KEY = "temporary-secret-key-for-dev"
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "VPTC AI Chatbot"
     API_V1_STR: str = "/api/v1"
@@ -14,7 +16,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
     # Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "temporary-secret-key-for-dev")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", _INSECURE_DEFAULT_KEY)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     # Frontend
@@ -26,6 +28,15 @@ class Settings(BaseSettings):
         extra = "allow"  # Allow extra fields from .env
 
 settings = Settings()
+
+# Warn loudly if insecure default SECRET_KEY is used
+if settings.SECRET_KEY == _INSECURE_DEFAULT_KEY:
+    import warnings
+    warnings.warn(
+        "⚠️  WARNING: SECRET_KEY is using the insecure default value! "
+        "Set a strong SECRET_KEY in your .env file before deploying to production.",
+        stacklevel=2,
+    )
 
 # CORS Origins - Hardcoded for simplicity
 BACKEND_CORS_ORIGINS = [

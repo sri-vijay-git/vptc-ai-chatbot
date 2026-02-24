@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models.tools import GPACalculationRequest, GPAResponse
-from app.services.gemini_service import gemini_service
+from app.services.groq_service import groq_service
 
 router = APIRouter()
 
@@ -22,8 +22,8 @@ def calculate_gpa(data: GPACalculationRequest):
         
     gpa = round(weighted_sum / total_credits, 2)
     
-    # Use Gemini to give a motivational message based on the GPA
-    message = gemini_service.generate_text(
+    # Use Groq to give a motivational message based on the GPA
+    message = groq_service.generate_text(
         f"A student just calculated their GPA and got {gpa}/10. Give a 1-sentence encouraging remark."
     )
     
