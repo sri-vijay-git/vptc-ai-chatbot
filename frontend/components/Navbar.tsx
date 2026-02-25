@@ -129,7 +129,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Right Actions - Always visible */}
-                <div className="flex items-center gap-2 z-50">
+                <div className="flex items-center gap-2 z-50 ml-auto">
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
