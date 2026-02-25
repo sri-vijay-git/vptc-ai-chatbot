@@ -16,6 +16,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     // /admin will have its own dashboard layout
     const isExcluded = pathname?.startsWith("/admin");
     const isChat = pathname?.startsWith("/chat");
+    const isAuthPage = pathname === "/login" || pathname === "/signup" || pathname?.startsWith("/forgot-password");
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -23,7 +24,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             <main className={`flex-1 ${!isExcluded ? "pt-20" : ""}`}>
                 {children}
             </main>
-            {!isExcluded && !isChat && <Footer />}
+            {!isExcluded && !isChat && !isAuthPage && <Footer />}
         </div>
     );
 }
