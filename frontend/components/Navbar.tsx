@@ -112,8 +112,8 @@ export default function Navbar() {
                     </span>
                 </Link>
 
-                {/* Desktop Navigation - Centered */}
-                <div className="hidden md:flex items-center gap-8 mx-auto">
+                {/* Desktop Navigation - Truly Centered */}
+                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
