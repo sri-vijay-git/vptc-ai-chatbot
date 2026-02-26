@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -76,15 +76,24 @@ export default function Footer() {
                     </p>
 
                     <div className="flex items-center gap-4">
-                        {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                            <a
-                                key={i}
-                                href="#"
-                                className="p-2 bg-gray-800 rounded-full text-gray-400 hover:bg-yellow-500 hover:text-white transition-all transform hover:-translate-y-1"
-                            >
-                                <Icon className="w-4 h-4" />
-                            </a>
-                        ))}
+                        <a
+                            href="https://www.facebook.com/VPTCTVM"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Facebook"
+                            className="p-2 bg-gray-800 rounded-full text-gray-400 hover:bg-yellow-500 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
+                            <Facebook className="w-4 h-4" />
+                        </a>
+                        <a
+                            href="https://www.instagram.com/vignesh.vpt?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Instagram"
+                            className="p-2 bg-gray-800 rounded-full text-gray-400 hover:bg-yellow-500 hover:text-white transition-all transform hover:-translate-y-1"
+                        >
+                            <Instagram className="w-4 h-4" />
+                        </a>
                     </div>
                 </div>
             </div>

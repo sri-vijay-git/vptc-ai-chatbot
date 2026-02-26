@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon, Facebook, Instagram } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -220,6 +220,29 @@ export default function HomePage() {
                         >
                             Admissions
                         </button>
+                    </div>
+
+                    {/* Social Media Links */}
+                    <div className="flex gap-5 justify-center mt-5">
+                        <a
+                            href="https://www.facebook.com/VPTCTVM"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Facebook"
+                            className="p-2 rounded-full text-[#5D4037] dark:text-[#FFCC80]/70 hover:text-[#1877F2] dark:hover:text-[#1877F2] hover:bg-[#1877F2]/10 transition-all"
+                        >
+                            <Facebook className="w-5 h-5" />
+                        </a>
+                        <a
+                            href="https://www.instagram.com/vignesh.vpt?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Instagram"
+                            className="p-2 rounded-full text-[#5D4037] dark:text-[#FFCC80]/70 hover:text-[#E1306C] dark:hover:text-[#E1306C] hover:bg-[#E1306C]/10 transition-all"
+                        >
+                            <Instagram className="w-5 h-5" />
+                        </a>
+
                     </div>
                 </footer>
             </div>
