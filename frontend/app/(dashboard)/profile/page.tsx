@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Trash2, User, Mail, ShieldAlert, Camera, Save, CheckCircle, BookOpen, FileText } from "lucide-react";
 import api from "@/lib/api";
+import { useProfilePic, saveProfilePic, removeProfilePic as removePic } from "@/hooks/useProfilePic";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -16,7 +17,8 @@ export default function ProfilePage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // Profile pic state
-    const [profilePic, setProfilePic] = useState<string | null>(null);
+    const profilePic = useProfilePic();
+    const [pendingPic, setPendingPic] = useState<string | null>(null);
     const [picSaved, setPicSaved] = useState(false);
     const [dragOver, setDragOver] = useState(false);
 
@@ -37,9 +39,7 @@ export default function ProfilePage() {
             setUserEmail(email || "user@example.com");
             setUserName(email.split("@")[0] || "User");
         }
-        // Load saved profile pic
-        const pic = localStorage.getItem("profile_pic");
-        if (pic) setProfilePic(pic);
+        // Load saved profile pic is now handled by useProfilePic hook automatically
     }, []);
 
     const processFile = (file: File) => {
@@ -53,7 +53,7 @@ export default function ProfilePage() {
         }
         const reader = new FileReader();
         reader.onload = (e) => {
-            setProfilePic(e.target?.result as string);
+            setPendingPic(e.target?.result as string);
             setPicSaved(false);
         };
         reader.readAsDataURL(file);
@@ -72,18 +72,22 @@ export default function ProfilePage() {
     };
 
     const handleSavePic = () => {
-        if (profilePic) {
-            localStorage.setItem("profile_pic", profilePic);
+        const pic = pendingPic || profilePic;
+        if (pic) {
+            saveProfilePic(pic);
             setPicSaved(true);
             setTimeout(() => setPicSaved(false), 3000);
         }
     };
 
     const handleRemovePic = () => {
-        setProfilePic(null);
-        localStorage.removeItem("profile_pic");
+        setPendingPic(null);
+        removePic();
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
+
+    // Preview = pendingPic (unsaved) OR profilePic (saved)
+    const previewPic = pendingPic || profilePic;
 
     const handleDeleteAccount = async () => {
         setLoading(true);
@@ -131,8 +135,8 @@ export default function ProfilePage() {
                         {/* Avatar */}
                         <div className="relative">
                             <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-[#8B6F47] dark:border-[#FFCC80] shadow-lg">
-                                {profilePic ? (
-                                    <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                                {previewPic ? (
+                                    <img src={previewPic} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-[#8B6F47] to-[#6D563C] flex items-center justify-center text-4xl font-bold text-white">
                                         {initials}
@@ -172,7 +176,7 @@ export default function ProfilePage() {
                             >
                                 <Camera className="w-4 h-4" /> Choose Photo
                             </button>
-                            {profilePic && (
+                            {previewPic && (
                                 <>
                                     <button
                                         onClick={handleSavePic}

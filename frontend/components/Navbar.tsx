@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut } from "lucide-react";
+import { useProfilePic } from "@/hooks/useProfilePic";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -24,6 +25,8 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [userInitial, setUserInitial] = useState("U");
+    const profilePic = useProfilePic();
 
     // Mount check to prevent hydration mismatch
     useEffect(() => {
@@ -37,6 +40,15 @@ export default function Navbar() {
         const checkAuth = () => {
             const token = localStorage.getItem("token");
             setIsLoggedIn(!!token);
+            // Load user initial for avatar
+            const userStr = localStorage.getItem("user");
+            if (userStr) {
+                try {
+                    const u = JSON.parse(userStr);
+                    const name = u.full_name || u.email || "U";
+                    setUserInitial(name.charAt(0).toUpperCase());
+                } catch { setUserInitial("U"); }
+            }
         };
 
         checkAuth();
@@ -155,8 +167,14 @@ export default function Navbar() {
                                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                                     className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full bg-white dark:bg-[#2D1B15] border border-[#D7CCC8] dark:border-[#5D4037] shadow-sm hover:shadow-md transition-all"
                                 >
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] flex items-center justify-center text-white">
-                                        <User className="w-4 h-4 sm:w-6 sm:h-6" />
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden ring-2 ring-[#8B6F47]/40">
+                                        {profilePic ? (
+                                            <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] flex items-center justify-center text-white font-bold text-sm">
+                                                {userInitial}
+                                            </div>
+                                        )}
                                     </div>
                                     <ChevronDown className="w-4 h-4 text-[#5D4037] dark:text-[#BCAAA4] hidden sm:block" />
                                 </button>

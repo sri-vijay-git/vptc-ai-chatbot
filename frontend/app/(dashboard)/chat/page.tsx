@@ -10,6 +10,7 @@ import { useGuestMode } from "@/hooks/useGuestMode";
 import SignupPrompt from "@/components/SignupPrompt";
 import ChatHistoryModal from "@/components/ChatHistoryModal";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useProfilePic } from "@/hooks/useProfilePic";
 
 // Types
 type Message = {
@@ -32,6 +33,7 @@ type Conversation = {
 function ChatContent() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const profilePic = useProfilePic();
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor. Ask me anything about our Diploma courses, admissions, or campus facilities." }
@@ -554,8 +556,14 @@ function ChatContent() {
                                 {isGuest ? (
                                     <UserCircle className="w-5 h-5" />
                                 ) : (
-                                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white flex items-center justify-center text-xs font-bold shadow-sm">
-                                        {(userEmail ? userEmail.charAt(0).toUpperCase() : 'U')}
+                                    <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-[#8B6F47]/40 flex-shrink-0">
+                                        {profilePic ? (
+                                            <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white flex items-center justify-center text-xs font-bold">
+                                                {(userEmail ? userEmail.charAt(0).toUpperCase() : 'U')}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                                 <span className="text-sm hidden md:inline font-medium">
@@ -615,11 +623,17 @@ function ChatContent() {
                             <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn py-2`}>
                                 <div className={`flex gap-4 max-w-full ${msg.role === "user" ? "flex-row-reverse" : ""} group w-full`}>
                                     {/* Avatar */}
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === "user"
-                                        ? "bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white"
-                                        : "bg-transparent"
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${msg.role === "user" ? "" : "bg-transparent"
                                         }`}>
-                                        {msg.role === "user" ? <User className="w-5 h-5" /> : (
+                                        {msg.role === "user" ? (
+                                            profilePic ? (
+                                                <img src={profilePic} alt="You" className="w-full h-full object-cover rounded-full" />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white flex items-center justify-center">
+                                                    <User className="w-5 h-5" />
+                                                </div>
+                                            )
+                                        ) : (
                                             <div className="relative w-8 h-8 rounded-full overflow-hidden">
                                                 <Image
                                                     src="/logo.png"

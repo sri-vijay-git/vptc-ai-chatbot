@@ -1,17 +1,15 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useProfilePic, saveProfilePic as savePic, removeProfilePic as removePic } from "@/hooks/useProfilePic";
 
 export default function StudentDashboard() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("overview");
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const [profilePic, setProfilePic] = useState<string | null>(null);
+    const profilePic = useProfilePic();  // shared hook — per-user, auto-updates
     const [profileSaved, setProfileSaved] = useState(false);
 
     const [studentData, setStudentData] = useState({
@@ -57,9 +55,7 @@ export default function StudentDashboard() {
                 email: email
             }));
         }
-        // Load saved profile pic
-        const savedPic = localStorage.getItem("profile_pic");
-        if (savedPic) setProfilePic(savedPic);
+        // Profile pic is now handled by useProfilePic hook
     }, [router]);
 
     const handleLogout = () => {
@@ -79,23 +75,21 @@ export default function StudentDashboard() {
         const reader = new FileReader();
         reader.onload = (ev) => {
             const result = ev.target?.result as string;
-            setProfilePic(result);
+            savePic(result);
             setProfileSaved(false);
         };
         reader.readAsDataURL(file);
     };
 
-    const saveProfilePic = () => {
+    const saveProfilePicFn = () => {
         if (profilePic) {
-            localStorage.setItem("profile_pic", profilePic);
             setProfileSaved(true);
             setTimeout(() => setProfileSaved(false), 3000);
         }
     };
 
-    const removeProfilePic = () => {
-        setProfilePic(null);
-        localStorage.removeItem("profile_pic");
+    const removeProfilePicFn = () => {
+        removePic();
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
@@ -250,14 +244,14 @@ export default function StudentDashboard() {
                                                 {profilePic && (
                                                     <>
                                                         <button
-                                                            onClick={saveProfilePic}
+                                                            onClick={saveProfilePicFn}
                                                             className="flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
                                                         >
                                                             <Save className="w-4 h-4" />
                                                             {profileSaved ? "Saved ✓" : "Save Photo"}
                                                         </button>
                                                         <button
-                                                            onClick={removeProfilePic}
+                                                            onClick={removeProfilePicFn}
                                                             className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 font-medium rounded-lg transition-colors"
                                                         >
                                                             Remove
