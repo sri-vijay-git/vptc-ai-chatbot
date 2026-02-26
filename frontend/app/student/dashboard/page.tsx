@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
 import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail } from "lucide-react";
 import Link from "next/link";
