@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from app.api.v1.dependencies import get_current_admin
-from app.core.database import supabase
+from app.core.database import supabase, get_supabase_admin_client
 import os
 
 router = APIRouter()
@@ -48,7 +48,8 @@ def create_admin_account(data: AdminCreate):
     """
     Create a new admin account.
     Protected by a secret setup key (ADMIN_SETUP_KEY in .env).
-    No login required — anyone with the correct key can create an admin account.
+    Uses the Supabase service role key to bypass email verification.
+    No login required — anyone with the correct setup key can create an admin account.
     """
     # Verify the setup key against the one stored in .env
     expected_key = os.getenv("ADMIN_SETUP_KEY", "")
@@ -58,8 +59,16 @@ def create_admin_account(data: AdminCreate):
             detail="Invalid setup key. Access denied."
         )
 
+    # Use admin client (service role key) — required for create_user()
+    admin_client = get_supabase_admin_client()
+    if not admin_client:
+        raise HTTPException(
+            status_code=500,
+            detail="Server misconfiguration: SUPABASE_SERVICE_ROLE_KEY is not set. Please contact the system administrator."
+        )
+
     try:
-        res = supabase.auth.admin.create_user({
+        res = admin_client.auth.admin.create_user({
             "email": data.email,
             "password": data.password,
             "email_confirm": True,
