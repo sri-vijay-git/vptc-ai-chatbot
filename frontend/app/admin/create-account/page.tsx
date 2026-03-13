@@ -12,7 +12,6 @@ import {
     CheckCircle2,
     User,
     ArrowLeft,
-    KeyRound,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -255,7 +254,7 @@ export default function CreateAdminAccount() {
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <KeyRound className="h-5 w-5 text-[#BCAAA4]" />
+                                    <Lock className="h-5 w-5 text-[#BCAAA4]" />
                                 </div>
                                 <input
                                     type={showSetupKey ? "text" : "password"}
@@ -325,29 +324,6 @@ export default function CreateAdminAccount() {
                             <ArrowLeft className="w-4 h-4" />
                             Go to Admin Login
                         </Link>
-                    </div>
-                </div>
-
-                {/* Key hint notice */}
-                <div className="mt-6 p-4 bg-[#3E2723]/30 rounded-lg border border-[#8B6F47]/30">
-                    <div className="flex items-start gap-2">
-                        <KeyRound className="w-5 h-5 text-[#FFCC80] flex-shrink-0 mt-0.5" />
-                        <div>
-                            <p className="text-sm font-semibold text-[#FFCC80] mb-1">
-                                Setup Key Required
-                            </p>
-                            <p className="text-xs text-[#BCAAA4]">
-                                The Admin Setup Key is set in your backend{" "}
-                                <code className="bg-[#1A100E] px-1 rounded text-[#FFCC80]">
-                                    .env
-                                </code>{" "}
-                                file as{" "}
-                                <code className="bg-[#1A100E] px-1 rounded text-[#FFCC80]">
-                                    ADMIN_SETUP_KEY
-                                </code>
-                                . Keep it secret and share only with trusted people.
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
