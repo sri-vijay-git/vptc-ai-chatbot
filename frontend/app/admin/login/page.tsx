@@ -180,6 +180,16 @@ export default function AdminLogin() {
                         </Link>
                     </div>
 
+                    {/* Create Admin Account */}
+                    <div className="mt-3 text-center">
+                        <Link
+                            href="/admin/create-account"
+                            className="text-sm text-[#BCAAA4] hover:text-[#FFCC80] transition-colors flex items-center justify-center gap-1"
+                        >
+                            <span>+</span> Create Admin Account
+                        </Link>
+                    </div>
+
                     {/* Back to Home */}
                     <div className="mt-6 text-center">
                         <Link

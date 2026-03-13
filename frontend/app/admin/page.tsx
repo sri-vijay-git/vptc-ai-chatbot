@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users, FileText, TrendingUp, DollarSign, CheckCircle, Clock, XCircle, Settings, LogOut, Bell, Search, Download, Filter, MoreVertical, Shield } from "lucide-react";
+import { Users, FileText, TrendingUp, DollarSign, CheckCircle, Clock, XCircle, Settings, LogOut, Bell, Search, Download, Filter, MoreVertical, Shield, UserPlus } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -82,6 +82,13 @@ export default function AdminDashboard() {
                                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                             </button>
                             <Link
+                                href="/admin/create-account"
+                                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded-lg transition-colors text-sm"
+                            >
+                                <UserPlus className="w-4 h-4" />
+                                Create Admin
+                            </Link>
+                            <Link
                                 href="/"
                                 className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                             >
@@ -110,8 +117,8 @@ export default function AdminDashboard() {
                                         key={item.id}
                                         onClick={() => setActiveTab(item.id)}
                                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm ${activeTab === item.id
-                                                ? "bg-yellow-500 text-gray-900 font-medium"
-                                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            ? "bg-yellow-500 text-gray-900 font-medium"
+                                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                                             }`}
                                     >
                                         <item.icon className="w-5 h-5" />
