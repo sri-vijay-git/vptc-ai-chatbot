@@ -26,6 +26,8 @@ storage3==0.7.4
 groq>=1.0.0
 
 # Vector Database & RAG
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.1+cpu
 chromadb==0.4.22
 chroma-hnswlib==0.7.3
 sentence-transformers>=2.7.0
