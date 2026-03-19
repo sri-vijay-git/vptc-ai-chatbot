@@ -1,40 +1,39 @@
 import os
 import chromadb
 from typing import List, Dict, Any
-import hashlib
 
-# Simple hash-based embedding function (no external API needed!)
-class SimpleEmbeddingFunction:
+class SemanticEmbeddingFunction:
     """
-    Simple deterministic embedding function using hash
-    Works offline, no API calls needed
+    Real semantic embedding function using sentence-transformers.
+    Model: all-MiniLM-L6-v2 — fast, lightweight, highly accurate.
+    Downloads once (~90MB), works fully offline after that.
     """
+    def __init__(self):
+        from sentence_transformers import SentenceTransformer
+        print("⏳ Loading semantic embedding model...")
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        print("✅ Semantic embedding model loaded!")
+
     def __call__(self, input):
         if isinstance(input, str):
             input = [input]
-        
-        embeddings = []
-        for text in input:
-            # Use SHA-384 to create 48-byte hash = 384 bits
-            hash_obj = hashlib.sha384(text.encode())
-            hash_bytes = hash_obj.digest()
-            # Convert bytes to normalized floats (-1 to 1)
-            embedding = [(float(b) - 127.5) / 127.5 for b in hash_bytes]
-            embeddings.append(embedding)
-        
-        return embeddings
+        embeddings = self.model.encode(input, normalize_embeddings=True)
+        return embeddings.tolist()
+
 
 class VectorStoreService:
     def __init__(self):
-        """Initialize ChromaDB with simple hash-based embeddings"""
+        """Initialize ChromaDB with semantic embeddings"""
         try:
+            self.embedding_fn = SemanticEmbeddingFunction()
+
             # Persistent storage
             self.client = chromadb.PersistentClient(path="data/chromadb")
-            
-            # Create/get collection with simple embedding function
+
+            # Create/get collection with semantic embedding function
             self.collection = self.client.get_or_create_collection(
                 name="vptc_knowledge_base",
-                embedding_function=SimpleEmbeddingFunction(),
+                embedding_function=self.embedding_fn,
                 metadata={"hnsw:space": "cosine"}
             )
             print(f"✓ Vector store initialized. Documents: {self.collection.count()}")
@@ -44,8 +43,8 @@ class VectorStoreService:
 
     def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str]):
         """
-        Add documents to ChromaDB
-        Embeddings generated automatically by embedding function
+        Add documents to ChromaDB.
+        Embeddings generated automatically by SemanticEmbeddingFunction.
         """
         try:
             if self.collection:
@@ -54,28 +53,49 @@ class VectorStoreService:
                     metadatas=metadatas,
                     ids=ids
                 )
-                print(f"✓ Added {len(documents)} documents")
+                print(f"✓ Added {len(documents)} chunks to vector store")
         except Exception as e:
             print(f"Error adding documents: {e}")
 
+    def clear_collection(self):
+        """Delete and recreate the collection to clear all old embeddings."""
+        try:
+            self.client.delete_collection("vptc_knowledge_base")
+            self.collection = self.client.get_or_create_collection(
+                name="vptc_knowledge_base",
+                embedding_function=self.embedding_fn,
+                metadata={"hnsw:space": "cosine"}
+            )
+            print("🗑️  Old collection cleared. Fresh collection ready.")
+        except Exception as e:
+            print(f"Error clearing collection: {e}")
+
     def search(self, query: str, n_results: int = 3) -> List[str]:
         """
-        Semantic search for relevant documents
+        Semantic search — finds documents by meaning, not keywords.
         """
         try:
             if not self.collection:
                 return []
-                
+
+            count = self.collection.count()
+            if count == 0:
+                print("⚠️  Vector store is empty. Run ingest.py first!")
+                return []
+
+            # Don't request more results than we have
+            actual_n = min(n_results, count)
+
             results = self.collection.query(
                 query_texts=[query],
-                n_results=n_results
+                n_results=actual_n
             )
-            
-            # Return matched documents
+
             return results['documents'][0] if results['documents'] else []
         except Exception as e:
             print(f"Search error: {e}")
             return []
+
 
 # Singleton instance
 vector_store = VectorStoreService()

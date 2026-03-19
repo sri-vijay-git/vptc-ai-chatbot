@@ -28,6 +28,7 @@ groq>=1.0.0
 # Vector Database & RAG
 chromadb==0.4.22
 chroma-hnswlib==0.7.3
+sentence-transformers>=2.7.0
 
 # PDF Processing
 PyPDF2==3.0.1
