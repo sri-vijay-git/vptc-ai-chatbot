@@ -27,8 +27,14 @@ class VectorStoreService:
         try:
             self.embedding_fn = SemanticEmbeddingFunction()
 
+            # Robust absolute path calculation to prevent deployment issues on Render
+            # __file__ is app/services/vector_store.py
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            db_path = os.path.join(base_dir, "data", "chromadb")
+            print(f"📂 Connecting to ChromaDB at: {db_path}")
+
             # Persistent storage
-            self.client = chromadb.PersistentClient(path="data/chromadb")
+            self.client = chromadb.PersistentClient(path=db_path)
 
             # Create/get collection with semantic embedding function
             self.collection = self.client.get_or_create_collection(
