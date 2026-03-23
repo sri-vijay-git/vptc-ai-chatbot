@@ -31,7 +31,7 @@ torch==2.2.1+cpu
 chromadb==0.4.22
 chroma-hnswlib==0.7.3
 sentence-transformers>=2.7.0
-transformers>=4.40.0
+transformers==4.38.2
 
 # PDF Processing
 PyPDF2==3.0.1
