@@ -46,6 +46,9 @@ class VectorStoreService:
         except Exception as e:
             print(f"Vector store initialization error: {e}")
             self.collection = None
+            self.init_error = str(e)
+            import traceback
+            self.init_traceback = traceback.format_exc()
 
     def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str]):
         """

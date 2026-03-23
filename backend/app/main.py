@@ -44,15 +44,24 @@ def test_chroma():
         exists = os.path.exists(db_path)
         files = os.listdir(db_path) if exists else []
         
-        # Try a search
-        results = vector_store.search("test", n_results=1)
+        has_collection = getattr(vector_store, 'collection', None) is not None
         
+        if has_collection:
+            count = vector_store.collection.count()
+            results = vector_store.search("test", n_results=1)
+        else:
+            count = 0
+            results = []
+            
         return {
             "status": "success",
             "db_path": db_path,
             "path_exists": exists,
             "files_in_dir": files,
-            "collection_count": vector_store.collection.count(),
+            "collection_initialized": has_collection,
+            "init_error": getattr(vector_store, 'init_error', None),
+            "init_traceback": getattr(vector_store, 'init_traceback', None),
+            "collection_count": count,
             "search_results": results
         }
     except Exception as e:
