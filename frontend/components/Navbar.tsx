@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut } from "lucide-react";
+import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut, ArrowLeft } from "lucide-react";
 import { useProfilePic } from "@/hooks/useProfilePic";
 
 const navLinks = [
@@ -20,6 +20,7 @@ const navLinks = [
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
     const { theme, toggleTheme } = useTheme();
     const [scrolled, setScrolled] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -110,19 +111,30 @@ export default function Navbar() {
                     )}
                 </button>
 
-                {/* Logo - Centered on mobile, Left on desktop */}
-                <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:left-4 md:translate-x-0 flex items-center gap-2 z-40">
-                    <Image
-                        src="/logo.png"
-                        alt="VPTC Logo"
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                    />
-                    <span className="hidden sm:inline font-bold text-lg text-gray-900 dark:text-white">
-                        VPTC AI
-                    </span>
-                </Link>
+                {/* Back Button & Logo - Centered on mobile, Left on desktop */}
+                <div className="absolute left-1/2 -translate-x-1/2 md:left-4 md:translate-x-0 flex items-center gap-2 z-40">
+                    {pathname !== "/" && (
+                        <button
+                            onClick={() => router.back()}
+                            className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
+                            aria-label="Go Back"
+                        >
+                            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
+                        </button>
+                    )}
+                    <Link href="/" className="flex items-center gap-2">
+                        <Image
+                            src="/logo.png"
+                            alt="VPTC Logo"
+                            width={40}
+                            height={40}
+                            className="rounded-full"
+                        />
+                        <span className="hidden sm:inline font-bold text-lg text-gray-900 dark:text-white">
+                            VPTC AI
+                        </span>
+                    </Link>
+                </div>
 
                 {/* Desktop Navigation - Truly Centered */}
                 <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
@@ -153,14 +165,16 @@ export default function Navbar() {
 
                     {isLoggedIn ? (
                         <>
-                            {/* Student Dashboard Button */}
-                            <Link
-                                href="/student/dashboard"
-                                className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
-                            >
-                                <User className="w-4 h-4" />
-                                <span className="hidden sm:inline">Dashboard</span>
-                            </Link>
+                            {/* Student Dashboard Button (Hide if already on dashboard) */}
+                            {pathname !== "/student/dashboard" && (
+                                <Link
+                                    href="/student/dashboard"
+                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
+                                >
+                                    <User className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Dashboard</span>
+                                </Link>
+                            )}
 
                             <div className="relative">
                                 <button
