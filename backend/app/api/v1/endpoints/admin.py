@@ -18,6 +18,10 @@ class AdminResetPassword(BaseModel):
     new_password: str
     setup_key: str
 
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
 @router.get("/analytics/dashboard")
 def get_analytics(admin_user: dict = Depends(get_current_admin)):
     """
@@ -193,3 +197,37 @@ def reset_admin_password(data: AdminResetPassword):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to reset password: {str(e)}")
+
+@router.post("/login")
+def login_admin(data: AdminLoginRequest):
+    """
+    Login endpoint specifically for admin portal.
+    Checks if the user has the 'admin' role.
+    """
+    try:
+        from gotrue.errors import AuthApiError
+        res = supabase.auth.sign_in_with_password({
+            "email": data.email,
+            "password": data.password
+        })
+        
+        if not res.session:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+            
+        # Verify admin role
+        user_role = res.user.user_metadata.get("role")
+        if user_role != "admin":
+            raise HTTPException(status_code=403, detail="Access denied. Administrator privileges required.")
+
+        return {
+            "success": True,
+            "token": res.session.access_token,
+            "message": "Login successful"
+        }
+    except Exception as e:
+        error_msg = str(e)
+        if "Invalid login credentials" in error_msg or "user_metadata" in error_msg:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=401, detail="Invalid email or password")
