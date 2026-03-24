@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from app.api.v1.dependencies import get_current_admin
-from app.core.database import supabase, get_supabase_admin_client
+from app.api.v1.dependencies import get_current_admin, User
+from app.core.database import supabase, get_supabase_admin_client, get_supabase_client
 import os
+from datetime import datetime
+import PyPDF2
+import io
+from app.services.vector_store import vector_store
 
 router = APIRouter()
 
@@ -313,24 +317,123 @@ def update_student(user_id: str, data: StudentUpdate, admin_user: dict = Depends
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/students/{user_id}")
-def delete_student(user_id: str, admin_user: dict = Depends(get_current_admin)):
-    """
-    Delete a student account completely.
-    """
-    admin_client = get_supabase_admin_client()
-    if not admin_client:
-        raise HTTPException(status_code=500, detail="Server misconfiguration")
+async def delete_student(user_id: str, current_admin: User = Depends(get_current_admin)):
+    """Delete a student account completely"""
+    supabase = get_supabase_admin_client()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
         
     try:
-        # Delete from student_profiles explicitly to handle constraints if cascade is off
-        try:
-            supabase.table("student_profiles").delete().eq("id", user_id).execute()
-        except:
-            pass # Ignore if no profile exists
-            
-        # Delete auth user
-        admin_client.auth.admin.delete_user(user_id)
+        # Delete user from auth.users (requires service_role)
+        supabase.auth.admin.delete_user(user_id)
         
-        return {"success": True, "message": "Student deleted successfully"}
+        # Profile cascade deletes if set up, otherwise explicitly delete
+        supabase.table("student_profiles").delete().eq("id", user_id).execute()
+        
+        return {"status": "success", "message": "Student deleted"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+# ==========================================
+# KNOWLEDGE BASE MANAGEMENT ENDPOINTS
+# ==========================================
+
+def chunk_plain_text(text: str, chunk_size: int = 800, overlap: int = 150) -> list[str]:
+    """Fixed-size chunking for plain text / PDF content."""
+    chunks = []
+    start = 0
+    text_len = len(text)
+
+    while start < text_len:
+        end = start + chunk_size
+        if end < text_len:
+            # Try to break at sentence boundary
+            for split_char in ['\n\n', '\n', '. ', ' ']:
+                last_occ = text.rfind(split_char, start, end)
+                if last_occ != -1 and last_occ > start + int(chunk_size * 0.6):
+                    end = last_occ + len(split_char)
+                    break
+
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
+
+        start = end - overlap
+        if start >= end:
+            start = end
+
+    return chunks
+
+@router.get("/documents")
+async def get_documents(current_admin: User = Depends(get_current_admin)):
+    """List all uploaded knowledge base documents"""
+    supabase = get_supabase_admin_client() or get_supabase_client()
+    
+    try:
+        response = supabase.table("vptc_documents").select("*").order("uploaded_at", desc=True).execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch documents: {str(e)}")
+
+@router.post("/documents")
+async def upload_document(
+    file: UploadFile = File(...),
+    current_admin: User = Depends(get_current_admin)
+):
+    """Upload a PDF, extract text, embed, and store in PGVector"""
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+        
+    supabase = get_supabase_admin_client()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
+        
+    try:
+        # 1. Read PDF in memory
+        contents = await file.read()
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(contents))
+        
+        raw_text = ""
+        for page in pdf_reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                raw_text += page_text + "\n"
+                
+        if not raw_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract any text from the PDF")
+            
+        # 2. Insert document record tracking
+        doc_response = supabase.table("vptc_documents").insert({
+            "filename": file.filename
+        }).execute()
+        doc_id = doc_response.data[0]["id"]
+        
+        # 3. Chunk the text
+        text_chunks = chunk_plain_text(raw_text)
+        
+        # 4. Generate embeddings and save to Supabase
+        metadatas = [{"document_id": doc_id, "source": file.filename}] * len(text_chunks)
+        dummy_ids = [f"chunk_{i}" for i in range(len(text_chunks))] # Not used in pgvector but required by signature
+        
+        vector_store.add_documents(text_chunks, metadatas, dummy_ids)
+        
+        return {
+            "status": "success",
+            "message": f"Successfully processed {len(text_chunks)} chunks from {file.filename}",
+            "document": doc_response.data[0]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing document: {str(e)}")
+
+@router.delete("/documents/{document_id}")
+async def delete_document(document_id: str, current_admin: User = Depends(get_current_admin)):
+    """Delete a document and all its embeddings (via cascade)"""
+    supabase = get_supabase_admin_client()
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Admin client not configured")
+        
+    try:
+        supabase.table("vptc_documents").delete().eq("id", document_id).execute()
+        return {"status": "success", "message": "Document and embeddings deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
-import { Shield, Users, Activity, MessageSquare, TrendingUp, LogOut, BarChart3, Clock } from "lucide-react";
+import { Shield, Users, Activity, MessageSquare, TrendingUp, LogOut, BarChart3, Clock, Database } from "lucide-react";
 import StudentManagement from "@/components/admin/StudentManagement";
+import KnowledgeBase from "@/components/admin/KnowledgeBase";
 
 interface Analytics {
     total_students: number;
@@ -106,13 +107,19 @@ export default function AdminDashboard() {
                         onClick={() => setActiveTab("analytics")}
                         className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${activeTab === "analytics" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 text-blue-100 hover:bg-white/10"}`}
                     >
-                        Analytics Overview
+                        <div className="flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Analytics Overview</div>
                     </button>
                     <button 
                         onClick={() => setActiveTab("students")}
                         className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${activeTab === "students" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 text-blue-100 hover:bg-white/10"}`}
                     >
-                        Student Directory
+                        <div className="flex items-center gap-2"><Users className="w-4 h-4" /> Student Directory</div>
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab("knowledge")}
+                        className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${activeTab === "knowledge" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 text-blue-100 hover:bg-white/10"}`}
+                    >
+                        <div className="flex items-center gap-2"><Database className="w-4 h-4" /> Knowledge Base</div>
                     </button>
                 </div>
             </div>
@@ -242,6 +249,13 @@ export default function AdminDashboard() {
             {activeTab === "students" && (
                 <div className="max-w-7xl mx-auto">
                     <StudentManagement />
+                </div>
+            )}
+
+            {/* Tab Content: Knowledge Base */}
+            {activeTab === "knowledge" && (
+                <div className="max-w-7xl mx-auto">
+                    <KnowledgeBase />
                 </div>
             )}
         </div>

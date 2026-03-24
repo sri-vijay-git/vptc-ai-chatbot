@@ -1,5 +1,4 @@
 import os
-import chromadb
 from typing import List, Dict, Any
 
 class SemanticEmbeddingFunction:
@@ -23,86 +22,79 @@ class SemanticEmbeddingFunction:
 
 class VectorStoreService:
     def __init__(self):
-        """Initialize ChromaDB with semantic embeddings"""
+        """Initialize PGVector integration with Supabase"""
         try:
             self.embedding_fn = SemanticEmbeddingFunction()
-
-            # Robust absolute path calculation to prevent deployment issues on Render
-            # __file__ is app/services/vector_store.py
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            db_path = os.path.join(base_dir, "data", "chromadb")
-            print(f"📂 Connecting to ChromaDB at: {db_path}")
-
-            # Persistent storage
-            self.client = chromadb.PersistentClient(path=db_path)
-
-            # Create/get collection with semantic embedding function
-            self.collection = self.client.get_or_create_collection(
-                name="vptc_knowledge_base",
-                embedding_function=self.embedding_fn,
-                metadata={"hnsw:space": "cosine"}
-            )
-            print(f"✓ Vector store initialized. Documents: {self.collection.count()}")
+            
+            # We connect to Supabase instead of a local file DB
+            # We use the admin client if available to bypass RLS for systemic uploads
+            from app.core.database import get_supabase_admin_client, supabase
+            self.supabase = get_supabase_admin_client() or supabase
+            
+            print("✓ Vector store connected to Supabase PGVector.")
+            self.init_error = None
         except Exception as e:
             print(f"Vector store initialization error: {e}")
-            self.collection = None
             self.init_error = str(e)
             import traceback
             self.init_traceback = traceback.format_exc()
 
     def add_documents(self, documents: List[str], metadatas: List[Dict[str, Any]], ids: List[str]):
         """
-        Add documents to ChromaDB.
-        Embeddings generated automatically by SemanticEmbeddingFunction.
+        Embed and insert documents into Supabase.
+        Expects metadatas to contain 'document_id' matching a row in 'vptc_documents'.
         """
         try:
-            if self.collection:
-                self.collection.add(
-                    documents=documents,
-                    metadatas=metadatas,
-                    ids=ids
-                )
-                print(f"✓ Added {len(documents)} chunks to vector store")
+            embeddings = self.embedding_fn(documents)
+            
+            # Prepare rows for insertion
+            rows = []
+            for doc, meta, emb in zip(documents, metadatas, embeddings):
+                if isinstance(emb, list):
+                    emb_list = emb
+                else:
+                    emb_list = emb.tolist()
+                    
+                rows.append({
+                    "content": doc,
+                    "embedding": emb_list,
+                    "document_id": meta.get("document_id")
+                })
+            
+            if rows:
+                self.supabase.table("vptc_embeddings").insert(rows).execute()
+                print(f"✓ Added {len(rows)} chunks to Supabase PGVector")
+                
         except Exception as e:
-            print(f"Error adding documents: {e}")
+            print(f"Error adding documents to Supabase: {e}")
 
     def clear_collection(self):
-        """Delete and recreate the collection to clear all old embeddings."""
-        try:
-            self.client.delete_collection("vptc_knowledge_base")
-            self.collection = self.client.get_or_create_collection(
-                name="vptc_knowledge_base",
-                embedding_function=self.embedding_fn,
-                metadata={"hnsw:space": "cosine"}
-            )
-            print("🗑️  Old collection cleared. Fresh collection ready.")
-        except Exception as e:
-            print(f"Error clearing collection: {e}")
+        """Not commonly used in production PGVector. Just here for safety."""
+        pass
 
     def search(self, query: str, n_results: int = 3) -> List[str]:
         """
-        Semantic search — finds documents by meaning, not keywords.
+        Semantic search using Supabase Postgres Function `match_vptc_embeddings`.
         """
         try:
-            if not self.collection:
-                return []
-
-            count = self.collection.count()
-            if count == 0:
-                print("⚠️  Vector store is empty. Run ingest.py first!")
-                return []
-
-            # Don't request more results than we have
-            actual_n = min(n_results, count)
-
-            results = self.collection.query(
-                query_texts=[query],
-                n_results=actual_n
-            )
-
-            return results['documents'][0] if results['documents'] else []
+            query_vector = self.embedding_fn([query])[0]
+            
+            response = self.supabase.rpc(
+                "match_vptc_embeddings",
+                {
+                    "query_embedding": query_vector,
+                    "match_threshold": 0.3,
+                    "match_count": n_results
+                }
+            ).execute()
+            
+            if response.data:
+                # Return just the contents of the matching documents
+                return [row["content"] for row in response.data]
+            return []
         except Exception as e:
-            print(f"Search error: {e}")
+            import traceback
+            print(f"Search error: {traceback.format_exc()}")
             return []
 
 
