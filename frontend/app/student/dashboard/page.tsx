@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail } from "lucide-react";
+import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail, Edit2, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useProfilePic, saveProfilePic as savePic, removeProfilePic as removePic } from "@/hooks/useProfilePic";
+import api from "@/lib/api";
 
 export default function StudentDashboard() {
     const router = useRouter();
@@ -13,15 +14,26 @@ export default function StudentDashboard() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const profilePic = useProfilePic();  // shared hook — per-user, auto-updates
     const [profileSaved, setProfileSaved] = useState(false);
+    
+    // Dynamic Editing State
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [editForm, setEditForm] = useState({
+        roll_no: "",
+        department: "",
+        semester: "",
+        cgpa: 0.0,
+        attendance: 0.0
+    });
 
     const [studentData, setStudentData] = useState({
         name: "Loading...",
         email: "",
-        rollNo: "VPTC/CSE/2024/001",
-        department: "Computer Science & Engineering",
-        semester: "3rd Semester",
-        attendance: 92,
-        cgpa: 8.7,
+        rollNo: "",
+        department: "",
+        semester: "",
+        attendance: 0,
+        cgpa: 0,
         courses: [
             { code: "CS301", name: "Data Structures", credits: 4, grade: "A", attendance: 95 },
             { code: "CS302", name: "Database Management", credits: 3, grade: "A+", attendance: 98 },
@@ -41,15 +53,35 @@ export default function StudentDashboard() {
             router.push("/login");
             return;
         }
-        const userStr = localStorage.getItem("user");
-        if (userStr) {
-            const user = JSON.parse(userStr);
+        fetchProfile();
+    }, [router]);
+
+    const fetchProfile = async () => {
+        try {
+            const response = await api.get("/student/profile");
+            const data = response.data;
             setStudentData(prev => ({
                 ...prev,
-                name: user.full_name || user.email || "Student",
-                email: user.email || ""
+                name: data.name,
+                email: data.email,
+                rollNo: data.roll_no,
+                department: data.department,
+                semester: data.semester,
+                cgpa: data.cgpa,
+                attendance: data.attendance,
+                courses: data.courses || prev.courses,
+                upcomingEvents: data.upcomingEvents || prev.upcomingEvents
             }));
-        } else {
+            setEditForm({
+                roll_no: data.roll_no !== "Not Set" ? data.roll_no : "",
+                department: data.department !== "Not Set" ? data.department : "",
+                semester: data.semester !== "Not Set" ? data.semester : "",
+                cgpa: data.cgpa,
+                attendance: data.attendance
+            });
+        } catch (error) {
+            console.error("Failed to fetch profile", error);
+            // Fallback
             const email = localStorage.getItem("user_email") || "";
             setStudentData(prev => ({
                 ...prev,
@@ -57,8 +89,21 @@ export default function StudentDashboard() {
                 email: email
             }));
         }
-        // Profile pic is now handled by useProfilePic hook
-    }, [router]);
+    };
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        try {
+            await api.post("/student/profile", editForm);
+            await fetchProfile(); // Refresh live data
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to save profile", error);
+            alert("Failed to save profile. Please try again.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -282,37 +327,141 @@ export default function StudentDashboard() {
 
                                 {/* Account Info Card */}
                                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Account Information</h3>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                            <User className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Full Name</p>
-                                                <p className="font-medium text-gray-900 dark:text-white">{studentData.name}</p>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Academic Details</h3>
+                                        {!isEditing ? (
+                                            <button
+                                                onClick={() => setIsEditing(true)}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                                Edit Info
+                                            </button>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setIsEditing(false)}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={handleSaveProfile}
+                                                    disabled={isSaving}
+                                                    className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium rounded-lg transition-colors disabled:opacity-50"
+                                                >
+                                                    <Save className="w-4 h-4" />
+                                                    {isSaving ? "Saving..." : "Save"}
+                                                </button>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                            <Mail className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Email Address</p>
-                                                <p className="font-medium text-gray-900 dark:text-white">{studentData.email}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                            <FileText className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Roll Number</p>
-                                                <p className="font-medium text-gray-900 dark:text-white">{studentData.rollNo}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                            <BookOpen className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Department</p>
-                                                <p className="font-medium text-gray-900 dark:text-white">{studentData.department}</p>
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
+                                    
+                                    {!isEditing ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                                <User className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Full Name</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.name}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                                <Mail className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Email Address</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white truncate">{studentData.email}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <FileText className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Roll Number</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.rollNo}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <BookOpen className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Department</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.department}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Semester</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.semester}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <TrendingUp className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">CGPA & Attendance</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.cgpa} CGPA ( {studentData.attendance}% )</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-900/50 md:col-span-2">
+                                                <p className="text-sm text-blue-800 dark:text-blue-300">
+                                                    Update your academic records here. This data powers your dynamic dashboard overview!
+                                                </p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
+                                                <input 
+                                                    type="text" 
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                    value={editForm.roll_no}
+                                                    onChange={e => setEditForm({...editForm, roll_no: e.target.value})}
+                                                    placeholder="VPTC/CSE/001"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
+                                                <input 
+                                                    type="text" 
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                    value={editForm.department}
+                                                    onChange={e => setEditForm({...editForm, department: e.target.value})}
+                                                    placeholder="Computer Science"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Semester</label>
+                                                <input 
+                                                    type="text" 
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                    value={editForm.semester}
+                                                    onChange={e => setEditForm({...editForm, semester: e.target.value})}
+                                                    placeholder="3rd Semester"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">CGPA</label>
+                                                    <input 
+                                                        type="number" step="0.1" 
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                        value={editForm.cgpa}
+                                                        onChange={e => setEditForm({...editForm, cgpa: parseFloat(e.target.value) || 0})}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Attendance %</label>
+                                                    <input 
+                                                        type="number" step="0.1" 
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                        value={editForm.attendance}
+                                                        onChange={e => setEditForm({...editForm, attendance: parseFloat(e.target.value) || 0})}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

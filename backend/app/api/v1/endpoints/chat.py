@@ -23,7 +23,7 @@ async def chat_endpoint(
     # Real RAG implementation
     from app.services.rag_service import rag_service
     
-    response_data = rag_service.generate_response(request.message)
+    response_data = rag_service.generate_response(request.message, current_user)
     
     # Generate follow-up questions
     from app.services.followup_generator import generate_followup_questions

@@ -4,7 +4,7 @@ from app.services.groq_client import get_groq_client
 import os
 
 class RAGService:
-    def generate_response(self, user_query: str) -> dict:
+    def generate_response(self, user_query: str, user: dict = None) -> dict:
         """
         RAG flow with REAL Groq AI - Fast & Free!
         """
@@ -123,6 +123,23 @@ I can provide info about:
 What would you like to know?"""
             
             sources = ["VPTC Knowledge Base"]
+
+        # Log Interaction to Database
+        try:
+            from app.core.database import supabase
+            user_id = user["id"] if user else None
+            user_email = user["email"] if user else "Guest"
+            status = "Pending Data" if "contact the college office" in answer else "Resolved"
+            
+            supabase.table("chat_logs").insert({
+                "user_id": user_id,
+                "user_email": user_email,
+                "query": user_query,
+                "response": answer,
+                "status": status
+            }).execute()
+        except Exception as e:
+            print(f"Error logging chat to Supabase: {e}")
 
         return {
             "answer": answer,
