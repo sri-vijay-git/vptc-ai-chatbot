@@ -384,9 +384,7 @@ async def upload_document(
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
         
-    supabase = get_supabase_admin_client()
-    if not supabase:
-        raise HTTPException(status_code=500, detail="Admin client not configured")
+    supabase = get_supabase_admin_client() or get_supabase_client()
         
     try:
         # 1. Read PDF in memory
@@ -428,9 +426,7 @@ async def upload_document(
 @router.delete("/documents/{document_id}")
 async def delete_document(document_id: str, current_admin: dict = Depends(get_current_admin)):
     """Delete a document and all its embeddings (via cascade)"""
-    supabase = get_supabase_admin_client()
-    if not supabase:
-        raise HTTPException(status_code=500, detail="Admin client not configured")
+    supabase = get_supabase_admin_client() or get_supabase_client()
         
     try:
         supabase.table("vptc_documents").delete().eq("id", document_id).execute()
