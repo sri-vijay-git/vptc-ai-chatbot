@@ -13,7 +13,7 @@ const api = axios.create({
 // Add a request interceptor to include the value of the token in every request
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token") || localStorage.getItem("adminToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
