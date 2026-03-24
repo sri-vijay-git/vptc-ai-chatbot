@@ -40,8 +40,10 @@ export default function AdminLogin() {
                 localStorage.setItem("adminToken", data.token);
                 localStorage.setItem("adminEmail", email);
 
-                // Redirect to admin dashboard
-                router.push("/admin");
+                // Redirect to admin dashboard in a new tab
+                window.open("/admin", "_blank");
+                // Optionally redirect current tab to home
+                router.push("/");
             } else {
                 setError(data.message || "Invalid email or password");
                 setLoading(false);

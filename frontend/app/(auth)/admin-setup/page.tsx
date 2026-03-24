@@ -33,7 +33,9 @@ export default function AdminSetupPage() {
 
             // Redirect to admin login after 2 seconds
             setTimeout(() => {
-                router.push("/admin");
+                // Redirect admin cleanly to a new tab
+                window.open("/admin", "_blank");
+                router.push("/");
             }, 2000);
         } catch (err: any) {
             setError(err.response?.data?.detail || "Admin creation failed. Please try again.");
