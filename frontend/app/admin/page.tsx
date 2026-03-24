@@ -50,7 +50,7 @@ export default function AdminDashboard() {
             setLoading(false);
             // Redirect to login if unauthorized
             if (err.response?.status === 401 || err.response?.status === 403) {
-                router.push("/admin");
+                router.push("/admin/login");
             }
         }
     };
