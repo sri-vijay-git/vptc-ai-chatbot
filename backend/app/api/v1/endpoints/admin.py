@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from app.api.v1.dependencies import get_current_admin, User
+from app.api.v1.dependencies import get_current_admin
 from app.core.database import supabase, get_supabase_admin_client, get_supabase_client
 import os
 from datetime import datetime
@@ -317,7 +317,7 @@ def update_student(user_id: str, data: StudentUpdate, admin_user: dict = Depends
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/students/{user_id}")
-async def delete_student(user_id: str, current_admin: User = Depends(get_current_admin)):
+async def delete_student(user_id: str, current_admin: dict = Depends(get_current_admin)):
     """Delete a student account completely"""
     supabase = get_supabase_admin_client()
     if not supabase:
@@ -365,7 +365,7 @@ def chunk_plain_text(text: str, chunk_size: int = 800, overlap: int = 150) -> li
     return chunks
 
 @router.get("/documents")
-async def get_documents(current_admin: User = Depends(get_current_admin)):
+async def get_documents(current_admin: dict = Depends(get_current_admin)):
     """List all uploaded knowledge base documents"""
     supabase = get_supabase_admin_client() or get_supabase_client()
     
@@ -378,7 +378,7 @@ async def get_documents(current_admin: User = Depends(get_current_admin)):
 @router.post("/documents")
 async def upload_document(
     file: UploadFile = File(...),
-    current_admin: User = Depends(get_current_admin)
+    current_admin: dict = Depends(get_current_admin)
 ):
     """Upload a PDF, extract text, embed, and store in PGVector"""
     if not file.filename.lower().endswith('.pdf'):
@@ -426,7 +426,7 @@ async def upload_document(
         raise HTTPException(status_code=500, detail=f"Error processing document: {str(e)}")
 
 @router.delete("/documents/{document_id}")
-async def delete_document(document_id: str, current_admin: User = Depends(get_current_admin)):
+async def delete_document(document_id: str, current_admin: dict = Depends(get_current_admin)):
     """Delete a document and all its embeddings (via cascade)"""
     supabase = get_supabase_admin_client()
     if not supabase:
