@@ -167,9 +167,10 @@ def reset_admin_password(data: AdminResetPassword):
 
     try:
         # Retrieve all users to find the one matching the email
-        users_resp = admin_client.auth.admin.list_users()
+        # list_users() returns a plain list, not an object with .users
+        all_users = admin_client.auth.admin.list_users()
         target_user = None
-        for u in users_resp.users:
+        for u in all_users:
             if u.email.lower() == data.email.lower():
                 target_user = u
                 break
