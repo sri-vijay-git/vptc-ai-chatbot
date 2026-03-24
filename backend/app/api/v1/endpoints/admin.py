@@ -22,6 +22,14 @@ class AdminLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class StudentUpdate(BaseModel):
+    roll_no: str
+    department: str
+    semester: str
+    cgpa: float
+    attendance: float
+    full_name: Optional[str] = None
+
 @router.get("/analytics/dashboard")
 def get_analytics(admin_user: dict = Depends(get_current_admin)):
     """
@@ -231,3 +239,98 @@ def login_admin(data: AdminLoginRequest):
         if isinstance(e, HTTPException):
             raise e
         raise HTTPException(status_code=401, detail="Invalid email or password")
+
+@router.get("/students")
+def get_all_students(admin_user: dict = Depends(get_current_admin)):
+    """
+    Fetch all users with role 'student', and merge their profile data.
+    """
+    admin_client = get_supabase_admin_client()
+    if not admin_client:
+        raise HTTPException(status_code=500, detail="Server misconfiguration")
+        
+    try:
+        all_users = admin_client.auth.admin.list_users()
+        students = [u for u in all_users if u.user_metadata.get("role") == "student"]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch users: {str(e)}")
+        
+    try:
+        profiles_resp = supabase.table("student_profiles").select("*").execute()
+        profiles_map = {p["id"]: p for p in profiles_resp.data} if profiles_resp.data else {}
+    except:
+        profiles_map = {}
+        
+    result = []
+    for s in students:
+        prof = profiles_map.get(s.id, {})
+        result.append({
+            "id": s.id,
+            "email": s.email,
+            "full_name": s.user_metadata.get("full_name", s.email.split("@")[0]),
+            "roll_no": prof.get("roll_no", "Not Set"),
+            "department": prof.get("department", "Not Set"),
+            "semester": prof.get("semester", "Not Set"),
+            "cgpa": prof.get("cgpa", 0.0),
+            "attendance": prof.get("attendance", 0.0),
+            "created_at": s.created_at.isoformat() if hasattr(s.created_at, 'isoformat') else str(s.created_at)
+        })
+        
+    # Sort by creation date descending
+    result.sort(key=lambda x: x["created_at"], reverse=True)
+    return result
+
+@router.put("/students/{user_id}")
+def update_student(user_id: str, data: StudentUpdate, admin_user: dict = Depends(get_current_admin)):
+    """
+    Update a student's profile and metadata.
+    """
+    admin_client = get_supabase_admin_client()
+    if not admin_client:
+        raise HTTPException(status_code=500, detail="Server misconfiguration")
+
+    try:
+        # Update metadata if full_name is provided
+        if data.full_name is not None:
+            admin_client.auth.admin.update_user_by_id(
+                user_id,
+                {"user_metadata": {"full_name": data.full_name, "role": "student"}}
+            )
+            
+        # Update or Insert profile
+        profile_data = {
+            "id": user_id,
+            "roll_no": data.roll_no,
+            "department": data.department,
+            "semester": data.semester,
+            "cgpa": data.cgpa,
+            "attendance": data.attendance
+        }
+        supabase.table("student_profiles").upsert(profile_data).execute()
+        
+        return {"success": True, "message": "Student updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/students/{user_id}")
+def delete_student(user_id: str, admin_user: dict = Depends(get_current_admin)):
+    """
+    Delete a student account completely.
+    """
+    admin_client = get_supabase_admin_client()
+    if not admin_client:
+        raise HTTPException(status_code=500, detail="Server misconfiguration")
+        
+    try:
+        # Delete from student_profiles explicitly to handle constraints if cascade is off
+        try:
+            supabase.table("student_profiles").delete().eq("id", user_id).execute()
+        except:
+            pass # Ignore if no profile exists
+            
+        # Delete auth user
+        admin_client.auth.admin.delete_user(user_id)
+        
+        return {"success": True, "message": "Student deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

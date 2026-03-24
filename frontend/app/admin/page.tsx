@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { Shield, Users, Activity, MessageSquare, TrendingUp, LogOut, BarChart3, Clock } from "lucide-react";
+import StudentManagement from "@/components/admin/StudentManagement";
 
 interface Analytics {
     total_students: number;
@@ -22,6 +23,7 @@ interface Interaction {
 
 export default function AdminDashboard() {
     const router = useRouter();
+    const [activeTab, setActiveTab] = useState("analytics");
     const [analytics, setAnalytics] = useState<Analytics | null>(null);
     const [interactions, setInteractions] = useState<Interaction[]>([]);
     const [loading, setLoading] = useState(true);
@@ -97,7 +99,28 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Analytics Cards */}
+            {/* Tab Navigation */}
+            <div className="max-w-7xl mx-auto mb-8">
+                <div className="flex gap-4 border-b border-blue-900/30 pb-4">
+                    <button 
+                        onClick={() => setActiveTab("analytics")}
+                        className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${activeTab === "analytics" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 text-blue-100 hover:bg-white/10"}`}
+                    >
+                        Analytics Overview
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab("students")}
+                        className={`px-5 py-2.5 font-semibold rounded-xl transition-all ${activeTab === "students" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 text-blue-100 hover:bg-white/10"}`}
+                    >
+                        Student Directory
+                    </button>
+                </div>
+            </div>
+
+            {/* Tab Content: Analytics */}
+            {activeTab === "analytics" && (
+                <>
+                    {/* Analytics Cards */}
             <div className="max-w-7xl mx-auto mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Total Students */}
@@ -212,6 +235,15 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+            </>
+            )}
+
+            {/* Tab Content: Students */}
+            {activeTab === "students" && (
+                <div className="max-w-7xl mx-auto">
+                    <StudentManagement />
+                </div>
+            )}
         </div>
     );
 }
