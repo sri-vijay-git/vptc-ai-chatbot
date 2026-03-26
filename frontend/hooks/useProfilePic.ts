@@ -10,20 +10,28 @@ export function useProfilePic(): string | null {
 
     useEffect(() => {
         const load = () => {
-            // Try to get per-user key first
             const userStr = localStorage.getItem("user");
             let pic: string | null = null;
+            let googleAvatarUrl: string | null = null;
+
             if (userStr) {
                 try {
                     const user = JSON.parse(userStr);
                     const email = user.email;
                     if (email) {
+                        // Check for manually uploaded profile pic first
                         pic = localStorage.getItem(`profile_pic_${email}`);
+                    }
+                    // Also grab Google avatar URL as fallback
+                    if (user.avatar_url) {
+                        googleAvatarUrl = user.avatar_url;
                     }
                 } catch { /* ignore */ }
             }
-            // Fallback to legacy key
+
+            // Priority: manually uploaded → Google avatar → legacy key
             if (!pic) pic = localStorage.getItem("profile_pic");
+            if (!pic && googleAvatarUrl) pic = googleAvatarUrl;
             setProfilePic(pic);
         };
 
