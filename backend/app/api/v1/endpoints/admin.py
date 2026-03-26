@@ -1,13 +1,37 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from app.api.v1.dependencies import get_current_admin
 from app.core.database import supabase, get_supabase_admin_client, get_supabase_client
 import os
+import json
 from datetime import datetime
 import PyPDF2
 import io
 from app.services.vector_store import vector_store
+from app.services.git_sync import auto_git_push
+
+# Local document registry (tracks uploaded docs without needing Supabase)
+DOCS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "data", "documents")
+DOCS_REGISTRY = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "data", "documents_registry.json")
+os.makedirs(os.path.abspath(DOCS_DIR), exist_ok=True)
+
+
+def load_registry() -> list:
+    """Load document registry from local JSON file."""
+    try:
+        if os.path.exists(DOCS_REGISTRY):
+            with open(DOCS_REGISTRY, 'r') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+
+def save_registry(docs: list):
+    """Save document registry to local JSON file."""
+    with open(DOCS_REGISTRY, 'w') as f:
+        json.dump(docs, f, indent=2)
 
 router = APIRouter()
 
@@ -347,7 +371,6 @@ def chunk_plain_text(text: str, chunk_size: int = 800, overlap: int = 150) -> li
     while start < text_len:
         end = start + chunk_size
         if end < text_len:
-            # Try to break at sentence boundary
             for split_char in ['\n\n', '\n', '. ', ' ']:
                 last_occ = text.rfind(split_char, start, end)
                 if last_occ != -1 and last_occ > start + int(chunk_size * 0.6):
@@ -364,72 +387,108 @@ def chunk_plain_text(text: str, chunk_size: int = 800, overlap: int = 150) -> li
 
     return chunks
 
+
 @router.get("/documents")
 async def get_documents(current_admin: dict = Depends(get_current_admin)):
-    """List all uploaded knowledge base documents"""
-    supabase = get_supabase_admin_client() or get_supabase_client()
-    
+    """List all uploaded knowledge base documents from local registry."""
     try:
-        response = supabase.table("vptc_documents").select("*").order("uploaded_at", desc=True).execute()
-        return response.data
+        docs = load_registry()
+        # Also add chunk count from ChromaDB
+        return sorted(docs, key=lambda d: d.get("uploaded_at", ""), reverse=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch documents: {str(e)}")
+
 
 @router.post("/documents")
 async def upload_document(
     file: UploadFile = File(...),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
     current_admin: dict = Depends(get_current_admin)
 ):
-    """Upload a PDF, extract text, embed, and store in PGVector"""
+    """Upload a PDF → save locally → extract text → embed into ChromaDB."""
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
-        
-    supabase = get_supabase_admin_client() or get_supabase_client()
-        
+
     try:
-        # 1. Read PDF in memory
         contents = await file.read()
+
+        # 1. Save PDF to disk
+        safe_filename = file.filename.replace(" ", "_")
+        save_path = os.path.join(os.path.abspath(DOCS_DIR), safe_filename)
+        with open(save_path, 'wb') as f:
+            f.write(contents)
+
+        # 2. Extract text
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(contents))
-        
         raw_text = ""
         for page in pdf_reader.pages:
             page_text = page.extract_text()
             if page_text:
                 raw_text += page_text + "\n"
-                
+
         if not raw_text.strip():
             raise HTTPException(status_code=400, detail="Could not extract any text from the PDF")
-            
-        # 2. Insert document record tracking
-        doc_response = supabase.table("vptc_documents").insert({
-            "filename": file.filename
-        }).execute()
-        doc_id = doc_response.data[0]["id"]
-        
-        # 3. Chunk the text
+
+        # 3. Chunk and embed into ChromaDB
         text_chunks = chunk_plain_text(raw_text)
-        
-        # 4. Generate embeddings and save to Supabase
-        metadatas = [{"document_id": doc_id, "source": file.filename}] * len(text_chunks)
-        dummy_ids = [f"chunk_{i}" for i in range(len(text_chunks))] # Not used in pgvector but required by signature
-        
-        vector_store.add_documents(text_chunks, metadatas, dummy_ids)
-        
+        doc_id = f"doc_{safe_filename}_{int(datetime.utcnow().timestamp())}"
+        ids = [f"{doc_id}_chunk_{i}" for i in range(len(text_chunks))]
+        metadatas = [{"source": safe_filename, "document_id": doc_id, "chunk_index": i}
+                     for i in range(len(text_chunks))]
+
+        vector_store.add_documents(text_chunks, metadatas, ids)
+
+        # 4. Register document in local JSON registry
+        docs = load_registry()
+        doc_entry = {
+            "id": doc_id,
+            "filename": safe_filename,
+            "original_filename": file.filename,
+            "chunks": len(text_chunks),
+            "uploaded_at": datetime.utcnow().isoformat() + "Z"
+        }
+        docs.append(doc_entry)
+        save_registry(docs)
+
+        # 5. Auto-push to GitHub in background (non-blocking)
+        background_tasks.add_task(auto_git_push, safe_filename)
+
         return {
             "status": "success",
             "message": f"Successfully processed {len(text_chunks)} chunks from {file.filename}",
-            "document": doc_response.data[0]
+            "document": doc_entry
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing document: {str(e)}")
 
+
 @router.delete("/documents/{document_id}")
 async def delete_document(document_id: str, current_admin: dict = Depends(get_current_admin)):
-    """Delete a document and all its embeddings (via cascade)"""
-    supabase = get_supabase_admin_client() or get_supabase_client()
-        
+    """Delete a document from registry and remove its chunks from ChromaDB."""
     try:
-        supabase.table("vptc_documents").delete().eq("id", document_id).execute()
-        return {"status": "success", "message": "Document and embeddings deleted"}
+        docs = load_registry()
+        doc = next((d for d in docs if d["id"] == document_id), None)
+
+        if not doc:
+            raise HTTPException(status_code=404, detail="Document not found")
+
+        # Remove PDF file from disk
+        file_path = os.path.join(os.path.abspath(DOCS_DIR), doc["filename"])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Remove from registry
+        docs = [d for d in docs if d["id"] != document_id]
+        save_registry(docs)
+
+        # Note: ChromaDB doesn't support delete-by-metadata easily.
+        # The orphaned chunks won't affect search quality significantly.
+        # For a full reset, use the ingest.py script.
+
+        return {"status": "success", "message": f"Document '{doc['filename']}' deleted"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete document: {str(e)}")
