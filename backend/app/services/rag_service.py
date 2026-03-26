@@ -3,37 +3,95 @@ from app.core.config import settings
 from app.services.groq_client import get_groq_client
 import os
 
+# -----------------------------------------------------------------------
+# Hardcoded seed knowledge — RAM-friendly fallback (~2KB plain text).
+# Injected when DB vector/keyword search returns zero results.
+# -----------------------------------------------------------------------
+SEED_KNOWLEDGE = """
+=== VPTC Core Facts (Fallback Knowledge) ===
+
+INSTITUTION: Vignesh Polytechnic College (VPTC), Tiruvannamalai, Tamil Nadu.
+ADDRESS: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai - 606603.
+PHONE: 9488853917 / 9488863917 | MOBILE: 7373689294 | EMAIL: vpt384@yahoo.co.in
+
+PRINCIPAL: Sarvesan D.
+CHAIRMAN: Vignesh (Founder & Chairman)
+
+DEPARTMENTS & HODs:
+- Civil Engineering: HOD – Karthikeyan A.
+- Mechanical Engineering: HOD – Arunpandi R.
+- Electrical & Electronics Engineering (EEE): HOD – Anbalagan M.
+- Electronics & Communication Engineering (ECE): HOD – Elumalai K.
+- Computer Science Engineering (CSE): HOD – Saravanan S.
+
+COURSES OFFERED (3-year Diploma):
+1. Civil Engineering
+2. Mechanical Engineering
+3. Electrical & Electronics Engineering (EEE)
+4. Electronics & Communication Engineering (ECE)
+5. Computer Science Engineering
+
+ADMISSION:
+- Eligibility: Pass in SSLC (10th) or equivalent. No age limit.
+- Documents: 10th Mark Sheet, Transfer Certificate, Community Certificate, Conduct Certificate, Photos.
+- Lateral Entry: Direct 2nd year admission for ITI holders.
+
+FEES: As per Tamil Nadu Government norms. Scholarships for SC/ST students.
+
+EXAM SYSTEM: 6 semesters over 3 years. Internal (30%) + Final (70%). Pass: 35% minimum.
+
+CAMPUS FACILITIES: Library, Computer Lab, Workshop, Sports Ground, NSS/NCC, Canteen.
+
+HOSTEL: Available for boys and girls separately.
+
+TRANSPORT: College bus service available from Tiruvannamalai city.
+
+PLACEMENT: Active placement cell. Students placed in companies like DALMIA, TATA, L&T, and local industries. Placement Officer: Viknesh Kumar R.
+
+ACHIEVEMENTS: Government aided college. Consistently good pass percentages. Focus on practical skill development.
+"""
+
+
 class RAGService:
     def generate_response(self, user_query: str, user: dict = None) -> dict:
         """
         RAG flow with REAL Groq AI - Fast & Free!
         """
         
-        # 1. Retrieve Context from Vector Store
+        # 1. Retrieve Context from Vector Store (vector + keyword fallback)
+        context_source = "College Documents"
         try:
-            relevant_docs = vector_store.search(user_query, n_results=3)
-            context = "\n".join(relevant_docs) if relevant_docs else "No specific documents found."
+            relevant_docs = vector_store.search(user_query, n_results=5)
+            if relevant_docs:
+                context = "\n---\n".join(relevant_docs)
+            else:
+                # Last resort: inject hardcoded seed knowledge
+                print("⚠️ Both vector and keyword search failed — using SEED_KNOWLEDGE fallback")
+                context = SEED_KNOWLEDGE
+                context_source = "Seed Knowledge"
         except Exception as e:
             print(f"Vector store error: {e}")
-            context = "General knowledge"
+            context = SEED_KNOWLEDGE
+            context_source = "Seed Knowledge"
 
         # 2. Build Conversational Prompt
-        prompt = f"""You are a helpful and friendly AI assistant for Vignesh Polytechnic College (VPTC), Tiruvannamalai.
+        prompt = f"""You are a friendly and knowledgeable AI assistant for Vignesh Polytechnic College (VPTC), Tiruvannamalai.
 
-CONTEXT FROM COLLEGE DOCUMENTS:
+CONTEXT FROM COLLEGE KNOWLEDGE BASE:
 {context}
 
 STUDENT QUESTION: {user_query}
 
 INSTRUCTIONS:
-- Answer naturally, helpfully, and concisely like a real college advisor. 
-- For casual greetings (e.g., "hi", "hello"), just respond warmly and briefly asking how you can help. DO NOT paste contact info for greetings.
-- ALWAYS prioritize information from the CONTEXT above. If the answer is in the context, use it directly.
-- Keep responses concise (1-3 sentences for simple questions). Use bullet points for lists.
-- DO NOT fabricate information. If a user asks a specific college-related question that is NOT in the context, ONLY THEN say you don't have that detail and provide the contact info: Phone: 9488853917 / 9488863917, Mobile: 7373689294, Email: vpt384@yahoo.co.in.
-- Do not proactively offer contact information unless the database doesn't have the answer or the user asks to speak to a human/office.
+- ALWAYS use the CONTEXT above to answer. It contains verified facts about VPTC.
+- For greetings like "hi" or "hello", respond warmly without pasting contact info.
+- Be concise: 1-3 sentences for simple questions. Use bullet points for lists.
+- If question asks about principal, HODs, courses, fees, admission - answer directly from the CONTEXT.
+- Only say you don't know if the specific detail is truly absent from the context AND the seed knowledge.
+- NEVER fabricate names, numbers, or facts not in the context.
+- If genuinely unknown, share contact: Phone 9488853917 / 9488863917, Email: vpt384@yahoo.co.in
 
-Answer the student's question:"""
+Answer concisely:"""
 
         # 3. Get Response from Groq AI
         try:
@@ -52,7 +110,7 @@ Answer the student's question:"""
             )
             
             answer = response.choices[0].message.content
-            sources = ["College Documents"] if relevant_docs else ["General Knowledge"]
+            sources = ["College Documents"] if context_source == "College Documents" else ["General Knowledge"]
             
             print(f"✅ Groq responded successfully!")
             

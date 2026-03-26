@@ -72,29 +72,62 @@ class VectorStoreService:
         """Not commonly used in production PGVector. Just here for safety."""
         pass
 
-    def search(self, query: str, n_results: int = 3) -> List[str]:
+    def search(self, query: str, n_results: int = 5) -> List[str]:
         """
-        Semantic search using Supabase Postgres Function `match_vptc_embeddings`.
+        Semantic search using Supabase `match_vptc_embeddings` RPC.
+        Falls back to keyword ILIKE search if vector search returns nothing.
         """
         try:
             query_vector = self.embedding_fn([query])[0]
-            
+
             response = self.supabase.rpc(
                 "match_vptc_embeddings",
                 {
                     "query_embedding": query_vector,
-                    "match_threshold": 0.3,
-                    "match_count": n_results
+                    "match_threshold": 0.15,  # Lowered from 0.3 for better recall
+                    "match_count": n_results    # Up to 5 chunks for more context
                 }
             ).execute()
-            
+
             if response.data:
-                # Return just the contents of the matching documents
                 return [row["content"] for row in response.data]
+
+            # --- Keyword fallback: ILIKE search when vector search finds nothing ---
+            print("⚠️ Vector search returned 0 results, trying keyword fallback...")
+            keyword_results = self._keyword_search(query, n_results)
+            if keyword_results:
+                print(f"✅ Keyword fallback found {len(keyword_results)} results")
+                return keyword_results
+
             return []
         except Exception as e:
             import traceback
             print(f"Search error: {traceback.format_exc()}")
+            # Try keyword fallback even on vector search error
+            try:
+                return self._keyword_search(query, n_results)
+            except:
+                return []
+
+    def _keyword_search(self, query: str, n_results: int = 5) -> List[str]:
+        """Lightweight keyword fallback: searches vptc_embeddings.content using ILIKE."""
+        try:
+            # Extract key terms (first 3 significant words)
+            stop_words = {"what", "who", "is", "the", "are", "of", "in", "at", "a", "an", "do", "does", "how", "many", "tell", "me", "about"}
+            words = [w for w in query.lower().split() if w not in stop_words and len(w) > 2]
+            search_term = words[0] if words else query.split()[0]
+
+            response = self.supabase.table("vptc_embeddings") \
+                .select("content") \
+                .ilike("content", f"%{search_term}%") \
+                .limit(n_results) \
+                .execute()
+
+            if response.data:
+                return [row["content"] for row in response.data]
+            return []
+        except Exception as e:
+            print(f"Keyword search error: {e}")
             return []
 
 
