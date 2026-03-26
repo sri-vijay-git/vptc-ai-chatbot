@@ -7,10 +7,8 @@ export default function AuthCallback() {
     const router = useRouter();
 
     useEffect(() => {
-        // Extract tokens from URL hash (Supabase OAuth returns tokens in fragment)
         const handleOAuthCallback = () => {
             try {
-                // Get the hash part of the URL
                 const hash = window.location.hash.substring(1);
                 const params = new URLSearchParams(hash);
 
@@ -18,16 +16,33 @@ export default function AuthCallback() {
                 const refreshToken = params.get('refresh_token');
 
                 if (accessToken) {
-                    // Store tokens in localStorage
                     localStorage.setItem('token', accessToken);
                     if (refreshToken) {
                         localStorage.setItem('refresh_token', refreshToken);
                     }
 
-                    // Redirect to chat page
-                    router.push('/chat');
+                    // Decode JWT to extract user info for localStorage
+                    try {
+                        const parts = accessToken.split('.');
+                        if (parts.length === 3) {
+                            const payload = JSON.parse(atob(parts[1]));
+                            const meta = payload.user_metadata || {};
+                            localStorage.setItem('user', JSON.stringify({
+                                id: payload.sub,
+                                email: payload.email || meta.email || '',
+                                full_name: meta.full_name || meta.name || payload.email?.split('@')[0] || 'Student',
+                                role: meta.role || 'student',
+                                avatar_url: meta.avatar_url || meta.picture || null,
+                            }));
+                        }
+                    } catch {
+                        // If JWT decode fails, store minimal info
+                        localStorage.setItem('user', JSON.stringify({ role: 'student' }));
+                    }
+
+                    window.dispatchEvent(new Event('auth-change'));
+                    router.push('/');
                 } else {
-                    // No token found, redirect to login with error
                     router.push('/login?error=auth_failed');
                 }
             } catch (error) {

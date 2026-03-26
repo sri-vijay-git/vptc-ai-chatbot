@@ -5,6 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1
 
 const api = axios.create({
     baseURL: API_URL,
+    timeout: 120000, // 2 minutes timeout for long-running PDF processing on Render
     headers: {
         "Content-Type": "application/json",
     },
