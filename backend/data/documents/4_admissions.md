@@ -7,7 +7,7 @@ VPTC provides accessible technical education with straightforward admission proc
 * **Age Limit:** NO AGE LIMIT for admission to the diploma courses.
 
 ## Lateral Entry (Direct 2nd Year)
-* Students holding a 2-year ITI qualification or who have passed the Higher Secondary Course (+2) in Vocational or Academic streams are eligible for Lateral entry admission directly to the 2nd year (3rd semester) of their respective Diploma courses.
+* Students holding a 2-year ITI qualification or who have passed the 12th (HSC)Higher Secondary Course in Vocational or Academic Stream are eligible for Lateral entry admission directly to the 2nd year (3rd semester) of their respective Diploma courses.
 
 ## Required Documents for Admission
 To finalize admission, candidates must bring the original and photocopies of the following documents:

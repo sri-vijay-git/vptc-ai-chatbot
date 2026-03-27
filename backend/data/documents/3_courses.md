@@ -20,5 +20,6 @@ VPTC strictly follows the Directorate of Technical Education (DOTE) exam system.
     * **Pass Mark:** A minimum of 35% is required.
 
 ## Working Hours
-* **College Timing:** Classes start at 9.00 AM and end at 4.30 PM.
+* **College Timing:** Classes start at 9.00 AM and 
+                      Classes end at 4.30 PM.
 * **Working Days:** Monday to Saturday.
