@@ -11,6 +11,11 @@ import SignupPrompt from "@/components/SignupPrompt";
 import ChatHistoryModal from "@/components/ChatHistoryModal";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useProfilePic } from "@/hooks/useProfilePic";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import TextareaAutosize from 'react-textarea-autosize';
 
 // Types
 type Message = {
@@ -657,15 +662,66 @@ function ChatContent() {
                                         </div>
                                     ) : (
                                         // AI message clean without bubble
-                                        <div className="flex-1">
-                                            <p className="whitespace-pre-wrap leading-relaxed text-base text-gray-900 dark:text-gray-100">
-                                                {msg.isTyping && idx === typingMessageIndex
-                                                    ? displayedText
-                                                    : msg.content}
-                                                {msg.isTyping && idx === typingMessageIndex && (
-                                                    <span className="inline-block w-1 h-4 ml-1 bg-current animate-pulse"></span>
+                                        <div className="flex-1 w-full overflow-hidden">
+                                            <div className="text-gray-900 dark:text-gray-100 max-w-none break-words">
+                                                {msg.isTyping && idx === typingMessageIndex ? (
+                                                    <p className="whitespace-pre-wrap leading-relaxed text-base mb-0">
+                                                        {displayedText}
+                                                        <span className="inline-block w-1.5 h-4 ml-1 bg-current animate-pulse align-middle"></span>
+                                                    </p>
+                                                ) : (
+                                                    <ReactMarkdown 
+                                                        remarkPlugins={[remarkGfm]}
+                                                        components={{
+                                                            code(props) {
+                                                                const {children, className, node, ...rest} = props;
+                                                                const match = /language-(\w+)/.exec(className || '');
+                                                                return match ? (
+                                                                    <div className="relative group rounded-md overflow-hidden my-4 bg-[#1E1E1E]">
+                                                                        <div className="flex items-center justify-between px-4 py-1.5 bg-gray-800 text-gray-200 text-xs font-mono">
+                                                                            <span>{match[1]}</span>
+                                                                            <button 
+                                                                                onClick={() => navigator.clipboard.writeText(String(children).replace(/\n$/, ''))}
+                                                                                className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-white flex items-center gap-1"
+                                                                            >
+                                                                                <Copy className="w-3.5 h-3.5" />
+                                                                                Copy
+                                                                            </button>
+                                                                        </div>
+                                                                        <SyntaxHighlighter
+                                                                            {...rest}
+                                                                            style={vscDarkPlus as any}
+                                                                            language={match[1]}
+                                                                            PreTag="div"
+                                                                            customStyle={{ margin: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                                                                        >
+                                                                            {String(children).replace(/\n$/, '')}
+                                                                        </SyntaxHighlighter>
+                                                                    </div>
+                                                                ) : (
+                                                                    <code {...rest} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
+                                                                        {children}
+                                                                    </code>
+                                                                );
+                                                            },
+                                                            p: ({children}) => <p className="leading-relaxed text-base mb-4 last:mb-0">{children}</p>,
+                                                            a: ({href, children}) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">{children}</a>,
+                                                            ul: ({children}) => <ul className="list-disc pl-5 mb-4 space-y-1">{children}</ul>,
+                                                            ol: ({children}) => <ol className="list-decimal pl-5 mb-4 space-y-1">{children}</ol>,
+                                                            li: ({children}) => <li className="leading-relaxed">{children}</li>,
+                                                            table: ({children}) => <div className="overflow-x-auto my-4"><table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg">{children}</table></div>,
+                                                            thead: ({children}) => <thead className="bg-gray-50 dark:bg-gray-800/50">{children}</thead>,
+                                                            th: ({children}) => <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{children}</th>,
+                                                            td: ({children}) => <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700">{children}</td>,
+                                                            h1: ({children}) => <h1 className="text-2xl font-bold mb-4 mt-6">{children}</h1>,
+                                                            h2: ({children}) => <h2 className="text-xl font-bold mb-3 mt-5">{children}</h2>,
+                                                            h3: ({children}) => <h3 className="text-lg font-bold mb-2 mt-4">{children}</h3>,
+                                                        }}
+                                                    >
+                                                        {msg.content}
+                                                    </ReactMarkdown>
                                                 )}
-                                            </p>
+                                            </div>
                                             {!msg.isTyping && msg.sources && msg.sources.length > 0 && (
                                                 (() => {
                                                     const filteredSources = msg.sources!.filter(s => s !== "General Knowledge");
@@ -726,6 +782,32 @@ function ChatContent() {
                             </div>
                         ))}
 
+                        {/* Starter Prompts - Only show if no user messages yet */}
+                        {messages.length === 1 && !loading && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 animate-fadeIn max-w-2xl mx-auto pt-6">
+                                {[
+                                    { title: "Courses", prompt: "What diploma courses do you offer?", icon: <Sparkles className="w-5 h-5 text-yellow-500" /> },
+                                    { title: "Admissions", prompt: "Explain the admission process & eligibility.", icon: <User className="w-5 h-5 text-blue-500" /> },
+                                    { title: "Facilities", prompt: "Tell me about the college library and sports facilities.", icon: <RefreshCw className="w-5 h-5 text-green-500" /> },
+                                    { title: "Placements", prompt: "What is the placement record of the college?", icon: <Check className="w-5 h-5 text-purple-500" /> },
+                                ].map((item, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => sendMessage({} as any, item.prompt)}
+                                        className="flex flex-col text-left p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all hover:shadow-md hover:border-[#8B6F47] dark:hover:border-[#FFCC80] group"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            {item.icon}
+                                            <span className="font-semibold text-gray-800 dark:text-gray-200">{item.title}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                                            {item.prompt}
+                                        </p>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         {/* Typing Indicator */}
                         {loading && (
                             <div className="flex justify-start animate-fadeIn">
@@ -756,12 +838,19 @@ function ChatContent() {
                 <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50">
                     <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
                         <div className="flex gap-1 sm:gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
-                            <input
-                                type="text"
+                            <TextareaAutosize
+                                minRows={1}
+                                maxRows={5}
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        sendMessage(e as any);
+                                    }
+                                }}
                                 placeholder="Ask about your college..."
-                                className="flex-1 px-3 sm:px-4 py-2 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base min-w-0"
+                                className="flex-1 px-3 sm:px-4 py-3 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base min-w-0 resize-none self-center scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
                                 disabled={loading || (isGuest && !canChat())}
                             />
 

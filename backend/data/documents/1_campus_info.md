@@ -9,11 +9,12 @@ TIRUVANNAMALAI, TAMIL NADU – 606 603.
 INDIA.
 * **Phone:** 9488853917, 9488863917
 * **Mobile:** 7373689294
-* **Email:** vpt384@yahoo.com
+* **Email:** [EMAIL_ADDRESS]
 * **Website:** https://vigneshpolytechniccollege.com
 
 ## Leadership & Key Personnel
-* **Founder & Chairman:** Managed by Sree Selva Vinayagar Trust & Thiru.R.Kuppusamy (Mani)
+* **Founder:** The college was founded and is managed by the Sree Selvavinayagar Trust. There is no individual founder named "Vignesh".
+* **Chairman:** The Chairman of the college is Thiru R. Kuppusamy (Mani).
 * **Principal:** Mr.Servesan D (M.E.,)
 * **Vice Principal:** Sujatha H (M.E.,) 
 
@@ -23,3 +24,4 @@ INDIA.
 
 ## Campus Visits
 The college office is open on Monday to Friday. Prospective students and parents may visit the campus directly or call 7373689294 to schedule an appointment.
+

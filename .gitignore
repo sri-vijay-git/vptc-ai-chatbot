@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 venv/
 venv_stable/
-.env
+.env*
 
 # Next.js
 .next/
