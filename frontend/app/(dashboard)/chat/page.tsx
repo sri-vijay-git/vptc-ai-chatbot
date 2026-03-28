@@ -86,6 +86,9 @@ function ChatContent() {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
 
+    // AbortController for stopping generation
+    const abortControllerRef = useRef<AbortController | null>(null);
+
     // Profile Dropdown Ref for click-outside detection
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -128,13 +131,26 @@ function ChatContent() {
         }
     }, [isGuest]);
 
+    const [isUserScrolledUp, setIsUserScrolledUp] = useState(false);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = () => {
+        if (chatContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+            const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+            setIsUserScrolledUp(!isNearBottom);
+        }
+    };
+
     // Auto-scroll to bottom
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const scrollToBottom = (force = false) => {
+        if (!isUserScrolledUp || force) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
     };
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, displayedText]);
 
     useEffect(() => {
         if (showSignupPrompt) {
@@ -236,8 +252,13 @@ function ChatContent() {
         setLoading(true);
 
         try {
+            abortControllerRef.current = new AbortController();
+
             // All users (guests and logged-in) get REAL AI responses!
-            const response = await api.post("/chat/message", { message: userMsg });
+            const response = await api.post("/chat/message", 
+                { message: userMsg },
+                { signal: abortControllerRef.current.signal }
+            );
             const aiResponse = response.data;
 
             const newMessage = {
@@ -260,13 +281,64 @@ function ChatContent() {
                 incrementConversation();
             }
         } catch (error: any) {
+            if (error?.name === 'CanceledError') {
+                // Request was successfully aborted
+                setLoading(false);
+                return;
+            }
             setMessages((prev) => [...prev, {
                 role: "assistant",
                 content: "Sorry, I'm having trouble right now. Please try again or sign up for full access."
             }]);
         } finally {
             setLoading(false);
+            abortControllerRef.current = null;
         }
+    };
+
+    const handleStopGeneration = () => {
+        if (loading && abortControllerRef.current) {
+            // Stop API request
+            abortControllerRef.current.abort();
+            setLoading(false);
+        } else if (typingMessageIndex !== null) {
+            // Stop typing animation
+            setMessages(prev => prev.map((msg, idx) =>
+                idx === typingMessageIndex ? { ...msg, content: displayedText, isTyping: false } : msg
+            ));
+            setTypingMessageIndex(null);
+        }
+    };
+
+    const handleRegenerate = async (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        
+        // Find last user message
+        const messagesCopy = [...messages];
+        const lastUserMsgIdx = messagesCopy.reverse().findIndex(m => m.role === "user");
+        if (lastUserMsgIdx === -1) return;
+        
+        const trueIdx = messages.length - 1 - lastUserMsgIdx;
+        const userMsg = messages[trueIdx].content;
+        
+        // Truncate messages back to the last user message
+        const newHistory = messages.slice(0, trueIdx);
+        setMessages(newHistory);
+        
+        // Let react update state queue, then run send
+        const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+        sendMessage(fakeEvent, userMsg);
+    };
+
+    const handleEditUserMessage = (idx: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const msgToEdit = messages[idx].content;
+        
+        // Truncate message history up to this point
+        setMessages(messages.slice(0, idx));
+        
+        // Put the message back in the input box so user can edit and send
+        setInput(msgToEdit);
     };
 
     const handleFeedback = async (messageIndex: number, rating: number) => {
@@ -622,7 +694,11 @@ function ChatContent() {
                 </header>
 
                 {/* Chat Area */}
-                <div className="flex-1 overflow-y-auto px-4 pt-20">
+                <div 
+                    ref={chatContainerRef}
+                    onScroll={handleScroll}
+                    className="flex-1 overflow-y-auto px-4 pt-20"
+                >
                     <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn py-2`}>
@@ -653,11 +729,20 @@ function ChatContent() {
                                     {/* Message Content */}
                                     {msg.role === "user" ? (
                                         // User message with bubble
-                                        <div className="flex-1 text-right">
-                                            <div className="inline-block max-w-[70%] px-4 py-3 rounded-2xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white shadow-sm border border-[#6D563C]/20">
-                                                <p className="whitespace-pre-wrap leading-relaxed text-base">
-                                                    {msg.content}
-                                                </p>
+                                        <div className="flex-1 text-right group/user">
+                                            <div className="flex justify-end items-center gap-2">
+                                                <button
+                                                    onClick={(e) => handleEditUserMessage(idx, e)}
+                                                    className="p-2 rounded-full text-gray-400 hover:text-[#8B6F47] dark:hover:text-[#FFCC80] hover:bg-white dark:hover:bg-gray-800 transition-colors opacity-0 group-hover/user:opacity-100 shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                                                    title="Edit message"
+                                                >
+                                                    <Edit2 className="w-4 h-4" />
+                                                </button>
+                                                <div className="inline-block max-w-[70%] px-4 py-3 rounded-2xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white shadow-sm border border-[#6D563C]/20">
+                                                    <p className="whitespace-pre-wrap leading-relaxed text-base text-left">
+                                                        {msg.content}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     ) : (
@@ -752,8 +837,25 @@ function ChatContent() {
                                             )}
 
                                             {/* Feedback Buttons */}
-                                            {msg.role === "assistant" && !loading && (
-                                                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:opacity-100">
+                                            {msg.role === "assistant" && !msg.isTyping && idx !== typingMessageIndex && (
+                                                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-gray-700/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                    <button
+                                                        onClick={() => navigator.clipboard.writeText(msg.content)}
+                                                        className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                                        title="Copy response"
+                                                    >
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                    {idx === messages.length - 1 && (
+                                                        <button
+                                                            onClick={handleRegenerate}
+                                                            className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                                            title="Regenerate response"
+                                                        >
+                                                            <RefreshCw className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
                                                     <button
                                                         onClick={() => handleFeedback(idx, 1)}
                                                         className={`p-1 rounded transition-colors ${msg.rating === 1
@@ -834,9 +936,36 @@ function ChatContent() {
                     </div>
                 </div>
 
+                {/* Floating Scroll Button */}
+                {isUserScrolledUp && (
+                    <button
+                        onClick={() => {
+                            setIsUserScrolledUp(false);
+                            scrollToBottom(true);
+                        }}
+                        className="absolute bottom-24 right-8 p-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 shadow-xl border border-gray-200 dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-all animate-bounce z-10"
+                        title="Scroll to bottom"
+                    >
+                        <ChevronDown className="w-5 h-5" />
+                    </button>
+                )}
+
                 {/* Input Area */}
-                <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50">
-                    <form onSubmit={sendMessage} className="max-w-4xl mx-auto">
+                <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50 relative">
+                    <form onSubmit={sendMessage} className="max-w-4xl mx-auto relative">
+                        {/* Stop Generating Button */}
+                        {(loading || typingMessageIndex !== null) && (
+                            <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 z-10 w-full flex justify-center">
+                                <button
+                                    type="button"
+                                    onClick={handleStopGeneration}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-full shadow-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors animate-fadeIn"
+                                >
+                                    <StopCircle className="w-4 h-4" />
+                                    Stop generating
+                                </button>
+                            </div>
+                        )}
                         <div className="flex gap-1 sm:gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
                             <TextareaAutosize
                                 minRows={1}
