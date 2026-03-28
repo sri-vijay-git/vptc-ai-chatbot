@@ -674,7 +674,7 @@ function ChatContent() {
                                                         remarkPlugins={[remarkGfm]}
                                                         components={{
                                                             code(props) {
-                                                                const {children, className, node, ...rest} = props;
+                                                                const {children, className, node, ref, ...rest} = props;
                                                                 const match = /language-(\w+)/.exec(className || '');
                                                                 return match ? (
                                                                     <div className="relative group rounded-md overflow-hidden my-4 bg-[#1E1E1E]">
