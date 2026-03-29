@@ -560,47 +560,34 @@ function ChatContent() {
                 />
 
                 {/* Header - Floating Elements */}
-                <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-start pointer-events-none">
-                    {/* Left Actions - always vertical column */}
-                    <div className="flex flex-col items-start gap-2 pointer-events-auto">
-                        {/* Sidebar Toggle */}
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
-                            title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-                        >
-                            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                        </button>
+                <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-center pointer-events-none">
+                    {/* Left Actions - Menu + Logo+Title in one pill */}
+                    <div className="flex items-center gap-2 pointer-events-auto">
+                        <div className="flex items-center gap-2 px-2 py-2 bg-white/60 hover:bg-white/80 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md rounded-full shadow-sm border border-gray-200/50 dark:border-gray-700/50 transition-all">
+                            {/* Sidebar Toggle */}
+                            <button
+                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                className="p-1.5 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-200/60 dark:hover:bg-gray-700/60 transition-colors"
+                                title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+                            >
+                                {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                            </button>
 
-                        {/* New Chat Button */}
-                        <button
-                            onClick={handleNewChat}
-                            className="p-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
-                            title="New Chat"
-                        >
-                            <Plus className="w-5 h-5" />
-                        </button>
+                            {/* Divider */}
+                            <div className="w-[1px] h-5 bg-gray-300/70 dark:bg-gray-600/70"></div>
 
-                        {/* Logo & Title - Floating Badge, desktop only */}
-                        <div className="hidden md:flex items-center gap-3 px-2 py-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
-                            <Link href="/" className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
-                                <Image
-                                    src="/logo.png"
-                                    alt="VPTC Logo"
-                                    fill
-                                    className="object-cover"
-                                />
+                            {/* Logo */}
+                            <Link href="/" className="relative w-7 h-7 rounded-full overflow-hidden shrink-0">
+                                <Image src="/logo.png" alt="VPTC Logo" fill className="object-cover" />
                             </Link>
-                            <div className="pr-3">
-                                <Link href="/" className="hover:opacity-80 transition-opacity">
-                                    <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100">Vignesh Polytechnic AI</h1>
-                                </Link>
+
+                            {/* Title */}
+                            <Link href="/" className="hover:opacity-80 transition-opacity pr-1">
+                                <span className="text-sm font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">Vignesh Polytechnic AI</span>
                                 {isGuest && remaining > 0 && (
-                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 -mt-0.5">
-                                        {remaining} free chats remaining
-                                    </p>
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 -mt-0.5 leading-none">{remaining} free chats left</p>
                                 )}
-                            </div>
+                            </Link>
                         </div>
                     </div>
 
@@ -690,7 +677,7 @@ function ChatContent() {
                 <div 
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto px-4 pt-4"
+                    className="flex-1 overflow-y-auto px-4 pt-16"
                 >
                     <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
