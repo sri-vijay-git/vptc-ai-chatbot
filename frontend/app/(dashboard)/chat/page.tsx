@@ -931,7 +931,7 @@ function ChatContent() {
                 )}
 
                 {/* Input Area */}
-                <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50 relative">
+                <div className="px-4 pt-3 pb-6 sm:pb-8 bg-transparent relative">
                     <form onSubmit={sendMessage} className="max-w-4xl mx-auto relative">
                         {/* No floating stop button anymore, integrated into Send button */}
                         <div className="relative group flex-1">
@@ -1004,6 +1004,9 @@ function ChatContent() {
                                 Free trial limit reached. Please sign up to continue.
                             </p>
                         )}
+                        <p className="text-center text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-3 font-medium">
+                            VPTC AI can make mistakes. Please verify important information.
+                        </p>
                     </form>
                 </div>
             </div>
