@@ -20,8 +20,8 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="max-w-4xl mx-auto space-y-6 text-gray-600 dark:text-gray-300 leading-relaxed">
                         <p>
-                            <strong className="text-gray-900 dark:text-white">Vignesh Polytechnic College</strong>, a premier Institution of high repute, was started in the year 1995 to impart quality Technical Education to the students of Tiruvannamalai District and around. Started with three disciplines of Engineering, the Institution has grown and now offers diploma courses in <strong>five disciplines</strong> of Engineering.
-                        </p>
+                             <strong className="text-gray-900 dark:text-white">Vignesh Polytechnic College</strong>, a premier Institution of high repute, was started in the year 1995 to impart quality Technical Education to the students of Tiruvannamalai District and around. Started with three disciplines of Engineering, the Institution has grown and now offers diploma courses in <strong>six disciplines</strong> of Engineering. The total first-year intake capacity is <strong>360 students</strong>.
+                         </p>
                         <p>
                             <strong className="text-gray-900 dark:text-white">Thiru R. Kuppusamy (alias Mani)</strong> is the Chairman of the Board of Directors. A visionary of the highest order, he has played a vital role in the development of this Polytechnic College with his sustained hard work, devotion, and a passion for education.
                         </p>
@@ -61,15 +61,15 @@ export default function AboutPage() {
             {/* Stats Section */}
             <section className="py-16 bg-white dark:bg-gray-800">
                 <div className="container mx-auto px-4 md:px-6">
-                    <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
+                    <h2 className="text-3xl font-bold center text-gray-900 dark:text-white mb-12">
                         VPTC by the Numbers
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {[
                             { icon: Users, value: "360", label: "First Year Intake" },
-                            { icon: GraduationCap, value: "5", label: "Diploma Courses" },
-                            { icon: BookOpen, value: "16,500+", label: "Library Books" },
-                            { icon: TrendingUp, value: "29+", label: "Years of Excellence" },
+                             { icon: GraduationCap, value: "5", label: "Diploma Departments" },
+                             { icon: BookOpen, value: "21,000+", label: "Library Books" },
+                             { icon: TrendingUp, value: "30+", label: "Years of Excellence" },
                         ].map((stat, i) => (
                             <div key={i} className="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-lg">
                                 <stat.icon className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
@@ -85,9 +85,24 @@ export default function AboutPage() {
             <section className="py-16 bg-gray-100 dark:bg-gray-900">
                 <div className="container mx-auto px-4 md:px-6 text-center">
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Sree Selvavinayagar Trust</h2>
-                    <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Vignesh Polytechnic College was the first Institution to be established by Sree Selvavinayagar Trust in 1995. The trust was formed by Thiru R. Kuppusamy with the sole motive of uplifting Tiruvannamalai District through the power of education. Today, the trust has expanded into the Vignesh Group of Institutions, including the Teacher Training Institute, College of Education, Nursing College, and Vignesh International School.
-                    </p>
+                     <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-300 leading-relaxed">
+                         Vignesh Polytechnic College was the first Institution to be established by Sree Selvavinayagar Trust in 1995. The trust was formed by Thiru R. Kuppusamy with the sole motive of uplifting Tiruvannamalai District through the power of education. Today, the trust has expanded into the Vignesh Group of Institutions, including the Teacher Training Institute, College of Education, Nursing College, and Vignesh International School.
+                     </p>
+                     <div className="mt-8 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto text-left">
+                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+                             <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 mb-1">AICTE Permanent ID</p>
+                             <p className="text-gray-800 dark:text-gray-200 font-mono">1-454848061</p>
+                         </div>
+                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+                             <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 mb-1">Affiliating Body</p>
+                             <p className="text-gray-800 dark:text-gray-200">Directorate of Technical Education, Tamil Nadu</p>
+                         </div>
+                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+                             <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 mb-1">Principal</p>
+                             <p className="text-gray-800 dark:text-gray-200">Mr. Sarvesan D (M.Tech., ECE)</p>
+                             <p className="text-sm text-gray-500 dark:text-gray-400">📞 9865854918</p>
+                         </div>
+                     </div>
                 </div>
             </section>
         </div>

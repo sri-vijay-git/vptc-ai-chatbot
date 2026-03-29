@@ -1,54 +1,51 @@
-import { Code, Cpu, Wrench, Building, Zap, Database, BookOpen, Users } from "lucide-react";
+import { Code, Cpu, Wrench, Building, Zap, BookOpen, Users, FlaskConical } from "lucide-react";
 import Link from "next/link";
 
 const departments = [
     {
         name: "Computer Science & Engineering",
         icon: Code,
-        description: "Leading-edge computing education with focus on AI, Machine Learning, and Software Development",
-        courses: ["Diploma in CSE", "Advanced Diploma in AI"],
-        placements: "98%",
+        description: "The department has over 200 latest computers in 3 labs. Students get individual computers with training in Linux, C, Java, .Net, Web Programming, RDBMS, Networking, and System Administration.",
+        courses: ["Diploma in Computer Science & Engineering (3 Years)"],
+        labs: ["Computer Lab I, II & III (200+ computers)", "Networking & Hardware Lab"],
+        placements: "100%",
         color: "from-blue-500 to-blue-600"
     },
     {
-        name: "Electronics & Communication",
+        name: "Electronics & Communication Engineering",
         icon: Cpu,
-        description: "Innovation in electronics, embedded systems, and communication technologies",
-        courses: ["Diploma in ECE", "IoT Specialization"],
-        placements: "95%",
+        description: "State-of-the-art labs with the latest kits and instruments for advanced training in VLSI, Embedded Systems, Communication and Microcontrollers.",
+        courses: ["Diploma in Electronics & Communication Engineering (3 Years)"],
+        labs: ["VLSI Lab", "Embedded Systems Lab", "Advanced Communication Systems Lab", "Micro-controllers Lab", "Simulation Lab"],
+        placements: "100%",
         color: "from-purple-500 to-purple-600"
     },
     {
         name: "Mechanical Engineering",
         icon: Wrench,
-        description: "Excellence in manufacturing, design, and automation",
-        courses: ["Diploma in Mech", "CAD/CAM Advanced"],
-        placements: "92%",
+        description: "Fully equipped with a CNC machine for hands-on manufacturing training, plus Thermal Engineering, Fluid Mechanics, Automobile, and CAD/CAM labs.",
+        courses: ["Diploma in Mechanical Engineering (3 Years)"],
+        labs: ["CNC Machine Shop", "Thermal Engineering Lab", "Fluid Mechanics Lab", "Automobile Lab", "CAD/CAM Lab"],
+        placements: "100%",
         color: "from-orange-500 to-orange-600"
     },
     {
         name: "Civil Engineering",
         icon: Building,
-        description: "Building the future with sustainable construction and infrastructure",
-        courses: ["Diploma in Civil", "Green Building Tech"],
-        placements: "90%",
+        description: "Equipped with a high-capacity UTM for material testing, modern surveying equipment, CAD in Civil Engineering, and Hydraulics & Plumbing labs.",
+        courses: ["Diploma in Civil Engineering (3 Years)"],
+        labs: ["Material Testing Lab (UTM)", "Surveying Lab", "CAD Lab", "Hydraulics & Plumbing Lab", "Construction Lab"],
+        placements: "100%",
         color: "from-green-500 to-green-600"
     },
     {
-        name: "Electrical Engineering",
+        name: "Electrical & Electronics Engineering",
         icon: Zap,
-        description: "Power systems, renewable energy, and electrical automation",
-        courses: ["Diploma in EEE", "Renewable Energy"],
-        placements: "93%",
+        description: "Fully equipped with Microcontroller, Power Electronics, Digital Electronics, and Wiring labs. Students apply theory to practical training to improve employability.",
+        courses: ["Diploma in Electrical & Electronics Engineering (3 Years)"],
+        labs: ["Electrical Machines Lab", "Power Electronics Lab", "Micro Controller Lab", "Digital Electronics Lab", "Wiring & Winding Lab"],
+        placements: "100%",
         color: "from-yellow-500 to-yellow-600"
-    },
-    {
-        name: "Information Technology",
-        icon: Database,
-        description: "Modern IT solutions, cloud computing, and cybersecurity",
-        courses: ["Diploma in IT", "Cloud Architecture"],
-        placements: "97%",
-        color: "from-teal-500 to-teal-600"
     },
 ];
 
@@ -89,12 +86,27 @@ export default function DepartmentsPage() {
                                     <div>
                                         <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                                             <BookOpen className="w-4 h-4" />
-                                            Programs Offered
+                                            Program Offered
                                         </h4>
                                         <ul className="space-y-1">
                                             {dept.courses.map((course, idx) => (
                                                 <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 ml-6">
                                                     • {course}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    {/* Labs */}
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                            <FlaskConical className="w-4 h-4" />
+                                            Key Laboratories
+                                        </h4>
+                                        <ul className="space-y-1">
+                                            {dept.labs.map((lab, idx) => (
+                                                <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 ml-6">
+                                                    • {lab}
                                                 </li>
                                             ))}
                                         </ul>
