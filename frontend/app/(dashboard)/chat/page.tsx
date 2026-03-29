@@ -677,7 +677,7 @@ function ChatContent() {
                 <div 
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto px-4 pt-16"
+                    className="flex-1 overflow-y-auto px-4 pt-6"
                 >
                     <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
@@ -946,8 +946,13 @@ function ChatContent() {
                                 </button>
                             </div>
                         )}
-                        <div className="flex gap-1 sm:gap-2 items-center bg-white dark:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 p-2">
-                            <TextareaAutosize
+                        <div className="relative group flex-1">
+                            {/* RGB Animated Glow Border */}
+                            <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 via-cyan-500 via-blue-500 to-pink-500 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-500 animate-[gradient_3s_linear_infinite]"
+                                style={{ backgroundSize: '200% 200%' }} />
+
+                            <div className="relative flex gap-1 sm:gap-2 items-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/50 dark:border-white/10 p-2">
+                                <TextareaAutosize
                                 minRows={1}
                                 maxRows={5}
                                 value={input}
@@ -992,6 +997,7 @@ function ChatContent() {
                             >
                                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
+                        </div>
                         </div>
                         {isGuest && remaining === 0 && (
                             <p className="text-center text-sm text-red-600 dark:text-red-400 mt-2">

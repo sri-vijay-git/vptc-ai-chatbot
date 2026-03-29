@@ -124,11 +124,9 @@ export default function HomePage() {
                         {/* Large Prompt Input - Gemini Style with RGB Border */}
                         <form onSubmit={handleSubmit} className="w-full">
                             <div className="relative group">
-                                {/* RGB Animated Border */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-purple-500 to-red-500 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-[gradient_3s_linear_infinite] bg-[length:200%_200%]"
+                                {/* RGB Animated Glow */}
+                                <div className="absolute -inset-1.5 bg-gradient-to-r from-pink-500 via-purple-500 via-cyan-500 via-blue-500 to-pink-500 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-500 shadow-[0_0_20px_rgba(236,72,153,0.5)]"
                                     style={{ backgroundSize: '200% 200%', animation: 'gradient 3s linear infinite' }} />
-
-
 
                                 <div className="relative">
                                     <input
@@ -136,11 +134,11 @@ export default function HomePage() {
                                         value={promptInput}
                                         onChange={(e) => setPromptInput(e.target.value)}
                                         placeholder="Ask about courses, admissions, fees..."
-                                        className="w-full px-4 sm:px-6 py-3 sm:py-5 text-sm sm:text-base md:text-lg rounded-2xl border-2 border-transparent bg-white dark:bg-[#2D1B15] text-[#3E2723] dark:text-[#FFCC80] focus:outline-none relative z-10 transition-all shadow-lg hover:shadow-2xl"
+                                        className="w-full px-4 sm:px-6 py-3 sm:py-5 text-sm sm:text-base md:text-lg rounded-2xl bg-white/80 dark:bg-[#2D1B15]/80 backdrop-blur-xl border border-white/50 dark:border-white/10 text-[#3E2723] dark:text-[#FFCC80] focus:outline-none relative z-10 transition-all shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]"
                                     />
                                     <button
                                         type="submit"
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-[#8B6F47] hover:bg-[#6D563C] text-white rounded-xl transition-all hover:scale-105 z-20"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-gradient-to-r from-[#8B6F47] to-[#6D563C] hover:from-[#6D563C] hover:to-[#5D4037] text-white rounded-xl transition-all hover:scale-105 z-20 shadow-md"
                                     >
                                         <ArrowRight className="w-5 h-5" />
                                     </button>
