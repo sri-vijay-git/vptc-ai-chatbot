@@ -468,7 +468,7 @@ function ChatContent() {
 
 
     return (
-        <div className="flex h-[100dvh] bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <div className="fixed inset-0 flex w-full h-full bg-gray-50 dark:bg-gray-900 overflow-hidden">
             {/* Sidebar - Fixed with left transition */}
             <div className={`fixed top-0 ${sidebarOpen ? 'left-0' : '-left-64'} w-64 h-full bg-[#efebe9] dark:bg-[#2d1b15] text-[#3e2723] dark:text-[#ffcc80] transition-all duration-300 ease-in-out flex flex-col z-50 shadow-2xl`}>
                 {/* Sidebar Header */}
@@ -544,7 +544,7 @@ function ChatContent() {
             )}
 
             {/* Main Chat Area */}
-            <div className="flex flex-col flex-1 h-[100dvh] bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723] overflow-hidden relative">
+            <div className="flex flex-col flex-1 h-full bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723] overflow-hidden relative">
                 {/* Signup Prompt Modal */}
                 <SignupPrompt
                     isOpen={showModal}
@@ -677,7 +677,7 @@ function ChatContent() {
                 <div 
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto px-4 pt-6"
+                    className="flex-1 overflow-y-auto px-4 pt-24 pb-4"
                 >
                     <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
@@ -933,19 +933,7 @@ function ChatContent() {
                 {/* Input Area */}
                 <div className="px-4 py-3 bg-transparent border-t border-gray-200/50 dark:border-gray-700/50 relative">
                     <form onSubmit={sendMessage} className="max-w-4xl mx-auto relative">
-                        {/* Stop Generating Button */}
-                        {(loading || typingMessageIndex !== null) && (
-                            <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 z-10 w-full flex justify-center">
-                                <button
-                                    type="button"
-                                    onClick={handleStopGeneration}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-full shadow-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors animate-fadeIn"
-                                >
-                                    <StopCircle className="w-4 h-4" />
-                                    Stop generating
-                                </button>
-                            </div>
-                        )}
+                        {/* No floating stop button anymore, integrated into Send button */}
                         <div className="relative group flex-1">
                             {/* RGB Animated Glow Border */}
                             <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 via-cyan-500 via-blue-500 to-pink-500 rounded-full blur opacity-50 group-hover:opacity-100 transition duration-500 animate-[gradient_3s_linear_infinite]"
@@ -990,13 +978,25 @@ function ChatContent() {
                                 )}
                             </button>
 
-                            <button
-                                type="submit"
-                                disabled={loading || !input.trim() || (isGuest && !canChat())}
-                                className="p-2 sm:p-3 bg-gradient-to-r from-[#8B6F47] to-[#6D563C] hover:from-[#6D563C] hover:to-[#5D4037] text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex-shrink-0"
-                            >
-                                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-                            </button>
+                            {/* Stop or Send Button */}
+                            {(loading || typingMessageIndex !== null) ? (
+                                <button
+                                    type="button"
+                                    onClick={handleStopGeneration}
+                                    className="p-3 sm:p-4 bg-gray-500 hover:bg-gray-600 text-white rounded-full transition-all flex-shrink-0 shadow-md animate-pulse flex items-center justify-center transform hover:scale-105 active:scale-95"
+                                    title="Stop generating"
+                                >
+                                    <Square className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
+                                </button>
+                            ) : (
+                                <button
+                                    type="submit"
+                                    disabled={!input.trim() || (isGuest && !canChat())}
+                                    className="p-2 sm:p-3 bg-gradient-to-r from-[#8B6F47] to-[#6D563C] hover:from-[#6D563C] hover:to-[#5D4037] text-white rounded-full hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex-shrink-0"
+                                >
+                                    <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </button>
+                            )}
                         </div>
                         </div>
                         {isGuest && remaining === 0 && (
