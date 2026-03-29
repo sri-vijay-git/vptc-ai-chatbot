@@ -561,18 +561,27 @@ function ChatContent() {
 
                 {/* Header - Floating Elements */}
                 <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-start pointer-events-none">
-                    {/* Left Actions */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pointer-events-auto">
+                    {/* Left Actions - always vertical column */}
+                    <div className="flex flex-col items-start gap-2 pointer-events-auto">
                         {/* Sidebar Toggle */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2.5 sm:px-4 sm:py-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
+                            className="p-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
                             title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
                         >
                             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
 
-                        {/* Logo & Title - Floating Badge */}
+                        {/* New Chat Button */}
+                        <button
+                            onClick={handleNewChat}
+                            className="p-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
+                            title="New Chat"
+                        >
+                            <Plus className="w-5 h-5" />
+                        </button>
+
+                        {/* Logo & Title - Floating Badge, desktop only */}
                         <div className="hidden md:flex items-center gap-3 px-2 py-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
                             <Link href="/" className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
                                 <Image
@@ -681,7 +690,7 @@ function ChatContent() {
                 <div 
                     ref={chatContainerRef}
                     onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto px-4 pt-20"
+                    className="flex-1 overflow-y-auto px-4 pt-4"
                 >
                     <div className="max-w-4xl mx-auto space-y-3">
                         {messages.map((msg, idx) => (
