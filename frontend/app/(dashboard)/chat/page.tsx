@@ -468,7 +468,7 @@ function ChatContent() {
 
 
     return (
-        <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <div className="flex h-[100dvh] bg-gray-50 dark:bg-gray-900 overflow-hidden">
             {/* Sidebar - Fixed with left transition */}
             <div className={`fixed top-0 ${sidebarOpen ? 'left-0' : '-left-64'} w-64 h-full bg-[#efebe9] dark:bg-[#2d1b15] text-[#3e2723] dark:text-[#ffcc80] transition-all duration-300 ease-in-out flex flex-col z-50 shadow-2xl`}>
                 {/* Sidebar Header */}
@@ -544,7 +544,7 @@ function ChatContent() {
             )}
 
             {/* Main Chat Area */}
-            <div className="flex flex-col flex-1 h-screen bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723] overflow-hidden">
+            <div className="flex flex-col flex-1 h-[100dvh] bg-gradient-to-br from-[#ffffff] via-[#fff8e1] to-[#ffe0b2] dark:from-[#1a100e] dark:via-[#2d1b15] dark:to-[#3e2723] overflow-hidden relative">
                 {/* Signup Prompt Modal */}
                 <SignupPrompt
                     isOpen={showModal}
@@ -559,81 +559,65 @@ function ChatContent() {
                     onLoadChat={loadChatFromHistory}
                 />
 
-                {/* Header */}
-                <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-center bg-gradient-to-b from-white/80 via-white/50 to-transparent dark:from-black/80 dark:via-black/50 dark:to-transparent backdrop-blur-sm">
-                    <div className="flex items-center gap-3">
-                        {/* Sidebar Toggle - Simple icon on mobile, with text on desktop */}
+                {/* Header - Floating Elements */}
+                <header className="absolute top-0 w-full z-10 p-4 flex justify-between items-start pointer-events-none">
+                    {/* Left Actions */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pointer-events-auto">
+                        {/* Sidebar Toggle */}
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="px-2 sm:px-3 py-2 bg-[#3e2723] hover:bg-[#5d4037] dark:bg-[#5d4037] dark:hover:bg-[#6d4c41] text-[#ffcc80] rounded-lg transition-colors shadow-md flex items-center gap-2 border border-[#5d4037] dark:border-[#6d4c41]"
+                            className="p-2.5 sm:px-4 sm:py-2.5 bg-white/60 hover:bg-white/90 dark:bg-black/40 dark:hover:bg-black/70 backdrop-blur-md text-gray-800 dark:text-gray-200 rounded-full transition-all shadow-sm flex items-center gap-2 border border-gray-200/50 dark:border-gray-700/50"
                             title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
                         >
                             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                            <span className="hidden sm:inline text-sm font-medium">{sidebarOpen ? 'Close' : 'Menu'}</span>
                         </button>
 
-                        {/* Logo - Hidden on mobile */}
-                        <Link href="/" className="hidden md:block relative w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-[#5d4037] dark:hover:border-[#ffcc80] transition-colors cursor-pointer">
-                            <Image
-                                src="/logo.png"
-                                alt="VPTC Logo"
-                                fill
-                                className="object-cover"
-                            />
-                        </Link>
-
-                        {/* Title - Hidden on mobile */}
-                        <div className="hidden md:block">
-                            <Link href="/" className="hover:opacity-80 transition-opacity">
-                                <h1 className="text-xl font-bold text-[#3e2723] dark:text-[#ffcc80]">Vignesh Polytechnic AI</h1>
+                        {/* Logo & Title - Floating Badge */}
+                        <div className="hidden md:flex items-center gap-3 px-2 py-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+                            <Link href="/" className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
+                                <Image
+                                    src="/logo.png"
+                                    alt="VPTC Logo"
+                                    fill
+                                    className="object-cover"
+                                />
                             </Link>
-                            {isGuest && remaining > 0 && (
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {remaining} free {remaining === 1 ? 'chat' : 'chats'} remaining
-                                </p>
-                            )}
+                            <div className="pr-3">
+                                <Link href="/" className="hover:opacity-80 transition-opacity">
+                                    <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100">Vignesh Polytechnic AI</h1>
+                                </Link>
+                                {isGuest && remaining > 0 && (
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 -mt-0.5">
+                                        {remaining} free chats remaining
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        {/* History & Save Buttons */}
-                        {!isGuest && (
-                            <>
-                                <button
-                                    onClick={() => setShowHistoryModal(true)}
-                                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
-                                    title="Chat History"
-                                >
-                                    <RefreshCw className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={handleSaveChat}
-                                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
-                                    title="Save Chat"
-                                >
-                                    <Copy className="w-5 h-5" />
-                                </button>
-                            </>
-                        )}
 
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-1.5 p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm border border-gray-200/50 dark:border-gray-700/50 pointer-events-auto">
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}
-                            className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                            className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
                             title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
                         >
-                            {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
+
+                        <div className="w-[1px] h-4 bg-gray-300 dark:bg-gray-600"></div>
 
                         {/* User Profile Button */}
                         <div className="relative" ref={profileDropdownRef}>
                             <button
                                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                                className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition-all"
+                                className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                                 {isGuest ? (
-                                    <UserCircle className="w-5 h-5" />
+                                    <UserCircle className="w-6 h-6 text-gray-500" />
                                 ) : (
-                                    <div className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-[#8B6F47]/40 flex-shrink-0">
+                                    <div className="w-7 h-7 rounded-full overflow-hidden">
                                         {profilePic ? (
                                             <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
                                         ) : (
@@ -643,10 +627,10 @@ function ChatContent() {
                                         )}
                                     </div>
                                 )}
-                                <span className="text-sm hidden md:inline font-medium">
+                                <span className="text-sm hidden md:inline font-medium text-gray-700 dark:text-gray-200">
                                     {isGuest ? 'Guest' : (userEmail?.split('@')[0] || 'User')}
                                 </span>
-                                <ChevronDown className="w-4 h-4 opacity-70" />
+                                <ChevronDown className="w-3 h-3 opacity-70" />
                             </button>
 
                             {/* Dropdown Menu */}
