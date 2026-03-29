@@ -160,13 +160,37 @@ export default function ContactPage() {
                 </div>
             </section>
 
-            {/* Map Section (Placeholder) */}
+            {/* Map Section */}
             <section className="py-16 bg-gray-100 dark:bg-gray-900">
                 <div className="container mx-auto px-4 md:px-6">
-                    <div className="bg-gray-300 dark:bg-gray-700 h-96 rounded-xl flex items-center justify-center">
-                        <p className="text-gray-600 dark:text-gray-400 text-lg">
-                            📍 Interactive Campus Map (Coming Soon)
-                        </p>
+                    <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-4">
+                        📍 Find Us on the Map
+                    </h2>
+                    <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+                        Melputhiyandal Village, Manalurpet Road, Tiruvannamalai, Tamil Nadu – 606 603
+                    </p>
+                    <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-yellow-400 dark:border-yellow-500">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.086390707617!2d79.09863487507645!3d12.248499987774924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bad1e3c5a95fb43%3A0x5ddffc02e5ef9b08!2sVignesh%20Polytechnic%20College!5e0!3m2!1sen!2sin!4v1711734000000!5m2!1sen!2sin"
+                            width="100%"
+                            height="480"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Vignesh Polytechnic College Location"
+                        />
+                    </div>
+                    <div className="text-center mt-6">
+                        <a
+                            href="https://www.google.com/maps/search/Vignesh+Polytechnic+College+Tiruvannamalai/@12.2253,79.0988,15z"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold rounded-full transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-1"
+                        >
+                            <MapPin className="w-5 h-5" />
+                            Open in Google Maps
+                        </a>
                     </div>
                 </div>
             </section>
