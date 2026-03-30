@@ -28,9 +28,9 @@ groq>=1.0.0
 # Vector Database & RAG
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.2.1+cpu
-chromadb>=1.5.5
-sentence-transformers>=5.3.0
-transformers>=5.3.0
+chromadb==0.4.24
+sentence-transformers==2.5.1
+transformers==4.38.2
 
 # PDF Processing
 PyPDF2==3.0.1
