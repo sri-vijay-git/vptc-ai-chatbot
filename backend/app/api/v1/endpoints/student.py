@@ -57,11 +57,35 @@ def get_student_profile(current_user: dict = Depends(get_current_user)):
         response = supabase.table("student_profiles").select("*").eq("id", current_user["id"]).execute()
         
         default_profile = get_default_profile(current_user)
-        academic_data = read_academic_record(current_user.get("email", current_user["id"]))
+        
+        # Read by email (student self-updates) and by id (staff updates)
+        user_email = current_user.get("email", current_user["id"])
+        user_id = current_user["id"]
+        
+        academic_by_email = read_academic_record(user_email)
+        academic_by_id = read_academic_record(user_id)
+        
+        # Staff writes by id → id-based record is authoritative for courses/marks
+        # Fall back to email-based if id-based is default/empty
+        use_id_record = bool(academic_by_id.get("courses") or academic_by_id.get("marks_history") or academic_by_id.get("exam_marks"))
+        academic_data = academic_by_id if use_id_record else academic_by_email
         
         # Merge local dynamic records
-        default_profile["courses"] = academic_data.get("courses", default_profile["courses"])
-        default_profile["exam_marks"] = academic_data.get("exam_marks", [])
+        staff_courses = academic_data.get("courses", [])
+        default_profile["courses"] = staff_courses if staff_courses else default_profile["courses"]
+        
+        # Support both marks_history (staff field) and exam_marks (student field)
+        staff_marks = academic_data.get("marks_history") or academic_data.get("exam_marks", [])
+        # Normalize marks_history format → exam_marks format for the frontend
+        normalized_marks = []
+        for m in staff_marks:
+            normalized_marks.append({
+                "subject": m.get("subject", ""),
+                "obtainedMarks": int(m.get("obtained_marks", m.get("obtainedMarks", 0))),
+                "maxMarks": int(m.get("total_marks", m.get("maxMarks", 100))),
+                "minMarks": int(m.get("minMarks", 0)),
+            })
+        default_profile["exam_marks"] = normalized_marks
         
         # Merge attendance tracking percentage if calculated dynamically by staff
         att_history = academic_data.get("attendance_history", {})
