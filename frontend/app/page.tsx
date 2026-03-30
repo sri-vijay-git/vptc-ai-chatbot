@@ -111,31 +111,8 @@ export default function HomePage() {
             <div className="min-h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#1A100E] relative overflow-hidden">
                 {/* Animated Glowing Background */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-amber-300/20 to-orange-400/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/15 to-amber-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
                     <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-yellow-400/10 to-orange-300/10 rounded-full blur-2xl animate-pulse delay-500" />
                 </div>
-
-                {/* Top Navigation Bar */}
-                <nav className="absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-end items-center z-40 pointer-events-auto">
-                    <button
-                        onClick={handleDashboardClick}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-white/80 dark:bg-[#2D1B15]/80 backdrop-blur-md border border-[#D7CCC8] dark:border-[#5D4037] hover:border-[#8B6F47] dark:hover:border-[#FFCC80] rounded-full text-[#5D4037] dark:text-[#FFCC80] font-medium transition-all shadow-sm hover:shadow-md"
-                    >
-                        {isLoggedIn ? (
-                            <>
-                                <LayoutDashboard className="w-4 h-4" />
-                                <span className="hidden sm:inline">Go to Dashboard</span>
-                                <span className="sm:hidden">Dashboard</span>
-                            </>
-                        ) : (
-                            <>
-                                <LogIn className="w-4 h-4" />
-                                <span>Login / Portal</span>
-                            </>
-                        )}
-                    </button>
-                </nav>
 
                 {/* Hero Section - Gemini Style */}
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative z-10 pt-24">

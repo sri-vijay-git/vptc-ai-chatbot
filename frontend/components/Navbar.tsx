@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut, ArrowLeft } from "lucide-react";
+import { Menu, X, Sun, Moon, Shield, GraduationCap, ChevronDown, User, LogOut, ArrowLeft, Briefcase } from "lucide-react";
 import { useProfilePic } from "@/hooks/useProfilePic";
 
 const navLinks = [
@@ -27,6 +27,7 @@ export default function Navbar() {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [userInitial, setUserInitial] = useState("U");
+    const [userRole, setUserRole] = useState("student");
     const profilePic = useProfilePic();
 
     // Mount check to prevent hydration mismatch
@@ -48,6 +49,7 @@ export default function Navbar() {
                     const u = JSON.parse(userStr);
                     const name = u.full_name || u.email || "U";
                     setUserInitial(name.charAt(0).toUpperCase());
+                    setUserRole(u.role || "student");
                 } catch { setUserInitial("U"); }
             }
         };
@@ -165,16 +167,20 @@ export default function Navbar() {
 
                     {isLoggedIn ? (
                         <>
-                            {/* Student Dashboard Button (Hide if already on dashboard) */}
-                            {pathname !== "/student/dashboard" && (
-                                <Link
-                                    href="/student/dashboard"
-                                    className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
-                                >
-                                    <User className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Dashboard</span>
-                                </Link>
-                            )}
+                            {/* Dashboard Button - role-aware */}
+                            {(() => {
+                                const dashHref = userRole === "staff" || userRole === "admin" ? "/staff/dashboard" : "/student/dashboard";
+                                const dashLabel = userRole === "staff" || userRole === "admin" ? "Staff Portal" : "Dashboard";
+                                return pathname !== dashHref && (
+                                    <Link
+                                        href={dashHref}
+                                        className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47] hover:bg-[#6D563C] text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap shadow-sm"
+                                    >
+                                        <User className="w-4 h-4" />
+                                        <span className="hidden sm:inline">{dashLabel}</span>
+                                    </Link>
+                                );
+                            })()}
 
                             <div className="relative">
                                 <button
@@ -223,6 +229,14 @@ export default function Navbar() {
                             >
                                 <GraduationCap className="w-4 h-4" />
                                 <span className="hidden sm:inline">Student</span>
+                            </Link>
+
+                            <Link
+                                href="/staff/login"
+                                className="flex items-center gap-1 px-2 sm:px-3 lg:px-4 py-2 rounded-full bg-[#8B6F47]/10 text-[#8B6F47] dark:bg-[#FFCC80]/10 dark:text-[#FFCC80] hover:bg-[#8B6F47]/20 dark:hover:bg-[#FFCC80]/20 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
+                            >
+                                <Briefcase className="w-4 h-4" />
+                                <span className="hidden sm:inline">Staff</span>
                             </Link>
 
                             <Link
@@ -278,6 +292,14 @@ export default function Navbar() {
                             >
                                 <GraduationCap className="w-5 h-5" />
                                 Student Login
+                            </Link>
+
+                            <Link
+                                href="/staff/login"
+                                className="flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                <Briefcase className="w-5 h-5" />
+                                Staff Login
                             </Link>
 
                             <Link
