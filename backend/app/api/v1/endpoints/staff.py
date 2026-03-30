@@ -15,6 +15,34 @@ class AttendanceUpdateReq(BaseModel):
 class BulkAttendanceReq(BaseModel):
     records: List[AttendanceUpdateReq]
 
+@router.get("/student/{student_id}/academic")
+def get_student_academic_record(student_id: str, current_user: dict = Depends(get_current_user)):
+    """Fetch the full academic record of a specific student for the staff modal."""
+    if current_user.get("role") not in ["staff", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    try:
+        return read_academic_record(student_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to fetch academic record")
+
+@router.post("/student/{student_id}/academic")
+def update_student_academic_record(student_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Overwrite the full academic record of a specific student (courses, marks)."""
+    if current_user.get("role") not in ["staff", "admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    try:
+        # We merge changes on top of original to prevent accidental wipe of attendance
+        existing = read_academic_record(student_id)
+        if "courses" in data:
+            existing["courses"] = data["courses"]
+        if "marks_history" in data:
+            existing["marks_history"] = data["marks_history"]
+            
+        write_academic_record(student_id, existing)
+        return {"success": True, "message": "Academic record updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to update academic record")
+
 @router.get("/students")
 def get_students_for_staff(department: str, current_user: dict = Depends(get_current_user)):
     """

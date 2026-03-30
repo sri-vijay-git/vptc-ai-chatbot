@@ -603,18 +603,8 @@ export default function StudentDashboard() {
                         {/* ===== COURSES TAB ===== */}
                         {activeTab === "courses" && (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage My Courses</h2>
-                                
-                                {/* Add Course Form */}
-                                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-6 border border-gray-200 dark:border-gray-600">
-                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Course</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                                        <input type="text" placeholder="Course Code" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newCourse.code} onChange={e => setNewCourse({...newCourse, code: e.target.value})} />
-                                        <input type="text" placeholder="Course Name" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500 md:col-span-2" value={newCourse.name} onChange={e => setNewCourse({...newCourse, name: e.target.value})} />
-                                        <input type="number" placeholder="Credits" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newCourse.credits || ''} onChange={e => setNewCourse({...newCourse, credits: parseInt(e.target.value) || 0})} />
-                                        <button onClick={handleAddCourse} disabled={!newCourse.code || !newCourse.name} className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 rounded-lg text-sm flex items-center justify-center gap-1 transition-colors disabled:opacity-50"><Plus className="w-4 h-4"/> Add</button>
-                                    </div>
-                                </div>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Assigned Courses</h2>
+                                <p className="text-sm text-gray-500 mb-6">These courses are managed by your department staff.</p>
 
                                 {/* Course List */}
                                 <div className="space-y-4">
@@ -631,7 +621,6 @@ export default function StudentDashboard() {
                                                 </div>
                                                 <div className="flex items-center gap-6">
                                                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">{course.credits} Credits</span>
-                                                    <button onClick={() => handleRemoveCourse(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         ))
@@ -644,17 +633,7 @@ export default function StudentDashboard() {
                         {activeTab === "grades" && (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Grades & Exam Tracking</h2>
-                                
-                                {/* Add Exam Form */}
-                                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-6 border border-gray-200 dark:border-gray-600">
-                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add Exam Record</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                                        <input type="text" placeholder="Subject Name" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500 md:col-span-2" value={newExam.subject} onChange={e => setNewExam({...newExam, subject: e.target.value})} />
-                                        <input type="number" placeholder="Marks Obtained" title="Obtained Marks" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newExam.obtainedMarks || ''} onChange={e => setNewExam({...newExam, obtainedMarks: parseInt(e.target.value) || 0})} />
-                                        <input type="number" placeholder="Total Marks" title="Total Marks" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newExam.maxMarks || ''} onChange={e => setNewExam({...newExam, maxMarks: parseInt(e.target.value) || 0})} />
-                                        <button onClick={handleAddExam} disabled={!newExam.subject} className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 rounded-lg text-sm flex items-center justify-center gap-1 transition-colors disabled:opacity-50"><Plus className="w-4 h-4"/> Add</button>
-                                    </div>
-                                </div>
+                                <p className="text-sm text-gray-500 mb-6">Your official exam marks are updated by your department staff.</p>
 
                                 {/* Exam List */}
                                 <div className="space-y-4">
@@ -677,7 +656,6 @@ export default function StudentDashboard() {
                                                             <div className={`text-xl font-bold ${isPass ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>{exam.obtainedMarks} <span className="text-sm font-normal text-gray-500">/ {exam.maxMarks}</span></div>
                                                             <p className="text-xs text-gray-500 dark:text-gray-400">{percent}% ({isPass ? 'Pass' : 'Fail'})</p>
                                                         </div>
-                                                        <button onClick={() => handleRemoveExam(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                                                     </div>
                                                 </div>
                                             );
