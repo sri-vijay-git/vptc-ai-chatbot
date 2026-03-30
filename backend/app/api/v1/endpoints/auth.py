@@ -12,7 +12,12 @@ def create_user(user: UserCreate):
     try:
         # Sign up with Supabase Auth
         # We store metadata (role, full_name) in the user_metadata field
-        # Get frontend URL for redirect
+        # Require a valid setup key for Staff registration
+        if user.role == "staff":
+            expected_staff_key = os.getenv("STAFF_SETUP_KEY", "missing_key")
+            if user.staff_setup_key != expected_staff_key:
+                raise HTTPException(status_code=403, detail="Invalid Staff Setup Key. Registration denied.")
+
         frontend_url = os.getenv("FRONTEND_URL", "https://vptc-ai-chatbot-frontend.vercel.app")
         redirect_url = f"{frontend_url}/verified"
 

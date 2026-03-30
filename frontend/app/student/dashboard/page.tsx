@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail, Edit2, X } from "lucide-react";
+import { BookOpen, Calendar, TrendingUp, FileText, User, LogOut, MessageSquare, Award, Clock, CheckCircle, Camera, Save, Mail, Edit2, X, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,10 @@ export default function StudentDashboard() {
         attendance: 0.0
     });
 
+    const [chatHistory, setChatHistory] = useState<any[]>([]);
+    const [newCourse, setNewCourse] = useState({ code: "", name: "", credits: 3, grade: "A", attendance: 100 });
+    const [newExam, setNewExam] = useState({ subject: "", minMarks: 0, maxMarks: 100, obtainedMarks: 0 });
+
     const [studentData, setStudentData] = useState({
         name: "Loading...",
         email: "",
@@ -34,17 +38,9 @@ export default function StudentDashboard() {
         semester: "",
         attendance: 0,
         cgpa: 0,
-        courses: [
-            { code: "CS301", name: "Data Structures", credits: 4, grade: "A", attendance: 95 },
-            { code: "CS302", name: "Database Management", credits: 3, grade: "A+", attendance: 98 },
-            { code: "CS303", name: "Operating Systems", credits: 4, grade: "A", attendance: 90 },
-            { code: "MA301", name: "Mathematics III", credits: 3, grade: "B+", attendance: 88 },
-        ],
-        upcomingEvents: [
-            { title: "Mid-term Exams", date: "Feb 15, 2026", type: "exam" },
-            { title: "Project Submission", date: "Feb 20, 2026", type: "assignment" },
-            { title: "Sports Day", date: "Feb 25, 2026", type: "event" },
-        ]
+        courses: [] as any[],
+        examMarks: [] as any[],
+        upcomingEvents: [] as any[]
     });
 
     useEffect(() => {
@@ -54,7 +50,17 @@ export default function StudentDashboard() {
             return;
         }
         fetchProfile();
+        fetchChatHistory();
     }, [router]);
+
+    const fetchChatHistory = async () => {
+        try {
+            const res = await api.get("/history/");
+            setChatHistory(res.data);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const fetchProfile = async () => {
         try {
@@ -70,6 +76,7 @@ export default function StudentDashboard() {
                 cgpa: data.cgpa,
                 attendance: data.attendance,
                 courses: data.courses || prev.courses,
+                examMarks: data.exam_marks || prev.examMarks,
                 upcomingEvents: data.upcomingEvents || prev.upcomingEvents
             }));
             setEditForm({
@@ -102,6 +109,48 @@ export default function StudentDashboard() {
             alert("Failed to save profile. Please try again.");
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleAddCourse = async () => {
+        const updatedCourses = [...studentData.courses, newCourse];
+        try {
+            await api.post("/student/profile", { courses: updatedCourses });
+            setStudentData(prev => ({ ...prev, courses: updatedCourses }));
+            setNewCourse({ code: "", name: "", credits: 3, grade: "A", attendance: 100 });
+        } catch (e) {
+            alert("Failed to add course.");
+        }
+    };
+
+    const handleRemoveCourse = async (index: number) => {
+        const updatedCourses = studentData.courses.filter((_, i) => i !== index);
+        try {
+            await api.post("/student/profile", { courses: updatedCourses });
+            setStudentData(prev => ({ ...prev, courses: updatedCourses }));
+        } catch (e) {
+            alert("Failed to remove course.");
+        }
+    };
+
+    const handleAddExam = async () => {
+        const updatedExams = [...studentData.examMarks, newExam];
+        try {
+            await api.post("/student/profile", { exam_marks: updatedExams });
+            setStudentData(prev => ({ ...prev, examMarks: updatedExams }));
+            setNewExam({ subject: "", minMarks: 0, maxMarks: 100, obtainedMarks: 0 });
+        } catch (e) {
+            alert("Failed to add exam.");
+        }
+    };
+
+    const handleRemoveExam = async (index: number) => {
+        const updatedExams = studentData.examMarks.filter((_, i) => i !== index);
+        try {
+            await api.post("/student/profile", { exam_marks: updatedExams });
+            setStudentData(prev => ({ ...prev, examMarks: updatedExams }));
+        } catch (e) {
+            alert("Failed to remove exam.");
         }
     };
 
@@ -217,7 +266,8 @@ export default function StudentDashboard() {
                                     { id: "overview", icon: BookOpen, label: "Overview" },
                                     { id: "courses", icon: FileText, label: "My Courses" },
                                     { id: "attendance", icon: Calendar, label: "Attendance" },
-                                    { id: "grades", icon: Award, label: "Grades" },
+                                    { id: "grades", icon: Award, label: "Grades & Exams" },
+                                    { id: "history", icon: MessageSquare, label: "Saved Chats" },
                                     { id: "profile", icon: User, label: "Profile" },
                                 ].map((item) => (
                                     <button
@@ -550,12 +600,137 @@ export default function StudentDashboard() {
                             </div>
                         )}
 
-                        {/* ===== OTHER TABS — placeholder ===== */}
-                        {(activeTab === "courses" || activeTab === "attendance" || activeTab === "grades") && (
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
-                                <Award className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 capitalize">{activeTab}</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Detailed {activeTab} data will be available once the backend is connected.</p>
+                        {/* ===== COURSES TAB ===== */}
+                        {activeTab === "courses" && (
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage My Courses</h2>
+                                
+                                {/* Add Course Form */}
+                                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-6 border border-gray-200 dark:border-gray-600">
+                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Course</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                        <input type="text" placeholder="Course Code" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newCourse.code} onChange={e => setNewCourse({...newCourse, code: e.target.value})} />
+                                        <input type="text" placeholder="Course Name" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500 md:col-span-2" value={newCourse.name} onChange={e => setNewCourse({...newCourse, name: e.target.value})} />
+                                        <input type="number" placeholder="Credits" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newCourse.credits || ''} onChange={e => setNewCourse({...newCourse, credits: parseInt(e.target.value) || 0})} />
+                                        <button onClick={handleAddCourse} disabled={!newCourse.code || !newCourse.name} className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 rounded-lg text-sm flex items-center justify-center gap-1 transition-colors disabled:opacity-50"><Plus className="w-4 h-4"/> Add</button>
+                                    </div>
+                                </div>
+
+                                {/* Course List */}
+                                <div className="space-y-4">
+                                    {studentData.courses.length === 0 ? (
+                                        <p className="text-center text-gray-500 dark:text-gray-400 py-4">No courses added yet.</p>
+                                    ) : (
+                                        studentData.courses.map((course, i) => (
+                                            <div key={i} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 gap-4">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs font-semibold rounded">{course.code}</span>
+                                                        <h3 className="font-semibold text-gray-900 dark:text-white">{course.name}</h3>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-6">
+                                                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">{course.credits} Credits</span>
+                                                    <button onClick={() => handleRemoveCourse(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ===== GRADES & EXAMS TAB ===== */}
+                        {activeTab === "grades" && (
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Grades & Exam Tracking</h2>
+                                
+                                {/* Add Exam Form */}
+                                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-6 border border-gray-200 dark:border-gray-600">
+                                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add Exam Record</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                        <input type="text" placeholder="Subject Name" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500 md:col-span-2" value={newExam.subject} onChange={e => setNewExam({...newExam, subject: e.target.value})} />
+                                        <input type="number" placeholder="Marks Obtained" title="Obtained Marks" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newExam.obtainedMarks || ''} onChange={e => setNewExam({...newExam, obtainedMarks: parseInt(e.target.value) || 0})} />
+                                        <input type="number" placeholder="Total Marks" title="Total Marks" className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white outline-none focus:border-yellow-500" value={newExam.maxMarks || ''} onChange={e => setNewExam({...newExam, maxMarks: parseInt(e.target.value) || 0})} />
+                                        <button onClick={handleAddExam} disabled={!newExam.subject} className="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 rounded-lg text-sm flex items-center justify-center gap-1 transition-colors disabled:opacity-50"><Plus className="w-4 h-4"/> Add</button>
+                                    </div>
+                                </div>
+
+                                {/* Exam List */}
+                                <div className="space-y-4">
+                                    {studentData.examMarks.length === 0 ? (
+                                        <p className="text-center text-gray-500 dark:text-gray-400 py-4">No exam records found.</p>
+                                    ) : (
+                                        studentData.examMarks.map((exam, i) => {
+                                            const percent = Math.round((exam.obtainedMarks / exam.maxMarks) * 100);
+                                            const isPass = percent >= 40;
+                                            return (
+                                                <div key={i} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 gap-4">
+                                                    <div className="flex-1 w-full relative">
+                                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{exam.subject}</h3>
+                                                        <div className="w-full max-w-sm bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                                                            <div className={`h-2.5 rounded-full ${isPass ? "bg-green-500" : "bg-red-500"}`} style={{ width: `${Math.min(percent, 100)}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-6 min-w-[150px] justify-end">
+                                                        <div className="text-right">
+                                                            <div className={`text-xl font-bold ${isPass ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>{exam.obtainedMarks} <span className="text-sm font-normal text-gray-500">/ {exam.maxMarks}</span></div>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-400">{percent}% ({isPass ? 'Pass' : 'Fail'})</p>
+                                                        </div>
+                                                        <button onClick={() => handleRemoveExam(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ===== ATTENDANCE TAB ===== */}
+                        {activeTab === "attendance" && (
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 text-center">
+                                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Overall Attendance: {studentData.attendance}%</h3>
+                                <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-lg mx-auto">Attendance is tracked by the Staff Portal. Maintain above 75% to be eligible for board exams.</p>
+                                <div className="max-w-md mx-auto bg-gray-100 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
+                                    <div className={`h-4 transition-all duration-1000 ${studentData.attendance >= 75 ? "bg-green-500" : "bg-red-500"}`} style={{ width: `${Math.min(studentData.attendance, 100)}%` }}></div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ===== CHAT HISTORY TAB ===== */}
+                        {activeTab === "history" && (
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">My AI Consultations</h2>
+                                    <Link href="/chat" className="text-sm text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 font-medium flex items-center gap-1">
+                                        New Chat <Plus className="w-3 h-3" />
+                                    </Link>
+                                </div>
+                                <div className="space-y-4">
+                                    {chatHistory.length === 0 ? (
+                                        <div className="text-center py-8">
+                                            <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                                            <p className="text-gray-500 dark:text-gray-400">No chat history found.</p>
+                                        </div>
+                                    ) : (
+                                        chatHistory.map((chat: any, i) => (
+                                            <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-yellow-400 dark:hover:border-yellow-500 transition-colors">
+                                                <div className="mb-3 sm:mb-0">
+                                                    <h3 className="font-medium text-gray-900 dark:text-white mb-1">{chat.title || "VPTC Query"}</h3>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        <Clock className="w-3 h-3 inline mr-1 border-none" />
+                                                        {new Date(chat.timestamp).toLocaleDateString()} at {new Date(chat.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                    </p>
+                                                </div>
+                                                <Link href={`/chat?session=${chat.id}`} className="px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center inline-block">
+                                                    View Conversation
+                                                </Link>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -3,11 +3,12 @@ from typing import Optional, Literal
 
 class UserBase(BaseModel):
     email: EmailStr
-    role: Literal["student", "admin"] = "student"
+    role: Literal["student", "staff", "admin"] = "student"
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6)
     full_name: Optional[str] = None
+    staff_setup_key: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr

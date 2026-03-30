@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from app.api.v1.dependencies import get_current_user
 from app.core.database import supabase
+from app.services.academic_records import read_academic_record, write_academic_record
 import json
 
 router = APIRouter()
@@ -25,6 +26,8 @@ class StudentProfileUpdate(BaseModel):
     semester: Optional[str] = None
     cgpa: Optional[float] = None
     attendance: Optional[float] = None
+    courses: Optional[List[Dict[str, Any]]] = None
+    exam_marks: Optional[List[Dict[str, Any]]] = None
 
 def get_default_profile(user: dict):
     """Return default mock profile structure if the user hasn't saved one yet."""
@@ -54,15 +57,28 @@ def get_student_profile(current_user: dict = Depends(get_current_user)):
         response = supabase.table("student_profiles").select("*").eq("id", current_user["id"]).execute()
         
         default_profile = get_default_profile(current_user)
+        academic_data = read_academic_record(current_user.get("email", current_user["id"]))
         
+        # Merge local dynamic records
+        default_profile["courses"] = academic_data.get("courses", default_profile["courses"])
+        default_profile["exam_marks"] = academic_data.get("exam_marks", [])
+        
+        # Merge attendance tracking percentage if calculated dynamically by staff
+        att_history = academic_data.get("attendance_history", {})
+        if att_history.get("total", 0) > 0:
+            default_profile["attendance"] = round((att_history["present"] / att_history["total"]) * 100, 1)
+
         if response.data and len(response.data) > 0:
             db_data = response.data[0]
-            # Merge DB data with defaults (since courses/events are hardcoded defaults for now to keep the UI rich)
             default_profile["roll_no"] = db_data.get("roll_no") or default_profile["roll_no"]
             default_profile["department"] = db_data.get("department") or default_profile["department"]
             default_profile["semester"] = db_data.get("semester") or default_profile["semester"]
             default_profile["cgpa"] = float(db_data.get("cgpa") or 0.0)
-            default_profile["attendance"] = float(db_data.get("attendance") or 0.0)
+            
+            # Use database attendance if local file attendance tracking isn't active
+            if att_history.get("total", 0) == 0:
+                default_profile["attendance"] = float(db_data.get("attendance") or 0.0)
+                
             return default_profile
         else:
             return default_profile
@@ -86,6 +102,16 @@ def update_student_profile(profile_data: StudentProfileUpdate, current_user: dic
             "attendance": profile_data.attendance
         }
         
+        # Save academic data locally
+        if profile_data.courses is not None or profile_data.exam_marks is not None:
+            user_email = current_user.get("email", current_user["id"])
+            current_records = read_academic_record(user_email)
+            if profile_data.courses is not None:
+                current_records["courses"] = profile_data.courses
+            if profile_data.exam_marks is not None:
+                current_records["exam_marks"] = profile_data.exam_marks
+            write_academic_record(user_email, current_records)
+
         # Remove None values
         payload = {k: v for k, v in payload.items() if v is not None}
         

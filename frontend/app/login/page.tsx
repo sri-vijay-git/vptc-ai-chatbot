@@ -40,6 +40,8 @@ export default function AuthPage() {
         email: "",
         password: "",
         confirm_password: "",
+        role: "student",
+        staff_setup_key: "",
     });
 
     // ========== HANDLERS ==========
@@ -113,7 +115,15 @@ export default function AuthPage() {
             }
             window.dispatchEvent(new Event("auth-change"));
             window.dispatchEvent(new Event("storage"));
-            router.push("/");
+            
+            const userObj = JSON.parse(localStorage.getItem("user") || "{}");
+            if (userObj.role === "admin") {
+                router.push("/admin/dashboard");
+            } else if (userObj.role === "staff") {
+                router.push("/staff/dashboard");
+            } else {
+                router.push("/student/dashboard");
+            }
             router.refresh();
         } catch (err: any) {
             setError(err.response?.data?.detail || "Invalid email or password.");
@@ -140,9 +150,11 @@ export default function AuthPage() {
                 full_name: signupData.full_name,
                 email: signupData.email,
                 password: signupData.password,
+                role: signupData.role,
+                ...(signupData.role === "staff" ? { staff_setup_key: signupData.staff_setup_key } : {})
             });
             setSuccess("Account created! Please check your email to verify, then log in.");
-            setSignupData({ full_name: "", email: "", password: "", confirm_password: "" });
+            setSignupData({ full_name: "", email: "", password: "", confirm_password: "", role: "student", staff_setup_key: "" });
             setTimeout(() => switchMode("login"), 2500);
         } catch (err: any) {
             setError(
@@ -349,6 +361,61 @@ export default function AuthPage() {
                                         />
                                     </div>
                                 </div>
+
+                                {/* Role Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-[#3E2723] dark:text-[#FFCC80] mb-2">
+                                        I am a...
+                                    </label>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input 
+                                                type="radio" 
+                                                name="role" 
+                                                checked={signupData.role === "student"}
+                                                onChange={() => setSignupData({...signupData, role: "student"})}
+                                                className="w-4 h-4 text-[#8B6F47] focus:ring-[#8B6F47]"
+                                            />
+                                            <span className="text-sm text-[#5D4037] dark:text-[#BCAAA4]">Student</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input 
+                                                type="radio" 
+                                                name="role" 
+                                                checked={signupData.role === "staff"}
+                                                onChange={() => setSignupData({...signupData, role: "staff"})}
+                                                className="w-4 h-4 text-[#8B6F47] focus:ring-[#8B6F47]"
+                                            />
+                                            <span className="text-sm text-[#5D4037] dark:text-[#BCAAA4]">Staff Member</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Staff Secret Key */}
+                                <AnimatePresence>
+                                    {signupData.role === "staff" && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <label className="block text-sm font-medium text-[#3E2723] dark:text-[#FFCC80] mb-2 mt-2">
+                                                Staff Secret Code
+                                            </label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-red-500" />
+                                                <input
+                                                    type="password"
+                                                    value={signupData.staff_setup_key}
+                                                    onChange={(e) => setSignupData({ ...signupData, staff_setup_key: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3 rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/10 text-[#3E2723] dark:text-[#FFCC80] focus:ring-2 focus:ring-red-500 outline-none transition-all"
+                                                    placeholder="Required for staff registration"
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* Email */}
                                 <div>
