@@ -25,7 +25,7 @@ Vignesh Polytechnic College was the first Institution given birth by the Trust i
 ## Leadership & Key Personnel
 * **Founder:** The college was founded and is managed by the Sree Selvavinayagar Trust. There is no individual founder named "Vignesh".
 * **Chairman:** The Chairman of the college is Thiru R. Kuppusamy (Mani).
-* **Principal:** Mr. Sarvesan D (Qualifications: M.Tech., Electronics and Communication Engineering). Contact: 9865854918 | Email: sdsarvesantvm@rediffmail.com
+* **Principal:** Mr. Sarvesan D (Qualifications: M.Tech., Electronics and Communication Engineering). Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
 * **Vice Principal:** Mrs. Sujatha H (M.E.,) 
 
 ## Vision & Mission

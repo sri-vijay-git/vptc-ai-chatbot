@@ -14,7 +14,7 @@ INSTITUTION: Vignesh Polytechnic College (VPTC), Tiruvannamalai, Tamil Nadu.
 ADDRESS: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai - 606603.
 PHONE: 9488853917 / 9488863917 | MOBILE: 7373689294 | EMAIL: vpt384@yahoo.co.in
 
-PRINCIPAL: Sarvesan D.
+PRINCIPAL: Sarvesan D. | Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
 CHAIRMAN: Vignesh (Founder & Chairman)
 
 DEPARTMENTS & HODs:
@@ -59,16 +59,14 @@ class RAGService:
         """
         
         # 1. Retrieve Context from Vector Store (vector + keyword fallback)
-        context_source = "College Documents"
+        context_source = "College Documents + Seed Knowledge"
         try:
             relevant_docs = vector_store.search(user_query, n_results=5)
+            context = SEED_KNOWLEDGE + "\n\n=== RELEVANT DOCUMENTS ===\n"
             if relevant_docs:
-                context = "\n---\n".join(relevant_docs)
+                context += "\n---\n".join(relevant_docs)
             else:
-                # Last resort: inject hardcoded seed knowledge
-                print("⚠️ Both vector and keyword search failed — using SEED_KNOWLEDGE fallback")
-                context = SEED_KNOWLEDGE
-                context_source = "Seed Knowledge"
+                context += "No additional documents found."
         except Exception as e:
             print(f"Vector store error: {e}")
             context = SEED_KNOWLEDGE
