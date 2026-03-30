@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon, Facebook, Instagram } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon, Facebook, Instagram, LogIn, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -11,6 +11,8 @@ export default function HomePage() {
     const { theme, toggleTheme } = useTheme();
     const [promptInput, setPromptInput] = useState("");
     const [showSplash, setShowSplash] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userRole, setUserRole] = useState("student");
 
     // Splash screen effect
     useEffect(() => {
@@ -19,8 +21,29 @@ export default function HomePage() {
             setShowSplash(false);
         }, 2000);
 
+        // Check auth status
+        const token = localStorage.getItem("token");
+        const userStr = localStorage.getItem("user");
+        if (token && userStr) {
+            setIsLoggedIn(true);
+            try {
+                const userObj = JSON.parse(userStr);
+                setUserRole(userObj.role || "student");
+            } catch (e) {}
+        }
+
         return () => clearTimeout(timer);
     }, []);
+
+    const handleDashboardClick = () => {
+        if (!isLoggedIn) {
+            router.push("/login");
+        } else if (userRole === "staff" || userRole === "admin") {
+            router.push("/staff/dashboard");
+        } else {
+            router.push("/student/dashboard");
+        }
+    };
 
     const handleSubmit = (e?: React.FormEvent, query?: string) => {
         e?.preventDefault();
@@ -93,8 +116,29 @@ export default function HomePage() {
                     <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-gradient-to-r from-yellow-400/10 to-orange-300/10 rounded-full blur-2xl animate-pulse delay-500" />
                 </div>
 
+                {/* Top Navigation Bar */}
+                <nav className="absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-end items-center z-40 pointer-events-auto">
+                    <button
+                        onClick={handleDashboardClick}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white/80 dark:bg-[#2D1B15]/80 backdrop-blur-md border border-[#D7CCC8] dark:border-[#5D4037] hover:border-[#8B6F47] dark:hover:border-[#FFCC80] rounded-full text-[#5D4037] dark:text-[#FFCC80] font-medium transition-all shadow-sm hover:shadow-md"
+                    >
+                        {isLoggedIn ? (
+                            <>
+                                <LayoutDashboard className="w-4 h-4" />
+                                <span className="hidden sm:inline">Go to Dashboard</span>
+                                <span className="sm:hidden">Dashboard</span>
+                            </>
+                        ) : (
+                            <>
+                                <LogIn className="w-4 h-4" />
+                                <span>Login / Portal</span>
+                            </>
+                        )}
+                    </button>
+                </nav>
+
                 {/* Hero Section - Gemini Style */}
-                <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative z-10">
+                <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative z-10 pt-24">
                     <div className="w-full max-w-3xl text-center space-y-8">
                         {/* College Logo */}
                         <div className="flex justify-center">
