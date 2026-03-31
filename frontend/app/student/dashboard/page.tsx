@@ -468,23 +468,34 @@ export default function StudentDashboard() {
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
-                                                <input 
-                                                    type="text" 
-                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                <select 
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white outline-none"
                                                     value={editForm.department}
                                                     onChange={e => setEditForm({...editForm, department: e.target.value})}
-                                                    placeholder="Computer Science"
-                                                />
+                                                >
+                                                    <option value="">-- Select Your Department --</option>
+                                                    <option value="Computer Engineering (CSE)">Computer Engineering (CSE)</option>
+                                                    <option value="Electronics and Comm. Engineering (ECE)">Electronics and Comm. Engineering (ECE)</option>
+                                                    <option value="Electrical and Electronics Engineering (EEE)">Electrical and Electronics Engineering (EEE)</option>
+                                                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                                    <option value="Civil Engineering">Civil Engineering</option>
+                                                </select>
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Semester</label>
-                                                <input 
-                                                    type="text" 
-                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                <select 
+                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white outline-none"
                                                     value={editForm.semester}
                                                     onChange={e => setEditForm({...editForm, semester: e.target.value})}
-                                                    placeholder="3rd Semester"
-                                                />
+                                                >
+                                                    <option value="">-- Select Semester --</option>
+                                                    <option value="Semester 1">Semester 1</option>
+                                                    <option value="Semester 2">Semester 2</option>
+                                                    <option value="Semester 3">Semester 3</option>
+                                                    <option value="Semester 4">Semester 4</option>
+                                                    <option value="Semester 5">Semester 5</option>
+                                                    <option value="Semester 6">Semester 6</option>
+                                                </select>
                                             </div>
                                             <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                                                 <TrendingUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
