@@ -21,9 +21,7 @@ export default function StudentDashboard() {
     const [editForm, setEditForm] = useState({
         roll_no: "",
         department: "",
-        semester: "",
-        cgpa: 0.0,
-        attendance: 0.0
+        semester: ""
     });
 
     const [chatHistory, setChatHistory] = useState<any[]>([]);
@@ -82,9 +80,7 @@ export default function StudentDashboard() {
             setEditForm({
                 roll_no: data.roll_no !== "Not Set" ? data.roll_no : "",
                 department: data.department !== "Not Set" ? data.department : "",
-                semester: data.semester !== "Not Set" ? data.semester : "",
-                cgpa: data.cgpa,
-                attendance: data.attendance
+                semester: data.semester !== "Not Set" ? data.semester : ""
             });
         } catch (error) {
             console.error("Failed to fetch profile", error);
@@ -490,24 +486,11 @@ export default function StudentDashboard() {
                                                     placeholder="3rd Semester"
                                                 />
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-1">
-                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">CGPA</label>
-                                                    <input 
-                                                        type="number" step="0.1" 
-                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
-                                                        value={editForm.cgpa}
-                                                        onChange={e => setEditForm({...editForm, cgpa: parseFloat(e.target.value) || 0})}
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Attendance %</label>
-                                                    <input 
-                                                        type="number" step="0.1" 
-                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
-                                                        value={editForm.attendance}
-                                                        onChange={e => setEditForm({...editForm, attendance: parseFloat(e.target.value) || 0})}
-                                                    />
+                                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                <TrendingUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">CGPA & Attendance</p>
+                                                    <p className="font-medium text-gray-500 dark:text-gray-400">Values are updated by your department staff.</p>
                                                 </div>
                                             </div>
                                         </div>

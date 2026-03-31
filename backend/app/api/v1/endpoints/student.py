@@ -24,11 +24,6 @@ class StudentProfileUpdate(BaseModel):
     roll_no: Optional[str] = None
     department: Optional[str] = None
     semester: Optional[str] = None
-    cgpa: Optional[float] = None
-    attendance: Optional[float] = None
-    courses: Optional[List[Dict[str, Any]]] = None
-    exam_marks: Optional[List[Dict[str, Any]]] = None
-
 def get_default_profile(user: dict):
     """Return default mock profile structure if the user hasn't saved one yet."""
     name = user.get("full_name") or user.get("email", "Student").split("@")[0]
@@ -121,21 +116,9 @@ def update_student_profile(profile_data: StudentProfileUpdate, current_user: dic
         payload = {
             "roll_no": profile_data.roll_no,
             "department": profile_data.department,
-            "semester": profile_data.semester,
-            "cgpa": profile_data.cgpa,
-            "attendance": profile_data.attendance
+            "semester": profile_data.semester
         }
         
-        # Save academic data locally
-        if profile_data.courses is not None or profile_data.exam_marks is not None:
-            user_email = current_user.get("email", current_user["id"])
-            current_records = read_academic_record(user_email)
-            if profile_data.courses is not None:
-                current_records["courses"] = profile_data.courses
-            if profile_data.exam_marks is not None:
-                current_records["exam_marks"] = profile_data.exam_marks
-            write_academic_record(user_email, current_records)
-
         # Remove None values
         payload = {k: v for k, v in payload.items() if v is not None}
         

@@ -39,9 +39,9 @@ The department also utilizes computer facilities for Programming in “C”, Com
 * **Syllabus:** [M-Scheme (Download)](https://vigneshpolytechniccollege.com/wp-content/uploads/2017/06/ECE.pdf)
 
 ## 5. Computer Science Engineering (CSE)
-* **Head of Department (HOD):** Mr. S.Saravanan (Qualification: MCA) 
-* **Key Faculty:** Mrs. A.Abirami (Qualification: MCA)
-* **Computer Lab Incharge:** Mis.Santhi (Qualification: BE.CSE)
+* **Head of Department (HOD):** Mr. S.Saravanan-Qualification: MCA
+* **Key Faculty:** Mrs. A.Abirami-Qualification: MCA
+* **Computer Lab Incharge:** Mis.Santhi-Qualification: BE.CSE
 
 ### Infrastructure & Facilities
 The Computer Department possesses over 200 of the latest computers distributed across Computer Lab I, II & III. All computers are configured with necessary software for hands-on, individual training in Linux, C Programming, Java, Data Structure using C, Web programming, RDBMS, .Net programming, Computer Servicing and Networking, System Administration, and multimedia.

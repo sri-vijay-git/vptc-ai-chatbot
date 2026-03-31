@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon, Facebook, Instagram, LogIn, LayoutDashboard } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Clock, BookOpen, Shield, Sun, Moon, Facebook, Instagram } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "@/contexts/ThemeContext";
 
