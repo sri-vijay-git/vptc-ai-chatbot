@@ -280,7 +280,7 @@ export default function StaffDashboard() {
                                     <table className="w-full text-left border-collapse">
                                         <thead>
                                             <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                                                <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-300">Roll No</th>
+                                                <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-300">Reg & Roll No</th>
                                                 <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-300">Student Profile</th>
                                                 <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-300 text-center">Past Attendance Total</th>
                                                 <th className="p-4 font-semibold text-sm text-gray-600 dark:text-gray-300 text-center">Today's Attendance</th>
@@ -296,7 +296,8 @@ export default function StaffDashboard() {
                                                 return (
                                                     <tr key={student.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-yellow-50/50 dark:hover:bg-yellow-900/10 transition-colors">
                                                         <td className="p-4 font-medium text-gray-900 dark:text-white">
-                                                            {student.roll_no || "N/A"}
+                                                            <div>{student.reg_no || "Reg: N/A"}</div>
+                                                            <div className="text-xs text-gray-500 mt-1">{student.roll_no || "Roll: N/A"}</div>
                                                         </td>
                                                         <td className="p-4 text-gray-600 dark:text-gray-300">
                                                             <div className="font-medium text-gray-900 dark:text-white text-sm">{student.email || student.id}</div>

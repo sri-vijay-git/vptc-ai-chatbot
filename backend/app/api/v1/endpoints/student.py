@@ -22,6 +22,7 @@ class EventInfo(BaseModel):
 
 class StudentProfileUpdate(BaseModel):
     roll_no: Optional[str] = None
+    reg_no: Optional[str] = None
     department: Optional[str] = None
     semester: Optional[str] = None
 def get_default_profile(user: dict):
@@ -32,6 +33,7 @@ def get_default_profile(user: dict):
         "name": name,
         "email": user.get("email", ""),
         "roll_no": "Not Set",
+        "reg_no": "Not Set",
         "department": "Not Set",
         "semester": "Not Set",
         "cgpa": 0.0,
@@ -90,6 +92,7 @@ def get_student_profile(current_user: dict = Depends(get_current_user)):
         if response.data and len(response.data) > 0:
             db_data = response.data[0]
             default_profile["roll_no"] = db_data.get("roll_no") or default_profile["roll_no"]
+            default_profile["reg_no"] = db_data.get("reg_no") or default_profile["reg_no"]
             default_profile["department"] = db_data.get("department") or default_profile["department"]
             default_profile["semester"] = db_data.get("semester") or default_profile["semester"]
             default_profile["cgpa"] = float(db_data.get("cgpa") or 0.0)
@@ -115,6 +118,7 @@ def update_student_profile(profile_data: StudentProfileUpdate, current_user: dic
         
         payload = {
             "roll_no": profile_data.roll_no,
+            "reg_no": profile_data.reg_no,
             "department": profile_data.department,
             "semester": profile_data.semester
         }

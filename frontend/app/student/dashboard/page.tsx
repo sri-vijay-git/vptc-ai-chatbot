@@ -20,6 +20,7 @@ export default function StudentDashboard() {
     const [isSaving, setIsSaving] = useState(false);
     const [editForm, setEditForm] = useState({
         roll_no: "",
+        reg_no: "",
         department: "",
         semester: ""
     });
@@ -32,6 +33,7 @@ export default function StudentDashboard() {
         name: "Loading...",
         email: "",
         rollNo: "",
+        regNo: "",
         department: "",
         semester: "",
         attendance: 0,
@@ -69,6 +71,7 @@ export default function StudentDashboard() {
                 name: data.name,
                 email: data.email,
                 rollNo: data.roll_no,
+                regNo: data.reg_no,
                 department: data.department,
                 semester: data.semester,
                 cgpa: data.cgpa,
@@ -79,6 +82,7 @@ export default function StudentDashboard() {
             }));
             setEditForm({
                 roll_no: data.roll_no !== "Not Set" ? data.roll_no : "",
+                reg_no: data.reg_no !== "Not Set" ? data.reg_no : "",
                 department: data.department !== "Not Set" ? data.department : "",
                 semester: data.semester !== "Not Set" ? data.semester : ""
             });
@@ -252,7 +256,7 @@ export default function StudentDashboard() {
                                     <Avatar size="lg" />
                                 </div>
                                 <h3 className="font-bold text-gray-900 dark:text-white mb-1">{studentData.name}</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">{studentData.rollNo}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{studentData.regNo || "Reg No: Not Set"} <span className="text-gray-300 mx-1">|</span> {studentData.rollNo || "Roll No: Not Set"}</p>
                                 <p className="text-xs text-gray-500 mt-1">{studentData.department}</p>
                             </div>
 
@@ -423,8 +427,10 @@ export default function StudentDashboard() {
                                             <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                                                 <FileText className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                                 <div>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Roll Number</p>
-                                                    <p className="font-medium text-gray-900 dark:text-white">{studentData.rollNo}</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Register & Roll No</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">
+                                                        {studentData.regNo || "Not Set"} <span className="text-gray-400 font-normal mx-1">/</span> {studentData.rollNo || "Not Set"}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
@@ -456,15 +462,27 @@ export default function StudentDashboard() {
                                                     Update your academic records here. This data powers your dynamic dashboard overview!
                                                 </p>
                                             </div>
-                                            <div className="space-y-1">
-                                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
-                                                <input 
-                                                    type="text" 
-                                                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
-                                                    value={editForm.roll_no}
-                                                    onChange={e => setEditForm({...editForm, roll_no: e.target.value})}
-                                                    placeholder="VPTC/CSE/001"
-                                                />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Register Number</label>
+                                                    <input 
+                                                        type="text" 
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                        value={editForm.reg_no}
+                                                        onChange={e => setEditForm({...editForm, reg_no: e.target.value})}
+                                                        placeholder="2115..."
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Roll Number</label>
+                                                    <input 
+                                                        type="text" 
+                                                        className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 text-gray-900 dark:text-white"
+                                                        value={editForm.roll_no}
+                                                        onChange={e => setEditForm({...editForm, roll_no: e.target.value})}
+                                                        placeholder="VPTC/CSE/001"
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
