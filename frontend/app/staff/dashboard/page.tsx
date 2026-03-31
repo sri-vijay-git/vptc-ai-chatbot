@@ -300,8 +300,9 @@ export default function StaffDashboard() {
                                                             <div className="text-xs text-gray-500 mt-1">{student.roll_no || "Roll: N/A"}</div>
                                                         </td>
                                                         <td className="p-4 text-gray-600 dark:text-gray-300">
-                                                            <div className="font-medium text-gray-900 dark:text-white text-sm">{student.email || student.id}</div>
-                                                            <div className="text-xs text-gray-500 mt-1">Sem {student.semester || "N/A"}</div>
+                                                            <div className="font-medium text-gray-900 dark:text-white text-sm">{student.name || "Unknown Student"}</div>
+                                                            <div className="text-xs text-gray-500 mt-1">{student.email || student.id}</div>
+                                                            <div className="text-xs text-gray-400 mt-0.5">Sem {student.semester || "N/A"}</div>
                                                         </td>
                                                         <td className="p-4 text-center">
                                                             <div className="flex flex-col items-center">
@@ -375,7 +376,7 @@ export default function StaffDashboard() {
                                     Control Academic Record
                                 </h2>
                                 <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                                    Editing Profile: <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedStudent.email || selectedStudent.id}</span>
+                                    Editing Profile: <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedStudent.name || selectedStudent.email || selectedStudent.id}</span>
                                     <span className="mx-2">•</span>
                                     <span>Sem {selectedStudent.semester || "Not Set"}</span>
                                 </p>
