@@ -116,7 +116,13 @@ def update_student_profile(profile_data: StudentProfileUpdate, current_user: dic
         # Check if exists
         check = supabase.table("student_profiles").select("id").eq("id", current_user["id"]).execute()
         
+        # Always include name and email so staff dashboard can display them
+        user_name = current_user.get("full_name") or current_user.get("email", "Student").split("@")[0]
+        user_email = current_user.get("email", "")
+        
         payload = {
+            "name": user_name,
+            "email": user_email,
             "roll_no": profile_data.roll_no,
             "reg_no": profile_data.reg_no,
             "department": profile_data.department,
