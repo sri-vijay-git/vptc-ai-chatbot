@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import "../styles/vptc-theme.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import SettingsApplier from "@/components/SettingsApplier";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={`${inter.className} bg-white dark:bg-[#1A100E] transition-colors`}>
                 <ThemeProvider>
+                    <SettingsApplier />
                     <LayoutWrapper>
                         {children}
                     </LayoutWrapper>

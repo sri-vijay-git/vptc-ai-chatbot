@@ -17,6 +17,49 @@ type Section = "appearance" | "chat" | "notifications" | "privacy" | "account" |
 const FONT_SIZE_OPTIONS = ["Small", "Medium", "Large"];
 const LANGUAGE_OPTIONS = ["English", "Tamil", "Hindi"];
 
+// Translations for the Settings page UI
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+    English: {
+        appearance: "Appearance",
+        appearanceDesc: "Customize how VPTC AI looks on your device.",
+        theme: "Theme",
+        chatFontSize: "Chat Font Size",
+        language: "Language",
+        small: "Small",
+        medium: "Medium",
+        large: "Large",
+        light: "Light",
+        dark: "Dark",
+        system: "System",
+    },
+    Tamil: {
+        appearance: "தோற்றம்",
+        appearanceDesc: "VPTC AI உங்கள் சாதனத்தில் எவ்வாறு தெரிகிறது என்பதை தனிப்பயனாக்கவும்.",
+        theme: "தீம்",
+        chatFontSize: "சாட் எழுத்து அளவு",
+        language: "மொழி",
+        small: "சிறியது",
+        medium: "நடுத்தரம்",
+        large: "பெரியது",
+        light: "வெளிர்",
+        dark: "இருள்",
+        system: "கணினி",
+    },
+    Hindi: {
+        appearance: "दिखावट",
+        appearanceDesc: "VPTC AI आपके डिवाइस पर कैसा दिखता है, अनुकूलित करें।",
+        theme: "थीम",
+        chatFontSize: "चैट फ़ॉन्ट आकार",
+        language: "भाषा",
+        small: "छोटा",
+        medium: "मध्यम",
+        large: "बड़ा",
+        light: "हल्का",
+        dark: "गहरा",
+        system: "सिस्टम",
+    },
+};
+
 export default function SettingsPage() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
@@ -68,6 +111,18 @@ export default function SettingsPage() {
         if (typeof settings.shareUsage === "boolean") setShareUsage(settings.shareUsage);
     }, []);
 
+    // Apply font size class to <html> whenever fontSize changes
+    useEffect(() => {
+        const html = document.documentElement;
+        html.classList.remove("font-size-small", "font-size-medium", "font-size-large");
+        html.classList.add(`font-size-${fontSize.toLowerCase()}`);
+    }, [fontSize]);
+
+    // Persist language to localStorage so other pages can read it
+    useEffect(() => {
+        localStorage.setItem("vptc_language", language);
+    }, [language]);
+
     const saveSettings = () => {
         const settings = {
             themeChoice, fontSize, language,
@@ -78,6 +133,9 @@ export default function SettingsPage() {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
+
+    // Shorthand translator
+    const t = (key: string) => TRANSLATIONS[language]?.[key] ?? TRANSLATIONS["English"][key] ?? key;
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -215,28 +273,28 @@ export default function SettingsPage() {
                             {/* APPEARANCE */}
                             {activeSection === "appearance" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">Appearance</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Customize how VPTC AI looks on your device.</p>
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("appearance")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("appearanceDesc")}</p>
 
                                     {/* Theme */}
                                     <div className="mb-6">
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">Theme</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">{t("theme")}</p>
                                         <div className="grid grid-cols-3 gap-3">
-                                            {(["light", "dark", "system"] as const).map(t => (
+                                            {(["light", "dark", "system"] as const).map(th => (
                                                 <button
-                                                    key={t}
+                                                    key={th}
                                                     onClick={() => {
-                                                        setThemeChoice(t);
-                                                        if (t === "light" && theme === "dark") toggleTheme();
-                                                        if (t === "dark" && theme === "light") toggleTheme();
+                                                        setThemeChoice(th);
+                                                        if (th === "light" && theme === "dark") toggleTheme();
+                                                        if (th === "dark" && theme === "light") toggleTheme();
                                                     }}
-                                                    className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${themeChoice === t ? "border-[#8B6F47] dark:border-[#FFCC80] bg-[#8B6F47]/5 dark:bg-[#FFCC80]/5" : "border-gray-200 dark:border-gray-700 hover:border-gray-300"}`}
+                                                    className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${themeChoice === th ? "border-[#8B6F47] dark:border-[#FFCC80] bg-[#8B6F47]/5 dark:bg-[#FFCC80]/5" : "border-gray-200 dark:border-gray-700 hover:border-gray-300"}`}
                                                 >
-                                                    {t === "light" && <Sun className="w-6 h-6 text-yellow-500" />}
-                                                    {t === "dark" && <Moon className="w-6 h-6 text-indigo-400" />}
-                                                    {t === "system" && <Monitor className="w-6 h-6 text-gray-500" />}
-                                                    <span className="text-xs font-medium capitalize text-gray-700 dark:text-gray-300">{t}</span>
-                                                    {themeChoice === t && <Check className="absolute top-2 right-2 w-3 h-3 text-[#8B6F47] dark:text-[#FFCC80]" />}
+                                                    {th === "light" && <Sun className="w-6 h-6 text-yellow-500" />}
+                                                    {th === "dark" && <Moon className="w-6 h-6 text-indigo-400" />}
+                                                    {th === "system" && <Monitor className="w-6 h-6 text-gray-500" />}
+                                                    <span className="text-xs font-medium capitalize text-gray-700 dark:text-gray-300">{t(th)}</span>
+                                                    {themeChoice === th && <Check className="absolute top-2 right-2 w-3 h-3 text-[#8B6F47] dark:text-[#FFCC80]" />}
                                                 </button>
                                             ))}
                                         </div>
@@ -244,7 +302,7 @@ export default function SettingsPage() {
 
                                     {/* Font Size */}
                                     <div className="mb-6">
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">Chat Font Size</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">{t("chatFontSize")}</p>
                                         <div className="flex gap-2">
                                             {FONT_SIZE_OPTIONS.map(size => (
                                                 <button
@@ -252,7 +310,7 @@ export default function SettingsPage() {
                                                     onClick={() => setFontSize(size)}
                                                     className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all ${fontSize === size ? "border-[#8B6F47] dark:border-[#FFCC80] bg-[#8B6F47]/10 text-[#8B6F47] dark:text-[#FFCC80]" : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"}`}
                                                 >
-                                                    {size}
+                                                    {t(size.toLowerCase())}
                                                 </button>
                                             ))}
                                         </div>
@@ -260,7 +318,7 @@ export default function SettingsPage() {
 
                                     {/* Language */}
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2"><Globe className="w-4 h-4" /> Language</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2"><Globe className="w-4 h-4" /> {t("language")}</p>
                                         <div className="flex gap-2 flex-wrap">
                                             {LANGUAGE_OPTIONS.map(lang => (
                                                 <button
