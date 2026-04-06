@@ -521,7 +521,7 @@ function ChatContent() {
 
                 {/* Sidebar Footer */}
                 <div className="p-4 border-t border-[#d7ccc8] dark:border-[#4e342e] space-y-2">
-                    <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#3e2723] dark:text-[#ffcc80] hover:bg-[#d7ccc8] dark:hover:bg-[#4e342e] rounded-lg transition-colors">
+                    <button onClick={() => router.push("/settings")} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#3e2723] dark:text-[#ffcc80] hover:bg-[#d7ccc8] dark:hover:bg-[#4e342e] rounded-lg transition-colors">
                         <Settings className="w-4 h-4" />
                         Settings
                     </button>
