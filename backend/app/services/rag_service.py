@@ -14,15 +14,32 @@ INSTITUTION: Vignesh Polytechnic College (VPTC), Tiruvannamalai, Tamil Nadu.
 ADDRESS: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai - 606603.
 PHONE: 9488853917 / 9488863917 | MOBILE: 7373689294 | EMAIL: vpt384@yahoo.co.in
 
-PRINCIPAL: Sarvesan D. | Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
-CHAIRMAN: Vignesh (Founder & Chairman)
+PRINCIPAL: Mr. Sarvesan D (M.Tech., Electronics & Communication Engineering). Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
+VICE PRINCIPAL: Mrs. Sujatha H (M.E.)
+CHAIRMAN: Thiru R. Kuppusamy (Mani) — Chairman of Sree Selvavinayagar Trust which manages VPTC. Note: There is NO individual founder named "Vignesh" — the college is named after the trust, not a person.
 
-DEPARTMENTS & HODs:
-- Civil Engineering: HOD – Mr. S. Subash (ME. Civil, 15 years experience).
-- Mechanical Engineering: HOD – Mr. Kumaran (ME. Mechanical, 20 years experience).
-- Electrical & Electronics Engineering (EEE): HOD – Mr. M. Anbalagan (ME. EEE, 20 years experience).
-- Electronics & Communication Engineering (ECE): HOD – Mrs. H. Sujatha (ME. ECE).
-- Computer Science Engineering (CSE): HOD – Mr. S. Saravanan (MCA).
+DEPARTMENTS, HODs & KEY FACULTY:
+- Civil Engineering:
+    HOD: Mr. S. Subash (ME. Civil, 15 years experience).
+    Key Faculty: Ms. S. Savithiri (BE. Civil).
+
+- Mechanical Engineering:
+    HOD: Mr. Kumaran (ME. Mechanical, 20 years experience).
+    Key Faculty: Mr. R. Ilaiyabharathi (BE. Mechanical), Mr. V. Vinoth (BE. Mechanical).
+
+- Electrical & Electronics Engineering (EEE):
+    HOD: Mr. M. Anbalagan (ME. EEE, 20 years experience).
+    Key Faculty: Mr. R. Anbalagan (BE. EEE), Mr. V. Kannan (ME. EEE).
+
+- Electronics & Communication Engineering (ECE):
+    HOD: Mrs. H. Sujatha (ME. ECE).
+    Key Faculty: Mrs. Thilagam (BE. ECE).
+
+- Computer Science Engineering (CSE):
+    HOD: Mr. S. Saravanan (MCA).
+    Key Faculty: Mrs. A. Abirami (MCA). Computer Lab Incharge: Ms. Santhi (BE. CSE).
+
+- System Admin: Mr. Elango.
 
 COURSES OFFERED (3-year Diploma):
 1. Civil Engineering
