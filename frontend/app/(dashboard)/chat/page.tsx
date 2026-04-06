@@ -718,8 +718,8 @@ function ChatContent() {
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
-                                                <div className="inline-block max-w-[70%] px-4 py-3 rounded-2xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white shadow-sm border border-[#6D563C]/20">
-                                                    <p className="whitespace-pre-wrap leading-relaxed text-base text-left">
+                                                <div className="inline-block max-w-[70%] px-4 py-3 rounded-2xl bg-gradient-to-r from-[#8B6F47] to-[#6D563C] text-white shadow-sm border border-[#6D563C]/20 overflow-hidden">
+                                                    <p className="whitespace-pre-wrap leading-relaxed text-base text-left break-words break-all">
                                                         {msg.content}
                                                     </p>
                                                 </div>
