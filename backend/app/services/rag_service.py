@@ -36,7 +36,13 @@ ADMISSION:
 - Documents: 10th Mark Sheet, Transfer Certificate, Community Certificate, Conduct Certificate, Photos.
 - Lateral Entry: Direct 2nd year admission for ITI holders.
 
-FEES: As per Tamil Nadu Government norms. Scholarships for SC/ST students.
+FEES (ALL DEPARTMENTS - CSE, ECE, EEE, MECHANICAL, CIVIL, S&H):
+- Annual Fee: Rs.42,000 per year for ALL departments (no difference between branches).
+- 1st Semester (Odd): Rs.20,000 | 2nd Semester (Even): Rs.22,000
+- SC/ST Students: Rs.35,000 per year. 1st Semester: Rs.15,000. 2nd Semester: Rs.22,500 (Rs.2,500 returned as pocket money, net college fee Rs.20,000).
+- Admission Fee (one-time): Rs.100 | Exam Fee: Rs.750/semester | Lab Fee: Rs.20/semester
+- Transport is included in the Rs.42,000 annual fee. No separate transport charge.
+- Payment options: Lump sum or semester-wise installments.
 
 EXAM SYSTEM: 6 semesters over 3 years. Internal (30%) + Final (70%). Pass: 35% minimum.
 
@@ -129,13 +135,13 @@ Answer concisely:"""
 
 Lateral entry options are available for direct admission to the 2nd year. Which one are you interested in?"""
 
-            elif any(word in query_lower for word in ['fee', 'fees', 'cost']):
-                answer = """**Fee Structure:**
+                answer = """**Fee Structure (All Departments - CSE, ECE, EEE, Mechanical, Civil):**
 
-• Tuition fees are collected as per the norms fixed by the **Government of Tamil Nadu**.
-• Scholarships are available for SC/ST and eligible students.
-
-For exact fee details, you can download the fee structure PDF from the official website or contact the college office at **9488853917 or 9488863917**."""
+• **Annual Fee: ₹42,000/year** (same for all departments)
+• 1st Semester (Odd): **₹20,000** | 2nd Semester (Even): **₹22,000**
+• **SC/ST Students: ₹35,000/year** — 1st Sem: ₹15,000 | 2nd Sem: ₹22,500 (₹2,500 returned as pocket money)
+• Admission Fee (one-time): ₹100 | Exam Fee: ₹750/semester | Lab Fee: ₹20/semester
+• Transport included in fees. Payment: Lump sum or semester-wise."""
 
 
             elif any(word in query_lower for word in ['exam', 'test']):
