@@ -18,11 +18,11 @@ PRINCIPAL: Sarvesan D. | Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
 CHAIRMAN: Vignesh (Founder & Chairman)
 
 DEPARTMENTS & HODs:
-- Civil Engineering: HOD – Karthikeyan A.
-- Mechanical Engineering: HOD – Arunpandi R.
-- Electrical & Electronics Engineering (EEE): HOD – Anbalagan M.
-- Electronics & Communication Engineering (ECE): HOD – Elumalai K.
-- Computer Science Engineering (CSE): HOD – Saravanan S.
+- Civil Engineering: HOD – Mr. S. Subash (ME. Civil, 15 years experience).
+- Mechanical Engineering: HOD – Mr. Kumaran (ME. Mechanical, 20 years experience).
+- Electrical & Electronics Engineering (EEE): HOD – Mr. M. Anbalagan (ME. EEE, 20 years experience).
+- Electronics & Communication Engineering (ECE): HOD – Mrs. H. Sujatha (ME. ECE).
+- Computer Science Engineering (CSE): HOD – Mr. S. Saravanan (MCA).
 
 COURSES OFFERED (3-year Diploma):
 1. Civil Engineering
