@@ -8,70 +8,119 @@ import os
 # Injected when DB vector/keyword search returns zero results.
 # -----------------------------------------------------------------------
 SEED_KNOWLEDGE = """
-=== VPTC Core Facts (Fallback Knowledge) ===
+=== VPTC Core Facts (Complete Knowledge Base) ===
 
 INSTITUTION: Vignesh Polytechnic College (VPTC), Tiruvannamalai, Tamil Nadu.
-ADDRESS: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai - 606603.
+ESTABLISHED: 1995. Started with 3 departments, now offers 5 diploma engineering courses.
+INSTITUTION TYPE: Private, self-financed, co-education polytechnic college.
+ADDRESS: Melputhiyandal Village, Manalurpet Road, Tiruvannamalai, Tamil Nadu – 606603.
 PHONE: 9488853917 / 9488863917 | MOBILE: 7373689294 | EMAIL: vpt384@yahoo.co.in
+WEBSITE: https://vigneshpolytechniccollege.com
+AICTE PERMANENT ID: 1-454848061
+AICTE APPROVED: Yes. All courses approved by AICTE from 1995 to current 2024-2025 academic year.
+AFFILIATING UNIVERSITY: Directorate of Technical Education (DTE), Tamil Nadu, Guindy, Chennai – 25. Website: www.dte.tn.gov.in
+NEAREST RAILWAY STATION: Tiruvannamalai Railway Station.
+NEAREST AIRPORT: Meenambakkam Airport, Chennai.
+TOTAL 1ST YEAR INTAKE: 360 students.
+
+MANAGING TRUST: Sree Selvavinayagar Trust, #262, Sesathri Madam Street, Tiruvannamalai - 606603.
+Trust Email: sreeselvavinyagart@gmail.com
 
 PRINCIPAL: Mr. Sarvesan D (M.Tech., Electronics & Communication Engineering). Phone: 9865854918 | Email: sdsarvesantvm@rediffmail.com
 VICE PRINCIPAL: Mrs. Sujatha H (M.E.)
-CHAIRMAN: Thiru R. Kuppusamy (Mani) — Chairman of Sree Selvavinayagar Trust which manages VPTC. Note: There is NO individual founder named "Vignesh" — the college is named after the trust, not a person.
+CHAIRMAN: Thiru R. Kuppusamy (Mani) — Chairman of Sree Selvavinayagar Trust which manages VPTC.
+NOTE: There is NO individual founder named "Vignesh" — the college is named after the Sree Selvavinayagar Trust. The college was founded and is managed by the Trust, not by any person named Vignesh.
 
-DEPARTMENTS, HODs & KEY FACULTY:
+DEPARTMENTS, HODs & KEY FACULTY (5 Departments):
 - Civil Engineering:
     HOD: Mr. S. Subash (ME. Civil, 15 years experience).
     Key Faculty: Ms. S. Savithiri (BE. Civil).
+    Labs: Material Testing Lab, Surveying Lab, CAD in Civil Lab, Construction Practical Lab, Hydraulics & Plumbing Lab.
 
 - Mechanical Engineering:
     HOD: Mr. Kumaran (ME. Mechanical, 20 years experience).
     Key Faculty: Mr. R. Ilaiyabharathi (BE. Mechanical), Mr. V. Vinoth (BE. Mechanical).
+    Labs: Fluid Mechanics Lab, Material Testing Lab, Thermal Engineering Lab, Special Machines Lab, Automobile Lab, AutoCAD Lab, CAD/CAM Lab. Has a CNC machine.
 
 - Electrical & Electronics Engineering (EEE):
     HOD: Mr. M. Anbalagan (ME. EEE, 20 years experience).
     Key Faculty: Mr. R. Anbalagan (BE. EEE), Mr. V. Kannan (ME. EEE).
+    Labs: Electrical Circuits Lab, Electronics Devices Lab, Electrical Machines Lab, Digital Electronics Lab, Micro Controller Lab, Wiring & Winding Lab, Power Electronics Lab.
 
 - Electronics & Communication Engineering (ECE):
     HOD: Mrs. H. Sujatha (ME. ECE).
     Key Faculty: Mrs. Thilagam (BE. ECE).
+    Labs: Electronic Devices Lab, Electrical Circuits Lab, Linear Integrated Circuits Lab, Communication Systems Lab, Micro-controllers Lab, VLSI Lab, Embedded Systems Lab, Simulation Lab.
 
 - Computer Science Engineering (CSE):
     HOD: Mr. S. Saravanan (MCA).
     Key Faculty: Mrs. A. Abirami (MCA). Computer Lab Incharge: Ms. Santhi (BE. CSE).
+    Labs: 3 Computer Labs with 200+ latest computers. Individual computers per student. Software: Linux, C, Java, Web Programming, RDBMS, .Net, Networking, Multimedia.
 
 - System Admin: Mr. Elango.
 
-COURSES OFFERED (3-year Diploma):
+COURSES OFFERED (6 semesters / 3-year Diploma):
 1. Civil Engineering
 2. Mechanical Engineering
 3. Electrical & Electronics Engineering (EEE)
 4. Electronics & Communication Engineering (ECE)
-5. Computer Science Engineering
+5. Computer Science Engineering (CSE)
 
 ADMISSION:
-- Eligibility: Pass in SSLC (10th) or equivalent. No age limit.
-- Documents: 10th Mark Sheet, Transfer Certificate, Community Certificate, Conduct Certificate, Photos.
-- Lateral Entry: Direct 2nd year admission for ITI holders.
+- Eligibility: Pass in SSLC (10th standard) or equivalent. NO AGE LIMIT.
+- Documents Required: 10th Mark Sheet, Transfer Certificate (TC), Conduct Certificate, Community Certificate, Passport Photos. Parent/Guardian must accompany the student.
+- Lateral Entry (Direct 2nd Year): Open to ITI graduates (2-year ITI after 10th), +2 Vocational stream, and +2 Academic stream students.
+- Out-of-State Students: Additional documents — Migration Certificate & Certificate of Permanent Residence.
+- Application Forms: Download at https://vigneshpolytechniccollege.com
+- Online Admission Registration: Available on website.
+- Anti-Ragging: Strictly prohibited. Zero-tolerance policy per AICTE regulations.
 
-FEES (ALL DEPARTMENTS - CSE, ECE, EEE, MECHANICAL, CIVIL, S&H):
-- Annual Fee: Rs.42,000 per year for ALL departments (no difference between branches).
+FEES (ALL DEPARTMENTS — CSE, ECE, EEE, MECHANICAL, CIVIL):
+- Annual Fee: Rs.42,000 per year for ALL departments. No difference between departments.
 - 1st Semester (Odd): Rs.20,000 | 2nd Semester (Even): Rs.22,000
-- SC/ST Students: Rs.35,000 per year. 1st Semester: Rs.15,000. 2nd Semester: Rs.22,500 (Rs.2,500 returned as pocket money, net college fee Rs.20,000).
+- SC/ST Students: Rs.35,000 per year. 1st Semester: Rs.15,000. 2nd Semester: Rs.22,500 (Rs.2,500 returned as pocket money).
 - Admission Fee (one-time): Rs.100 | Exam Fee: Rs.750/semester | Lab Fee: Rs.20/semester
-- Transport is included in the Rs.42,000 annual fee. No separate transport charge.
+- Transport is INCLUDED in the Rs.42,000 annual fee. No separate transport charge.
+- Scholarship: Aadidravidar Scholarship — submit Income Certificate + Community Certificate + scholarship form at admission time.
 - Payment options: Lump sum or semester-wise installments.
 
-EXAM SYSTEM: 6 semesters over 3 years. Internal (30%) + Final (70%). Pass: 35% minimum.
+EXAM SYSTEM:
+- 6 semesters over 3 years (3 years = 6 semesters).
+- Internal Assessment: 30% | Final Exam: 70%.
+- Minimum pass marks: 35%.
+- Diploma students can join B.E. through Lateral Entry (direct 2nd year of B.E.) after completing diploma.
 
-CAMPUS FACILITIES: Library, Computer Lab, Workshop, Sports Ground, NSS/NCC, Canteen.
+CAMPUS FACILITIES:
+- Library: 21,000 volumes, 20 reference books, internet facility, capacity 30+ students.
+- Sports: Football, Volleyball, Badminton, Kho-kho, Kabaddi (outdoor). Chess, Carrom (indoor).
+- Hostel: Available for boys and girls separately.
+- Transport: College bus service from Tiruvannamalai city. Included in annual fee.
+- Canteen: Available on campus.
+- NSS: Two units, 7-day annual camp, village adoption, medical/blood donation camps.
+- ISTE: Student chapter active for 10+ years. Membership fee: Rs.150.
+- Red Ribbon Club: AIDS awareness & personality development.
 
-HOSTEL: Available for boys and girls separately.
+STUDENT ASSOCIATIONS:
+- Every department has an active Students' Association.
+- Annual Technical Symposium — open to all Polytechnic College students across Tamil Nadu.
+- NSS (National Service Scheme) — Two units, social service activities.
+- ISTE (Indian Society for Technical Education) — Technical seminars, guest lectures, career guidance.
+- Red Ribbon Club — Youth awareness, AIDS awareness.
 
-TRANSPORT: College bus service available from Tiruvannamalai city.
+COMMITTEES:
+- Anti-Ragging Committee: Zero tolerance for ragging.
+- Grievance Redressal Committee (GRC): For academic and non-academic grievances.
+- Internal Complaint Committee (ICC): For internal concerns.
+- SC/ST Committee: For preventing discrimination.
 
-PLACEMENT: Active placement cell. Students placed in companies like DALMIA, TATA, L&T, and local industries. Placement Officer: Viknesh Kumar R.
+PLACEMENTS:
+- Placement Cell operated by Administrative Officer (AO).
+- Placement Officer: Mr. Raja.
+- Placement Percentage: 100% (for students who opt for placement).
+- Annual Mega Job Mela since 1995 — open to students from other institutions too.
+- Key Recruiters: Sundaram Fasteners, Brakes India Ltd, Lucas-TVS, India Nippon Electrical Ltd, Super Auto Forge, TVS-Sundaram Fasteners, Thai Summit Neel, Borg Warner, IFB, Sakthi Auto Components, Customised Technologies Bangalore, Avlon Technologies Chennai, TRR Automotive, Annaie Informations, and many more.
 
-ACHIEVEMENTS: Government aided college. Consistently good pass percentages. Focus on practical skill development.
+COLLEGE OFFICE HOURS: Monday to Friday. For appointments: call 7373689294.
 """
 
 
