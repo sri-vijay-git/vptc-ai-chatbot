@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import "../styles/vptc-theme.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import SettingsApplier from "@/components/SettingsApplier";
 
@@ -27,10 +28,12 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={`${inter.className} bg-white dark:bg-[#1A100E] transition-colors`}>
                 <ThemeProvider>
-                    <SettingsApplier />
-                    <LayoutWrapper>
-                        {children}
-                    </LayoutWrapper>
+                    <LanguageProvider>
+                        <SettingsApplier />
+                        <LayoutWrapper>
+                            {children}
+                        </LayoutWrapper>
+                    </LanguageProvider>
                 </ThemeProvider>
             </body>
         </html>

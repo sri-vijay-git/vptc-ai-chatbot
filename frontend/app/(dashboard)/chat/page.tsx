@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, Suspense } from "react";
 import api from "@/lib/api";
-import { User, Send, StopCircle, Square, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown, Settings, Menu, X, Plus, MessageSquare, Trash2, Edit2 } from "lucide-react";
+import { User, Send, StopCircle, Square, RefreshCw, Copy, Check, ThumbsUp, ThumbsDown, Sparkles, AlertTriangle, LogOut, Sun, Moon, UserCircle, ChevronDown, Settings, Menu, X, Plus, MessageSquare, Trash2, Edit2, Languages } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { useGuestMode } from "@/hooks/useGuestMode";
 import SignupPrompt from "@/components/SignupPrompt";
 import ChatHistoryModal from "@/components/ChatHistoryModal";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useProfilePic } from "@/hooks/useProfilePic";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -38,10 +39,11 @@ type Conversation = {
 function ChatContent() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const { language, setLanguage, t } = useLanguage();
     const profilePic = useProfilePic();
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
-        { role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor. Ask me anything about our Diploma courses, admissions, or campus facilities." }
+        { role: "assistant", content: t("greeting") }
     ]);
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -76,7 +78,7 @@ function ChatContent() {
 
     // Mock conversation history (in production, fetch from backend)
     const [conversations, setConversations] = useState<Conversation[]>([
-        { id: "1", title: "VPTC AI Advisor", date: "Today", preview: "Hello! I am your VPTC AI...", messages: [{ role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor." }] },
+        { id: "1", title: "VPTC AI Advisor", date: "Today", preview: t("greeting").slice(0, 50), messages: [{ role: "assistant", content: t("greeting") }] },
         { id: "2", title: "Mechanical Engineering", date: "Yesterday", preview: "Tell me about the Mechanical dept", messages: [{ role: "assistant", content: "VPTC offers a flagship Diploma in Mechanical Engineering..." }] },
         { id: "3", title: "Admission 2026", date: "Jan 25", preview: "How do I apply for 1st year?", messages: [{ role: "assistant", content: "Admissions are open! You need..." }] },
         { id: "4", title: "Bus Routes", date: "Jan 24", preview: "Is there a bus from Polur?", messages: [{ role: "assistant", content: "Yes, we have 40km radius transport..." }] },
@@ -378,10 +380,10 @@ function ChatContent() {
         const newId = "chat_" + Date.now();
         const newConversation: Conversation = {
             id: newId,
-            title: "New Chat",
+            title: t("newChat"),
             date: new Date().toLocaleDateString(),
-            preview: "Start a conversation...",
-            messages: [{ role: "assistant", content: "Hello! I am your Vignesh Polytechnic College (VPTC) AI Advisor. Ask me anything about our Diploma courses, admissions, or campus facilities." }]
+            preview: t("greeting").slice(0, 50),
+            messages: [{ role: "assistant", content: t("greeting") }]
         };
 
         setConversations(prev => [newConversation, ...prev]);
@@ -478,7 +480,7 @@ function ChatContent() {
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#d7ccc8] hover:bg-[#bcaaa4] dark:bg-[#4e342e] dark:hover:bg-[#5d4037] rounded-lg transition-colors font-medium text-[#3e2723] dark:text-[#ffcc80]"
                     >
                         <Plus className="w-5 h-5" />
-                        New Chat
+                        {t("newChat")}
                     </button>
                 </div>
 
@@ -523,14 +525,14 @@ function ChatContent() {
                 <div className="p-4 border-t border-[#d7ccc8] dark:border-[#4e342e] space-y-2">
                     <button onClick={() => router.push("/settings")} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#3e2723] dark:text-[#ffcc80] hover:bg-[#d7ccc8] dark:hover:bg-[#4e342e] rounded-lg transition-colors">
                         <Settings className="w-4 h-4" />
-                        Settings
+                        {t("settings")}
                     </button>
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#3e2723] dark:text-[#ffcc80] hover:bg-[#d7ccc8] dark:hover:bg-[#4e342e] rounded-lg transition-colors"
                     >
                         <LogOut className="w-4 h-4" />
-                        Logout
+                        {t("logout")}
                     </button>
                 </div>
             </div>
@@ -593,6 +595,18 @@ function ChatContent() {
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-1.5 p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full shadow-sm border border-gray-200/50 dark:border-gray-700/50 pointer-events-auto">
+                        {/* Translate Toggle Button */}
+                        <button
+                            onClick={() => setLanguage(language === "English" ? "Tamil" : "English")}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors text-xs font-semibold"
+                            title={t("translateToggle")}
+                        >
+                            <Languages className="w-4 h-4" />
+                            <span className="hidden sm:inline">{language === "English" ? "தமிழ்" : "EN"}</span>
+                        </button>
+
+                        <div className="w-[1px] h-4 bg-gray-300 dark:bg-gray-600"></div>
+
                         {/* Theme Toggle */}
                         <button
                             onClick={toggleTheme}
@@ -652,7 +666,7 @@ function ChatContent() {
                                             className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                         >
                                             <Settings className="w-4 h-4" />
-                                            Profile Settings
+                                            {t("profileSettings")}
                                         </button>
                                     )}
 
@@ -665,7 +679,7 @@ function ChatContent() {
                                         className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                     >
                                         <LogOut className="w-4 h-4" />
-                                        {isGuest ? 'Exit' : 'Logout'}
+                                        {isGuest ? t("exit") : t("logout")}
                                     </button>
                                 </div>
                             )}
@@ -868,10 +882,10 @@ function ChatContent() {
                         {messages.length === 1 && !loading && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 animate-fadeIn max-w-2xl mx-auto pt-6">
                                 {[
-                                    { title: "Courses", prompt: "What diploma courses do you offer?", icon: <Sparkles className="w-5 h-5 text-yellow-500" /> },
-                                    { title: "Admissions", prompt: "Explain the admission process & eligibility.", icon: <User className="w-5 h-5 text-blue-500" /> },
-                                    { title: "Facilities", prompt: "Tell me about the college library and sports facilities.", icon: <RefreshCw className="w-5 h-5 text-green-500" /> },
-                                    { title: "Placements", prompt: "What is the placement record of the college?", icon: <Check className="w-5 h-5 text-purple-500" /> },
+                                    { title: t("starterCourses"), prompt: t("starterCoursesPrompt"), icon: <Sparkles className="w-5 h-5 text-yellow-500" /> },
+                                    { title: t("starterAdmissions"), prompt: t("starterAdmissionsPrompt"), icon: <User className="w-5 h-5 text-blue-500" /> },
+                                    { title: t("starterFacilities"), prompt: t("starterFacilitiesPrompt"), icon: <RefreshCw className="w-5 h-5 text-green-500" /> },
+                                    { title: t("starterPlacements"), prompt: t("starterPlacementsPrompt"), icon: <Check className="w-5 h-5 text-purple-500" /> },
                                 ].map((item, i) => (
                                     <button
                                         key={i}
@@ -951,7 +965,7 @@ function ChatContent() {
                                         sendMessage(e as any);
                                     }
                                 }}
-                                placeholder="Ask about your college..."
+                                placeholder={t("chatPlaceholder")}
                                 className="flex-1 px-3 sm:px-4 py-3 bg-transparent focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base min-w-0 resize-none self-center scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
                                 disabled={loading || (isGuest && !canChat())}
                             />
@@ -1001,11 +1015,11 @@ function ChatContent() {
                         </div>
                         {isGuest && remaining === 0 && (
                             <p className="text-center text-sm text-red-600 dark:text-red-400 mt-2">
-                                Free trial limit reached. Please sign up to continue.
+                                {t("freeTrialLimit")}
                             </p>
                         )}
                         <p className="text-center text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mt-3 font-medium">
-                            VPTC AI can make mistakes. Please verify important information.
+                            {t("chatDisclaimer")}
                         </p>
                     </form>
                 </div>

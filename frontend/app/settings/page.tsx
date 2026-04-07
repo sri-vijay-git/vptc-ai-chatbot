@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { Language } from "@/contexts/LanguageContext";
 import {
     Settings, User, Bell, Shield, Palette, MessageSquare,
     ChevronRight, Sun, Moon, Monitor, ArrowLeft, Check,
-    Volume2, VolumeX, Globe, Trash2, Download, LogOut, Info
+    Globe, Trash2, LogOut, Info
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,54 +17,12 @@ import { motion, AnimatePresence } from "framer-motion";
 type Section = "appearance" | "chat" | "notifications" | "privacy" | "account" | "about";
 
 const FONT_SIZE_OPTIONS = ["Small", "Medium", "Large"];
-const LANGUAGE_OPTIONS = ["English", "Tamil", "Hindi"];
-
-// Translations for the Settings page UI
-const TRANSLATIONS: Record<string, Record<string, string>> = {
-    English: {
-        appearance: "Appearance",
-        appearanceDesc: "Customize how VPTC AI looks on your device.",
-        theme: "Theme",
-        chatFontSize: "Chat Font Size",
-        language: "Language",
-        small: "Small",
-        medium: "Medium",
-        large: "Large",
-        light: "Light",
-        dark: "Dark",
-        system: "System",
-    },
-    Tamil: {
-        appearance: "தோற்றம்",
-        appearanceDesc: "VPTC AI உங்கள் சாதனத்தில் எவ்வாறு தெரிகிறது என்பதை தனிப்பயனாக்கவும்.",
-        theme: "தீம்",
-        chatFontSize: "சாட் எழுத்து அளவு",
-        language: "மொழி",
-        small: "சிறியது",
-        medium: "நடுத்தரம்",
-        large: "பெரியது",
-        light: "வெளிர்",
-        dark: "இருள்",
-        system: "கணினி",
-    },
-    Hindi: {
-        appearance: "दिखावट",
-        appearanceDesc: "VPTC AI आपके डिवाइस पर कैसा दिखता है, अनुकूलित करें।",
-        theme: "थीम",
-        chatFontSize: "चैट फ़ॉन्ट आकार",
-        language: "भाषा",
-        small: "छोटा",
-        medium: "मध्यम",
-        large: "बड़ा",
-        light: "हल्का",
-        dark: "गहरा",
-        system: "सिस्टम",
-    },
-};
+const LANGUAGE_OPTIONS: Language[] = ["English", "Tamil"];
 
 export default function SettingsPage() {
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const { language, setLanguage, t } = useLanguage();
 
     const [activeSection, setActiveSection] = useState<Section>("appearance");
     const [user, setUser] = useState<{ full_name?: string; email?: string; role?: string } | null>(null);
@@ -72,7 +32,6 @@ export default function SettingsPage() {
     // Appearance
     const [themeChoice, setThemeChoice] = useState<"light" | "dark" | "system">("system");
     const [fontSize, setFontSize] = useState("Medium");
-    const [language, setLanguage] = useState("English");
 
     // Chat
     const [streamingEnabled, setStreamingEnabled] = useState(true);
@@ -101,7 +60,6 @@ export default function SettingsPage() {
         const settings = JSON.parse(localStorage.getItem("vptc_settings") || "{}");
         if (settings.themeChoice) setThemeChoice(settings.themeChoice);
         if (settings.fontSize) setFontSize(settings.fontSize);
-        if (settings.language) setLanguage(settings.language);
         if (typeof settings.streamingEnabled === "boolean") setStreamingEnabled(settings.streamingEnabled);
         if (typeof settings.soundEnabled === "boolean") setSoundEnabled(settings.soundEnabled);
         if (typeof settings.showTimestamps === "boolean") setShowTimestamps(settings.showTimestamps);
@@ -118,11 +76,6 @@ export default function SettingsPage() {
         html.classList.add(`font-size-${fontSize.toLowerCase()}`);
     }, [fontSize]);
 
-    // Persist language to localStorage so other pages can read it
-    useEffect(() => {
-        localStorage.setItem("vptc_language", language);
-    }, [language]);
-
     const saveSettings = () => {
         const settings = {
             themeChoice, fontSize, language,
@@ -133,9 +86,6 @@ export default function SettingsPage() {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
-
-    // Shorthand translator
-    const t = (key: string) => TRANSLATIONS[language]?.[key] ?? TRANSLATIONS["English"][key] ?? key;
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -151,12 +101,12 @@ export default function SettingsPage() {
     };
 
     const sidebarItems: { id: Section; icon: React.ReactNode; label: string }[] = [
-        { id: "appearance", icon: <Palette className="w-4 h-4" />, label: "Appearance" },
-        { id: "chat", icon: <MessageSquare className="w-4 h-4" />, label: "Chat & AI" },
-        { id: "notifications", icon: <Bell className="w-4 h-4" />, label: "Notifications" },
-        { id: "privacy", icon: <Shield className="w-4 h-4" />, label: "Privacy & Data" },
-        { id: "account", icon: <User className="w-4 h-4" />, label: "Account" },
-        { id: "about", icon: <Info className="w-4 h-4" />, label: "About" },
+        { id: "appearance", icon: <Palette className="w-4 h-4" />, label: t("appearance") },
+        { id: "chat", icon: <MessageSquare className="w-4 h-4" />, label: t("chatAndAI") },
+        { id: "notifications", icon: <Bell className="w-4 h-4" />, label: t("notifications") },
+        { id: "privacy", icon: <Shield className="w-4 h-4" />, label: t("privacyData") },
+        { id: "account", icon: <User className="w-4 h-4" />, label: t("account") },
+        { id: "about", icon: <Info className="w-4 h-4" />, label: t("about") },
     ];
 
     const Toggle = ({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) => (
@@ -189,7 +139,7 @@ export default function SettingsPage() {
                     <ArrowLeft className="w-5 h-5" />
                 </button>
                 <Settings className="w-5 h-5 text-[#8B6F47] dark:text-[#FFCC80]" />
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Settings</h1>
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">{t("settings")}</h1>
                 <div className="ml-auto">
                     <button
                         onClick={saveSettings}
@@ -198,7 +148,7 @@ export default function SettingsPage() {
                             : "bg-[#8B6F47] hover:bg-[#6D563C] text-white"
                             }`}
                     >
-                        {saved ? <><Check className="w-4 h-4" /> Saved!</> : "Save Changes"}
+                        {saved ? <><Check className="w-4 h-4" /> {t("saved")}</> : t("saveChanges")}
                     </button>
                 </div>
             </div>
@@ -326,7 +276,7 @@ export default function SettingsPage() {
                                                     onClick={() => setLanguage(lang)}
                                                     className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${language === lang ? "border-[#8B6F47] dark:border-[#FFCC80] bg-[#8B6F47]/10 text-[#8B6F47] dark:text-[#FFCC80]" : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400"}`}
                                                 >
-                                                    {lang}
+                                                    {lang === "English" ? "🇬🇧 English" : "🇮🇳 தமிழ்"}
                                                 </button>
                                             ))}
                                         </div>
@@ -337,21 +287,21 @@ export default function SettingsPage() {
                             {/* CHAT */}
                             {activeSection === "chat" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">Chat & AI</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Control how the AI chat behaves.</p>
-                                    <SettingRow label="Streaming Responses" description="Show AI response word-by-word as it generates">
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("chatAndAI")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("chatDesc")}</p>
+                                    <SettingRow label={t("streamingResponses")} description={t("streamingDesc")}>
                                         <Toggle enabled={streamingEnabled} onChange={setStreamingEnabled} />
                                     </SettingRow>
-                                    <SettingRow label="Message Sound" description="Play a sound when a response is received">
+                                    <SettingRow label={t("messageSound")} description={t("messageSoundDesc")}>
                                         <Toggle enabled={soundEnabled} onChange={setSoundEnabled} />
                                     </SettingRow>
-                                    <SettingRow label="Show Timestamps" description="Display the time next to each message">
+                                    <SettingRow label={t("showTimestamps")} description={t("showTimestampsDesc")}>
                                         <Toggle enabled={showTimestamps} onChange={setShowTimestamps} />
                                     </SettingRow>
-                                    <SettingRow label="Auto-scroll" description="Automatically scroll to the latest message">
+                                    <SettingRow label={t("autoScroll")} description={t("autoScrollDesc")}>
                                         <Toggle enabled={autoScroll} onChange={setAutoScroll} />
                                     </SettingRow>
-                                    <SettingRow label="Compact Mode" description="Reduce spacing between messages">
+                                    <SettingRow label={t("compactMode")} description={t("compactModeDesc")}>
                                         <Toggle enabled={compactMode} onChange={setCompactMode} />
                                     </SettingRow>
                                 </div>
@@ -360,12 +310,12 @@ export default function SettingsPage() {
                             {/* NOTIFICATIONS */}
                             {activeSection === "notifications" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">Notifications</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Manage how you get notified.</p>
-                                    <SettingRow label="Email Notifications" description="Receive important updates via email">
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("notifications")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("notifDesc")}</p>
+                                    <SettingRow label={t("emailNotif")} description={t("emailNotifDesc")}>
                                         <Toggle enabled={emailNotif} onChange={setEmailNotif} />
                                     </SettingRow>
-                                    <SettingRow label="Push Notifications" description="Browser push notifications for announcements">
+                                    <SettingRow label={t("pushNotif")} description={t("pushNotifDesc")}>
                                         <Toggle enabled={pushNotif} onChange={setPushNotif} />
                                     </SettingRow>
                                 </div>
@@ -374,12 +324,12 @@ export default function SettingsPage() {
                             {/* PRIVACY */}
                             {activeSection === "privacy" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">Privacy & Data</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Control your data and privacy preferences.</p>
-                                    <SettingRow label="Save Chat History" description="Store your conversations for future reference">
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("privacyData")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("privacyDesc")}</p>
+                                    <SettingRow label={t("saveChatHistory")} description={t("saveChatHistoryDesc")}>
                                         <Toggle enabled={saveHistory} onChange={setSaveHistory} />
                                     </SettingRow>
-                                    <SettingRow label="Share Usage Analytics" description="Help improve VPTC AI by sharing anonymous usage data">
+                                    <SettingRow label={t("shareUsage")} description={t("shareUsageDesc")}>
                                         <Toggle enabled={shareUsage} onChange={setShareUsage} />
                                     </SettingRow>
                                     <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-3">
@@ -388,7 +338,7 @@ export default function SettingsPage() {
                                             className="w-full flex items-center gap-2 px-4 py-3 rounded-xl border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium"
                                         >
                                             <Trash2 className="w-4 h-4" />
-                                            Clear All Chat History
+                                            {t("clearAllHistory")}
                                         </button>
                                     </div>
                                 </div>
@@ -397,8 +347,8 @@ export default function SettingsPage() {
                             {/* ACCOUNT */}
                             {activeSection === "account" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">Account</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Manage your account and profile.</p>
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("account")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("accountDesc")}</p>
 
                                     <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl mb-6">
                                         <div className="w-14 h-14 rounded-full overflow-hidden bg-[#8B6F47] flex items-center justify-center shrink-0">
@@ -421,7 +371,7 @@ export default function SettingsPage() {
                                             className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <div className="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                <User className="w-4 h-4" /> Edit Profile
+                                                <User className="w-4 h-4" /> {t("editProfile")}
                                             </div>
                                             <ChevronRight className="w-4 h-4 text-gray-400" />
                                         </Link>
@@ -431,7 +381,7 @@ export default function SettingsPage() {
                                             className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <div className="flex items-center gap-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                <Shield className="w-4 h-4" /> Change Password
+                                                <Shield className="w-4 h-4" /> {t("changePassword")}
                                             </div>
                                             <ChevronRight className="w-4 h-4 text-gray-400" />
                                         </Link>
@@ -441,7 +391,7 @@ export default function SettingsPage() {
                                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-medium"
                                         >
                                             <LogOut className="w-4 h-4" />
-                                            Sign Out
+                                            {t("signOut")}
                                         </button>
                                     </div>
                                 </div>
@@ -450,8 +400,8 @@ export default function SettingsPage() {
                             {/* ABOUT */}
                             {activeSection === "about" && (
                                 <div className="p-6">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">About</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Information about VPTC AI Chatbot.</p>
+                                    <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-1">{t("about")}</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{t("aboutDesc")}</p>
 
                                     <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-[#FAF7F2] to-[#EFEBE9] dark:from-[#2D1B15] dark:to-[#3E2723] rounded-2xl mb-6">
                                         <div className="w-20 h-20 rounded-full overflow-hidden mb-3 shadow-lg">

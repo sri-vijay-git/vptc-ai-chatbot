@@ -120,6 +120,19 @@ PLACEMENTS:
 - Annual Mega Job Mela since 1995 — open to students from other institutions too.
 - Key Recruiters: Sundaram Fasteners, Brakes India Ltd, Lucas-TVS, India Nippon Electrical Ltd, Super Auto Forge, TVS-Sundaram Fasteners, Thai Summit Neel, Borg Warner, IFB, Sakthi Auto Components, Customised Technologies Bangalore, Avlon Technologies Chennai, TRR Automotive, Annaie Informations, and many more.
 
+DEPARTMENT-WISE JOB PLACEMENT SPEED & RECOMMENDATION:
+- EEE (Electrical & Electronics Engineering): FASTEST job placement. High demand in manufacturing, electrical industries, and government sectors. Most recruiters hire EEE students immediately after completion.
+- Mechanical Engineering: FASTEST job placement. Very high industry demand in automobile, manufacturing, and production sectors. 100% placement consistently. Best for quick jobs in factories, auto companies (TVS, Sundaram Fasteners, Brakes India, etc.).
+- ECE (Electronics & Communication Engineering): Good job opportunities in electronics manufacturing, embedded systems, and communication sectors.
+- CSE (Computer Science Engineering): Good for IT/software sector jobs. Slightly more competitive but growing demand.
+- Civil Engineering: Good for construction, government projects, and infrastructure sectors.
+
+BEST DEPARTMENTS FOR QUICK JOB (RECOMMENDATION):
+- For the FASTEST job after diploma: Choose EEE or Mechanical Engineering. These departments have the highest industry demand and most recruiters visit specifically for these branches.
+- For government jobs: EEE is best (TNEB, TANGEDCO, etc.)
+- For IT/software: CSE is best.
+- For manufacturing/automobile industry: Mechanical or EEE.
+
 COLLEGE OFFICE HOURS: Monday to Friday. For appointments: call 7373689294.
 """
 
