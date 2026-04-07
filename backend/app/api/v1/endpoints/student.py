@@ -97,6 +97,24 @@ def get_student_profile(current_user: dict = Depends(get_current_user)):
             default_profile["semester"] = db_data.get("semester") or default_profile["semester"]
             default_profile["cgpa"] = float(db_data.get("cgpa") or 0.0)
             
+            # Self-healing: if old db record is missing name or email, patch it automatically
+            if not db_data.get("name") or not db_data.get("email"):
+                try:
+                    patch_name = current_user.get("full_name") or current_user.get("email", "Student").split("@")[0]
+                    patch_email = current_user.get("email", "")
+                    supabase.table("student_profiles").update({
+                        "name": patch_name,
+                        "email": patch_email
+                    }).eq("id", current_user["id"]).execute()
+                    
+                    default_profile["name"] = patch_name
+                    default_profile["email"] = patch_email
+                except Exception as e:
+                    print(f"Failed to auto-patch student name/email: {e}")
+            else:
+                default_profile["name"] = db_data.get("name")
+                default_profile["email"] = db_data.get("email")
+
             # Use database attendance if local file attendance tracking isn't active
             if att_history.get("total", 0) == 0:
                 default_profile["attendance"] = float(db_data.get("attendance") or 0.0)
